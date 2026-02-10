@@ -1,0 +1,96 @@
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { LucideIcon, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface ConfirmModalProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm: () => void;
+  variant?: "destructive" | "primary" | "warning";
+  icon?: LucideIcon;
+}
+
+export function ConfirmModal({
+  isOpen,
+  onOpenChange,
+  title,
+  description,
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  onConfirm,
+  variant = "destructive",
+  icon: Icon = AlertTriangle,
+}: ConfirmModalProps) {
+  const variantStyles = {
+    destructive: "bg-destructive/10 text-destructive border-destructive/20",
+    primary: "bg-primary/10 text-primary border-primary/20",
+    warning: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  };
+
+  const buttonVariants = {
+    destructive: "destructive",
+    primary: "default",
+    warning: "secondary",
+  } as const;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[420px] rounded-3xl p-8 border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] bg-white">
+        <DialogHeader className="flex flex-col items-center text-center space-y-4">
+          <div
+            className={cn(
+              "h-20 w-20 rounded-[2rem] border-2 flex items-center justify-center shadow-inner transition-transform duration-500 animate-in zoom-in-50",
+              variantStyles[variant],
+            )}>
+            <Icon className="h-10 w-10" />
+          </div>
+
+          <div className="space-y-2">
+            <DialogTitle className="text-2xl font-black tracking-tight text-slate-900">
+              {title}
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 font-medium leading-relaxed">
+              {description}
+            </DialogDescription>
+          </div>
+        </DialogHeader>
+
+        <DialogFooter className="mt-10 sm:justify-center gap-3 w-full">
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              className="flex-1 h-14 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition-all uppercase tracking-wider text-xs border-2 border-slate-200">
+              {cancelText}
+            </Button>
+          </DialogClose>
+          <Button
+            variant={buttonVariants[variant]}
+            className={cn(
+              "flex-1 h-14 rounded-2xl font-bold uppercase tracking-wider text-xs transition-all border-2",
+              variant === "destructive"
+                ? "border-destructive/20"
+                : "border-primary/20",
+            )}
+            onClick={onConfirm}>
+            {confirmText}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
