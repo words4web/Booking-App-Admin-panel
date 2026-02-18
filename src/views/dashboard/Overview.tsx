@@ -36,14 +36,7 @@ export function Overview() {
       color: "bg-blue-400",
       hoverColor: "hover:bg-blue-500",
     },
-    {
-      title: "Manage Drivers",
-      description: "Onboard and monitor delivery drivers",
-      icon: Truck,
-      href: "/drivers",
-      color: "bg-black",
-      hoverColor: "hover:bg-gray-900",
-    },
+
     {
       title: "Manage Bookings",
       description: "Create and track shipment bookings",
@@ -51,6 +44,14 @@ export function Overview() {
       href: "/bookings/new",
       color: "bg-primary",
       hoverColor: "hover:bg-primary/90",
+    },
+    {
+      title: "Manage Drivers",
+      description: "Onboard and monitor delivery drivers",
+      icon: Truck,
+      href: "/drivers",
+      color: "bg-black",
+      hoverColor: "hover:bg-gray-900",
     },
     {
       title: "Manage Invoices",

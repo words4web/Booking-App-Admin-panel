@@ -50,18 +50,18 @@ export function ConfirmModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[420px] rounded-3xl p-8 border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] bg-white">
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[98vw] max-w-[740px] rounded-[3rem] px-10 py-8 border-none shadow-[0_40px_100px_-15px_rgba(0,0,0,0.1)] bg-white/95 backdrop-blur-xl">
         <DialogHeader className="flex flex-col items-center text-center space-y-4">
           <div
             className={cn(
-              "h-20 w-20 rounded-[2rem] border-2 flex items-center justify-center shadow-inner transition-transform duration-500 animate-in zoom-in-50",
+              "h-16 w-16 rounded-[1.5rem] border-2 flex items-center justify-center shadow-inner transition-transform duration-500 animate-in zoom-in-50",
               variantStyles[variant],
             )}>
             <Icon className="h-10 w-10" />
           </div>
 
-          <div className="space-y-2">
-            <DialogTitle className="text-2xl font-black tracking-tight text-slate-900">
+          <div className="space-y-2 max-w-[460px] mx-auto">
+            <DialogTitle className="text-2xl font-extrabold tracking-tight text-slate-900">
               {title}
             </DialogTitle>
             <DialogDescription className="text-slate-500 font-medium leading-relaxed">
@@ -70,7 +70,7 @@ export function ConfirmModal({
           </div>
         </DialogHeader>
 
-        <DialogFooter className="mt-10 sm:justify-center gap-3 w-full">
+        <DialogFooter className="mt-10 sm:justify-between gap-3 w-full">
           <DialogClose asChild>
             <Button
               variant="ghost"
