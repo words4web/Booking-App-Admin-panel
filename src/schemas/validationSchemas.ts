@@ -59,10 +59,3 @@ export const LoginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
-export type CompanyFormData = z.infer<typeof CompanySchema>;
-export type CustomerFormData = z.infer<typeof CustomerSchema>;
-export type ProductFormData = z.infer<typeof ProductSchema>;
-export type DriverFormData = z.infer<typeof DriverSchema>;
-export type BookingFormData = z.infer<typeof BookingSchema>;
-export type LoginFormData = z.infer<typeof LoginSchema>;

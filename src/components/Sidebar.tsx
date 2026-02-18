@@ -43,6 +43,12 @@ export function Sidebar() {
       icon: <Package className="h-5 w-5" />,
       href: "/products",
     },
+
+    {
+      label: "Bookings",
+      icon: <Calendar className="h-5 w-5" />,
+      href: "/bookings",
+    },
     {
       label: "Driver",
       icon: <Truck className="h-5 w-5" />,
@@ -53,20 +59,12 @@ export function Sidebar() {
       icon: <FileText className="h-5 w-5" />,
       href: "/invoices",
     },
-    {
-      label: "Bookings",
-      icon: <Calendar className="h-5 w-5" />,
-      href: "/bookings",
-    },
   ];
 
   return (
     <aside className="w-72 border-r border-border/60 bg-white/50 backdrop-blur-xl flex flex-col h-full flex-shrink-0">
       <div className="flex-1 overflow-y-auto py-8">
         <div className="px-6 mb-8">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-4 mb-4">
-            Navigation Hub
-          </h2>
           <nav className="flex flex-col gap-1.5">
             {navItems.map((item) => {
               const isActive =
