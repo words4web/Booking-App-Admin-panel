@@ -13,6 +13,13 @@ const API_ENDPOINTS = {
     VERIFY_DOCUMENT: (driverId: string) =>
       `${Admin_Base}/drivers/${driverId}/verify-document`,
   },
+  COMPANIES: {
+    CREATE: `${Admin_Base}/companies`,
+    GET_ALL: `${Admin_Base}/companies`,
+    GET_BY_ID: (companyId: string) => `${Admin_Base}/companies/${companyId}`,
+    UPDATE: (companyId: string) => `${Admin_Base}/companies/${companyId}`,
+    DELETE: (companyId: string) => `${Admin_Base}/companies/${companyId}`,
+  },
 };
 
 export default API_ENDPOINTS;

@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* 1. Fixed Header (Stationary) */}
       <Header
         companyName={
-          user?.role === UserRoles.SUPER_ADMIN ? "Super Admin" : "Company Admin"
+          user?.role === UserRoles.SUPER_ADMIN ? "Super Admin" : user?.fullName
         }
         userName={user?.fullName}
       />

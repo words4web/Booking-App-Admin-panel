@@ -3,6 +3,8 @@ const ROUTES_PATH = {
     LOGIN: "/login",
   },
   DASHBOARD: "/dashboard",
+  COMPANIES: { BASE: "/companies", NEW: "/companies/new" },
+  DRIVERS: "/drivers",
 };
 
 export default ROUTES_PATH;
