@@ -8,7 +8,7 @@ export const CompanySchema = z.object({
   invoicePrefix: z.string().min(1, "Invoice prefix is required"),
   bankAccountNumber: z.string().optional(),
   bankCode: z.string().optional(),
-  adminUsername: z.string().min(1, "Admin username is required"),
+  adminEmail: z.string().email("Valid email is required"),
 });
 
 export const CustomerSchema = z.object({

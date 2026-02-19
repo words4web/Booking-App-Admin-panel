@@ -1,47 +1,53 @@
 "use client";
 
 import { useFormik } from "formik";
-import { toast } from "react-toastify";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import { CompanySchema } from "@/src/schemas/validationSchemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Building2,
-  Landmark,
-  ShieldCheck,
-  CreditCard,
-  RotateCcw,
-  Save,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreditCard, RotateCcw, Save, Mail, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CompanyFormData } from "@/src/types/forms.types";
+import { CompanyTabsData } from "@/lib/CompanyTabsData";
+import { Company } from "@/src/types/company.types";
 
 interface CompanyFormProps {
-  onSubmit?: (data: CompanyFormData) => void;
+  mode?: "create" | "edit";
+  initialData?: Company;
+  onSubmit: (data: CompanyFormData) => void;
+  isPending?: boolean;
 }
 
-export function CompanyForm({ onSubmit }: CompanyFormProps) {
+export function CompanyForm({
+  mode = "create",
+  initialData,
+  onSubmit,
+  isPending = false,
+}: CompanyFormProps) {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
+
   const formik = useFormik<CompanyFormData>({
     initialValues: {
-      name: "",
-      registrationNumber: "",
-      vatNumber: "",
-      vatRegistered: true,
-      invoicePrefix: "INV",
-      bankAccountNumber: "",
-      bankCode: "",
-      adminUsername: "",
+      name: initialData?.name || "",
+      registrationNumber: initialData?.registrationNumber || "",
+      vatNumber: initialData?.vatNumber || "",
+      vatRegistered: initialData?.vatRegistered ?? true,
+      invoicePrefix: initialData?.invoicePrefix || "INV",
+      bankAccountNumber: initialData?.bankAccountNumber || "",
+      bankCode: initialData?.bankCode || "",
+      adminEmail: initialData?.adminEmail || "",
     },
+    validationSchema: toFormikValidationSchema(CompanySchema),
+    enableReinitialize: true,
     onSubmit: (values) => {
-      try {
-        console.log("Company form submitted:", values);
-        toast.success("Company registration successful!");
-        onSubmit?.(values);
-      } catch (error) {
-        toast.error("Critical: Company registration failed");
-      }
+      onSubmit(values);
     },
   });
 
@@ -56,225 +62,266 @@ export function CompanyForm({ onSubmit }: CompanyFormProps) {
       <div className="flex flex-col gap-1 relative mb-10">
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Register New <span className="text-primary">Company</span>
+            {mode === "create" ? "Register New" : "Edit"}{" "}
+            <span className="text-primary">Company</span>
           </h1>
         </div>
         <p className="text-muted-foreground font-medium text-sm">
-          Provide the required details to initialize a new company profile.
+          {mode === "create"
+            ? "Provide the required details to initialize a new company profile."
+            : "Update the company profile details."}
         </p>
       </div>
 
       <form onSubmit={formik.handleSubmit} className="space-y-6">
-        {/* Section 1: Company Identity */}
-        <Card className="border shadow-sm bg-white rounded-xl overflow-hidden ring-1 ring-border/50">
-          <CardHeader className="bg-slate-50 border-b border-border/50 px-6 py-4">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-primary" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider">
-                Company Identity
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="name"
-                  className="text-xs font-semibold text-slate-600">
-                  Company Name
-                </Label>
-                <Input
-                  id="name"
-                  autoComplete="organization"
-                  placeholder="e.g., Global Logistics S.A."
-                  {...formik.getFieldProps("name")}
-                  className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("name") ? "border-destructive" : ""}`}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="registrationNumber"
-                  className="text-xs font-semibold text-slate-600">
-                  Registration Number
-                </Label>
-                <Input
-                  id="registrationNumber"
-                  placeholder="Official Reg No."
-                  {...formik.getFieldProps("registrationNumber")}
-                  className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("registrationNumber") ? "border-destructive" : ""}`}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="invoicePrefix"
-                  className="text-xs font-semibold text-slate-600">
-                  Invoice Prefix
-                </Label>
-                <Input
-                  id="invoicePrefix"
-                  placeholder="e.g., GLO"
-                  {...formik.getFieldProps("invoicePrefix")}
-                  className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary uppercase ${getFieldError("invoicePrefix") ? "border-destructive" : ""}`}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 2: Financial & Tax */}
-        <Card className="border shadow-sm bg-white rounded-xl overflow-hidden ring-1 ring-border/50">
-          <CardHeader className="bg-slate-50 border-b border-border/50 px-6 py-4">
-            <div className="flex items-center gap-2">
-              <Landmark className="h-4 w-4 text-primary" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider">
-                Financial & Tax Data
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div
-              className={cn(
-                "flex items-center justify-between p-4 rounded-lg border transition-all duration-300",
-                formik.values.vatRegistered
-                  ? "bg-emerald-50/50 border-emerald-200 ring-4 ring-emerald-50"
-                  : "bg-slate-50 border-slate-200",
-              )}>
-              <div className="space-y-0.5">
-                <Label
-                  htmlFor="vatRegistered"
-                  className={cn(
-                    "text-sm font-bold select-none transition-colors cursor-pointer",
-                    formik.values.vatRegistered
-                      ? "text-emerald-700"
-                      : "text-slate-900",
-                  )}>
-                  VAT Registered Status
-                </Label>
-                <p className="text-[11px] text-slate-500 font-medium leading-none">
-                  Toggle if this company is registered for VAT
-                </p>
-              </div>
-              <Switch
-                id="vatRegistered"
-                name="vatRegistered"
-                checked={formik.values.vatRegistered}
-                className="data-[state=checked]:bg-emerald-600"
-                onCheckedChange={(checked) => {
-                  formik.setFieldValue("vatRegistered", checked);
-                  if (!checked) {
-                    formik.setFieldValue("vatNumber", "N/A");
-                  } else {
-                    formik.setFieldValue("vatNumber", "");
-                  }
-                }}
-              />
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
+          <Tabs defaultValue="identity" className="w-full">
+            <div className="px-8 pt-8">
+              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit">
+                {CompanyTabsData.map((data) => (
+                  <TabsTrigger
+                    key={data.id}
+                    value={data.id}
+                    className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all data-[state=active]:bg-primary data-[state=active]:text-white">
+                    {data.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="vatNumber"
-                  className="text-xs font-semibold text-slate-600">
-                  VAT Reference Number
-                </Label>
-                <div className="relative group">
-                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
-                  <Input
-                    id="vatNumber"
-                    placeholder="VAT Reg No."
-                    disabled={!formik.values.vatRegistered}
-                    {...formik.getFieldProps("vatNumber")}
-                    className={`h-11 pl-10 rounded-lg border-border focus:ring-primary focus:border-primary transition-all ${getFieldError("vatNumber") ? "border-destructive border-2" : ""}`}
-                  />
+            <CardContent className="p-8">
+              {/* Tab 1: Company Identity */}
+              <TabsContent
+                value="identity"
+                className="mt-0 focus-visible:outline-none">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="name"
+                      className="text-xs font-semibold text-slate-600">
+                      Company Name
+                    </Label>
+                    <Input
+                      id="name"
+                      autoComplete="organization"
+                      placeholder="e.g., Global Logistics S.A."
+                      {...formik.getFieldProps("name")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("name") ? "border-destructive" : ""}`}
+                    />
+                    {getFieldError("name") && (
+                      <p className="text-xs text-destructive">
+                        {formik.errors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="registrationNumber"
+                      className="text-xs font-semibold text-slate-600">
+                      Registration Number
+                    </Label>
+                    <Input
+                      id="registrationNumber"
+                      placeholder="Official Reg No."
+                      {...formik.getFieldProps("registrationNumber")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("registrationNumber") ? "border-destructive" : ""}`}
+                      disabled={!isSuperAdmin}
+                    />
+                    {getFieldError("registrationNumber") && (
+                      <p className="text-xs text-destructive">
+                        {formik.errors.registrationNumber}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="invoicePrefix"
+                      className="text-xs font-semibold text-slate-600">
+                      Invoice Prefix
+                    </Label>
+                    <Input
+                      id="invoicePrefix"
+                      placeholder="e.g., GLO"
+                      {...formik.getFieldProps("invoicePrefix")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary uppercase ${getFieldError("invoicePrefix") ? "border-destructive" : ""}`}
+                      disabled={!isSuperAdmin}
+                    />
+                    {getFieldError("invoicePrefix") && (
+                      <p className="text-xs text-destructive">
+                        {formik.errors.invoicePrefix}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </TabsContent>
 
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="bankAccountNumber"
-                  className="text-xs font-semibold text-slate-600">
-                  Bank Account Number
-                </Label>
-                <Input
-                  id="bankAccountNumber"
-                  placeholder="Primary Account No."
-                  {...formik.getFieldProps("bankAccountNumber")}
-                  className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
-                />
-              </div>
+              {/* Tab 2: Financial & Tax */}
+              <TabsContent
+                value="financial"
+                className="mt-0 focus-visible:outline-none">
+                <div className="space-y-6">
+                  <div
+                    className={cn(
+                      "flex items-center justify-between p-4 rounded-lg border transition-all duration-300",
+                      formik.values.vatRegistered
+                        ? "bg-emerald-50/50 border-emerald-200 ring-4 ring-emerald-50"
+                        : "bg-slate-50 border-slate-200",
+                    )}>
+                    <div className="space-y-0.5">
+                      <Label
+                        htmlFor="vatRegistered"
+                        className={cn(
+                          "text-sm font-bold select-none transition-colors cursor-pointer",
+                          formik.values.vatRegistered
+                            ? "text-emerald-700"
+                            : "text-slate-900",
+                        )}>
+                        VAT Registered Status
+                      </Label>
+                      <p className="text-[11px] text-slate-500 font-medium leading-none">
+                        Toggle if this company is registered for VAT
+                      </p>
+                    </div>
+                    <Switch
+                      id="vatRegistered"
+                      name="vatRegistered"
+                      checked={formik.values.vatRegistered}
+                      className="data-[state=checked]:bg-emerald-600"
+                      onCheckedChange={(checked) => {
+                        formik.setFieldValue("vatRegistered", checked);
+                        if (!checked) {
+                          formik.setFieldValue("vatNumber", "N/A");
+                        } else {
+                          formik.setFieldValue("vatNumber", "");
+                        }
+                      }}
+                      disabled={!isSuperAdmin}
+                    />
+                  </div>
 
-              <div className="space-y-1.5 md:col-span-2">
-                <Label
-                  htmlFor="bankCode"
-                  className="text-xs font-semibold text-slate-600">
-                  Sort Code / Swift / BIC
-                </Label>
-                <Input
-                  id="bankCode"
-                  placeholder="Financial Institution Code"
-                  {...formik.getFieldProps("bankCode")}
-                  className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="vatNumber"
+                        className="text-xs font-semibold text-slate-600">
+                        VAT Reference Number
+                      </Label>
+                      <div className="relative group">
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                        <Input
+                          id="vatNumber"
+                          placeholder="VAT Reg No."
+                          disabled={
+                            !formik.values.vatRegistered || !isSuperAdmin
+                          }
+                          {...formik.getFieldProps("vatNumber")}
+                          className={`h-11 pl-10 rounded-lg border-border focus:ring-primary focus:border-primary transition-all ${getFieldError("vatNumber") ? "border-destructive border-2" : ""}`}
+                        />
+                      </div>
+                    </div>
 
-        {/* Section 3: Admin Access */}
-        <Card className="border shadow-sm bg-white rounded-xl overflow-hidden ring-1 ring-border/50 border-l-4 border-l-primary">
-          <CardHeader className="bg-primary/5 border-b border-border/50 px-6 py-4">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-primary" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-primary">
-                Administrative Access
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="adminUsername"
-                className="text-xs font-semibold text-slate-600">
-                Default Admin Username
-              </Label>
-              <div className="relative group">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary font-bold">
-                  @
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="bankAccountNumber"
+                        className="text-xs font-semibold text-slate-600">
+                        Bank Account Number
+                      </Label>
+                      <Input
+                        id="bankAccountNumber"
+                        placeholder="Primary Account No."
+                        {...formik.getFieldProps("bankAccountNumber")}
+                        className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
+                        disabled={!isSuperAdmin}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label
+                        htmlFor="bankCode"
+                        className="text-xs font-semibold text-slate-600">
+                        Sort Code / Swift / BIC
+                      </Label>
+                      <Input
+                        id="bankCode"
+                        placeholder="Financial Institution Code"
+                        {...formik.getFieldProps("bankCode")}
+                        className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
+                        disabled={!isSuperAdmin}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <Input
-                  id="adminUsername"
-                  placeholder="e.g., master_admin"
-                  {...formik.getFieldProps("adminUsername")}
-                  className={`h-11 pl-8 rounded-lg border-border font-bold text-slate-700 transition-all focus:ring-primary focus:border-primary ${getFieldError("adminUsername") ? "border-destructive font-bold" : ""}`}
-                />
-              </div>
-              <p className="text-[10px] text-slate-400 font-medium mt-1">
-                * This user will have root control over the company profile
-              </p>
-            </div>
-          </CardContent>
+              </TabsContent>
+
+              {/* Tab 3: Admin Access */}
+              <TabsContent
+                value="admin"
+                className="mt-0 focus-visible:outline-none">
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="adminEmail"
+                    className="text-xs font-semibold text-slate-600">
+                    Company Admin Email
+                  </Label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-focus-within:text-primary transition-colors" />
+                    <Input
+                      id="adminEmail"
+                      type="email"
+                      placeholder="e.g., admin@company.com"
+                      disabled={mode === "edit" || !isSuperAdmin}
+                      {...formik.getFieldProps("adminEmail")}
+                      className={`h-11 pl-10 rounded-lg border-border font-bold text-slate-700 transition-all focus:ring-primary focus:border-primary ${getFieldError("adminEmail") ? "border-destructive font-bold" : ""}`}
+                    />
+                  </div>
+                  {getFieldError("adminEmail") && (
+                    <p className="text-xs text-destructive">
+                      {formik.errors.adminEmail}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">
+                    {mode === "create"
+                      ? "* A company admin account will be created with this email. Login credentials will be sent via email."
+                      : "* Admin email cannot be changed after creation."}
+                  </p>
+                </div>
+              </TabsContent>
+            </CardContent>
+          </Tabs>
         </Card>
 
         {/* Form Controls */}
-        <div className="flex items-center justify-end gap-4 pt-4">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => formik.resetForm()}
-            className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
-            <RotateCcw className="h-4 w-4" />
-            Clear Form
-          </Button>
-          <Button
-            type="submit"
-            disabled={formik.isSubmitting || !formik.isValid}
-            className="h-11 px-8 rounded-lg font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
-            <Save className="h-4 w-4" />
-            Complete Registration
-          </Button>
-        </div>
+        {isSuperAdmin && (
+          <div className="flex items-center justify-end gap-4 pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => formik.resetForm()}
+              disabled={isPending}
+              className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
+              <RotateCcw className="h-4 w-4" />
+              {mode === "create" ? "Clear Form" : "Reset Changes"}
+            </Button>
+            <Button
+              type="submit"
+              disabled={formik.isSubmitting || !formik.isValid || isPending}
+              className="h-11 px-8 rounded-lg font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {mode === "create" ? "Creating..." : "Saving..."}
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  {mode === "create" ? "Complete Registration" : "Save Changes"}
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

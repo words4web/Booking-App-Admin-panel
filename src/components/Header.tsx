@@ -9,6 +9,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "../enums/roles.enum";
 
 interface HeaderProps {
   companyName?: string;
@@ -57,7 +58,9 @@ export function Header({ companyName = "Super Admin" }: HeaderProps) {
                   {user?.fullName}
                 </span>
                 <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter mt-1">
-                  Master Access
+                  {user?.role == UserRoles.SUPER_ADMIN
+                    ? "Super Admin"
+                    : "Company Admin"}
                 </span>
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-y-0.5" />
