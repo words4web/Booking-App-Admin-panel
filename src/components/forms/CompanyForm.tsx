@@ -1,6 +1,8 @@
 "use client";
 
 import { useFormik } from "formik";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { CompanySchema } from "@/src/schemas/validationSchemas";
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,9 @@ export function CompanyForm({
   onSubmit,
   isPending = false,
 }: CompanyFormProps) {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
+
   const formik = useFormik<CompanyFormData>({
     initialValues: {
       name: initialData?.name || "",
@@ -121,6 +126,7 @@ export function CompanyForm({
                       placeholder="Official Reg No."
                       {...formik.getFieldProps("registrationNumber")}
                       className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("registrationNumber") ? "border-destructive" : ""}`}
+                      disabled={!isSuperAdmin}
                     />
                     {getFieldError("registrationNumber") && (
                       <p className="text-xs text-destructive">
@@ -140,6 +146,7 @@ export function CompanyForm({
                       placeholder="e.g., GLO"
                       {...formik.getFieldProps("invoicePrefix")}
                       className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary uppercase ${getFieldError("invoicePrefix") ? "border-destructive" : ""}`}
+                      disabled={!isSuperAdmin}
                     />
                     {getFieldError("invoicePrefix") && (
                       <p className="text-xs text-destructive">
@@ -190,6 +197,7 @@ export function CompanyForm({
                           formik.setFieldValue("vatNumber", "");
                         }
                       }}
+                      disabled={!isSuperAdmin}
                     />
                   </div>
 
@@ -205,7 +213,9 @@ export function CompanyForm({
                         <Input
                           id="vatNumber"
                           placeholder="VAT Reg No."
-                          disabled={!formik.values.vatRegistered}
+                          disabled={
+                            !formik.values.vatRegistered || !isSuperAdmin
+                          }
                           {...formik.getFieldProps("vatNumber")}
                           className={`h-11 pl-10 rounded-lg border-border focus:ring-primary focus:border-primary transition-all ${getFieldError("vatNumber") ? "border-destructive border-2" : ""}`}
                         />
@@ -223,6 +233,7 @@ export function CompanyForm({
                         placeholder="Primary Account No."
                         {...formik.getFieldProps("bankAccountNumber")}
                         className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
+                        disabled={!isSuperAdmin}
                       />
                     </div>
 
@@ -237,6 +248,7 @@ export function CompanyForm({
                         placeholder="Financial Institution Code"
                         {...formik.getFieldProps("bankCode")}
                         className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
+                        disabled={!isSuperAdmin}
                       />
                     </div>
                   </div>
@@ -259,7 +271,7 @@ export function CompanyForm({
                       id="adminEmail"
                       type="email"
                       placeholder="e.g., admin@company.com"
-                      disabled={mode === "edit"}
+                      disabled={mode === "edit" || !isSuperAdmin}
                       {...formik.getFieldProps("adminEmail")}
                       className={`h-11 pl-10 rounded-lg border-border font-bold text-slate-700 transition-all focus:ring-primary focus:border-primary ${getFieldError("adminEmail") ? "border-destructive font-bold" : ""}`}
                     />
@@ -281,33 +293,35 @@ export function CompanyForm({
         </Card>
 
         {/* Form Controls */}
-        <div className="flex items-center justify-end gap-4 pt-4">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => formik.resetForm()}
-            disabled={isPending}
-            className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
-            <RotateCcw className="h-4 w-4" />
-            {mode === "create" ? "Clear Form" : "Reset Changes"}
-          </Button>
-          <Button
-            type="submit"
-            disabled={formik.isSubmitting || !formik.isValid || isPending}
-            className="h-11 px-8 rounded-lg font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
-            {isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {mode === "create" ? "Creating..." : "Saving..."}
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                {mode === "create" ? "Complete Registration" : "Save Changes"}
-              </>
-            )}
-          </Button>
-        </div>
+        {isSuperAdmin && (
+          <div className="flex items-center justify-end gap-4 pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => formik.resetForm()}
+              disabled={isPending}
+              className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
+              <RotateCcw className="h-4 w-4" />
+              {mode === "create" ? "Clear Form" : "Reset Changes"}
+            </Button>
+            <Button
+              type="submit"
+              disabled={formik.isSubmitting || !formik.isValid || isPending}
+              className="h-11 px-8 rounded-lg font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {mode === "create" ? "Creating..." : "Saving..."}
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  {mode === "create" ? "Complete Registration" : "Save Changes"}
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

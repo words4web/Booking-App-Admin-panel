@@ -11,6 +11,8 @@ import {
   useAllCompaniesQuery,
   useDeleteCompanyMutation,
 } from "@/src/services/companyManager/useCompanyQueries";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
 
 export function CompanyList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -19,8 +21,16 @@ export function CompanyList() {
     name: string;
   } | null>(null);
 
+  const { user } = useAuth();
   const { data: companies, isLoading } = useAllCompaniesQuery();
   const deleteMutation = useDeleteCompanyMutation();
+
+  const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
+
+  // Filter companies based on role
+  const filteredCompanies = isSuperAdmin
+    ? companies
+    : companies?.filter((c) => c._id === user?.companyId);
 
   const handleDeleteClick = (company: { id: string; name: string }) => {
     setSelectedCompany(company);
@@ -55,14 +65,16 @@ export function CompanyList() {
               Manage your network of transport companies
             </p>
           </div>
-          <Button
-            asChild
-            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-            <Link href="/companies/new">
-              <Plus className="h-5 w-5" />
-              Register New Company
-            </Link>
-          </Button>
+          {isSuperAdmin && (
+            <Button
+              asChild
+              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
+              <Link href="/companies/new">
+                <Plus className="h-5 w-5" />
+                Register New Company
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -73,7 +85,7 @@ export function CompanyList() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {!companies || companies.length === 0 ? (
+          {!filteredCompanies || filteredCompanies.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-muted-foreground text-sm font-medium">
                 No companies registered yet.
@@ -99,13 +111,15 @@ export function CompanyList() {
                     <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                       Admin Email
                     </th>
-                    <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Actions
-                    </th>
+                    {isSuperAdmin && (
+                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Actions
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
-                  {companies.map((company) => (
+                  {filteredCompanies.map((company) => (
                     <tr
                       key={company._id}
                       className="transition-all hover:bg-slate-50 cursor-default">
@@ -140,34 +154,36 @@ export function CompanyList() {
                           {company.adminEmail}
                         </code>
                       </td>
-                      <td className="px-8 py-5 align-middle text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                            asChild
-                            title="Edit Company">
-                            <Link href={`/companies/${company._id}/edit`}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Link>
-                          </Button>
+                      {isSuperAdmin && (
+                        <td className="px-8 py-5 align-middle text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
+                              asChild
+                              title="Edit Company">
+                              <Link href={`/companies/${company._id}/edit`}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Link>
+                            </Button>
 
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                            title="Delete Company"
-                            onClick={() =>
-                              handleDeleteClick({
-                                id: company._id,
-                                name: company.name,
-                              })
-                            }>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
+                              title="Delete Company"
+                              onClick={() =>
+                                handleDeleteClick({
+                                  id: company._id,
+                                  name: company.name,
+                                })
+                              }>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
