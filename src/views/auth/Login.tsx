@@ -15,6 +15,7 @@ import { LoginValues } from "@/src/types/forms.types";
 
 import { FormInput } from "@/src/components/forms/FormInput";
 import { useLoginMutation } from "@/src/services/authManager/useAuthMutations";
+import { requestNotificationPermission } from "@/lib/notifications";
 
 export function Login() {
   const { mutate, isPending } = useLoginMutation();
@@ -27,7 +28,21 @@ export function Login() {
     validationSchema: toFormikValidationSchema(loginSchema),
     validateOnMount: true,
     onSubmit: async (values) => {
-      mutate(values);
+      let fcmToken = "";
+      await requestNotificationPermission().then((token) => {
+        if (token) {
+          console.log("FCM Token:", token);
+          fcmToken = token;
+        }
+      });
+      const newValues = {
+        ...values,
+        deviceInfo: {
+          platform: "WEB",
+          fcmToken,
+        },
+      };
+      mutate(newValues);
     },
   });
 
