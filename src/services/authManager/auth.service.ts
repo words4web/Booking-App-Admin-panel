@@ -18,4 +18,18 @@ export const AuthService = {
     const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT);
     return response.data;
   },
+
+  registerFcmToken: async (
+    fcmToken: string,
+    platform: string = "WEB",
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await api.post(
+      API_ENDPOINTS.NOTIFICATIONS.REGISTER_TOKEN,
+      {
+        fcmToken,
+        platform,
+      },
+    );
+    return response.data;
+  },
 };

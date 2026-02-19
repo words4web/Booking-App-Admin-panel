@@ -14,7 +14,6 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { cn } from "@/lib/utils";
-
 interface NavItem {
   label: string;
   icon: React.ReactNode;
