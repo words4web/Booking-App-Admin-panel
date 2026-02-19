@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, token, isUserLoading } = useAuth();
@@ -14,7 +15,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isUserLoading && !token) {
-      router.replace("/login");
+      router.replace(ROUTES_PATH.AUTH.LOGIN);
     }
   }, [isUserLoading, token, router]);
 
