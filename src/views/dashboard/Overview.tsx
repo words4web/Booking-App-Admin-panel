@@ -21,10 +21,10 @@ export function Overview() {
       hoverColor: "hover:bg-slate-950",
     },
     {
-      title: "Manage Customers",
+      title: "Manage Clients",
       description: "Register and organize business clients",
       icon: UserPlus,
-      href: "/customers/new",
+      href: "/clients/new",
       color: "bg-blue-600",
       hoverColor: "hover:bg-blue-700",
     },

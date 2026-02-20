@@ -11,14 +11,34 @@ export const CompanySchema = z.object({
   adminEmail: z.string().email("Valid email is required"),
 });
 
-export const CustomerSchema = z.object({
-  name: z.string().min(1, "Customer name is required").max(255),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone number is required"),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  postalCode: z.string().min(1, "Postal code is required"),
-  vatExempt: z.boolean().default(false),
+export const ClientSchema = z.object({
+  contactInfo: z.object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email("Invalid email address"),
+    phone: z
+      .string()
+      .min(1, "Phone number is required")
+      .regex(
+        /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/,
+        "Invalid UK phone number",
+      ),
+  }),
+  legalDetails: z.object({
+    legalName: z.string().min(1, "Legal name is required"),
+    registrationNumber: z.string().min(1, "Registration number is required"),
+    vatRegistered: z.boolean().default(false),
+    vatNumber: z.string().optional(), // Logic handled in form/backend
+  }),
+  address: z.object({
+    addressLine1: z.string().min(1, "Address Line 1 is required"),
+    addressLine2: z.string().optional(),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    postalCode: z.string().min(1, "Postal code is required"),
+    country: z.string().min(1, "Country is required"),
+  }),
+  companyId: z.string().optional(), // Required for Super Admin
 });
 
 export const ProductSchema = z.object({
@@ -40,7 +60,7 @@ export const DriverSchema = z.object({
 });
 
 export const BookingSchema = z.object({
-  customerId: z.string().min(1, "Customer selection is required"),
+  clientId: z.string().min(1, "Client selection is required"),
   driverId: z.string().min(1, "Driver selection is required"),
   bookingDate: z.string().min(1, "Booking date is required"),
   products: z

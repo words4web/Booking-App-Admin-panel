@@ -38,22 +38,22 @@ export function Sidebar() {
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
-      label: "Customer",
+      label: "Client",
       icon: <Users className="h-5 w-5" />,
-      href: "/customers",
-      roles: [UserRoles.SUPER_ADMIN],
+      href: "/clients",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN], // Added Company Admin as per requirements
     },
     {
       label: "Product",
       icon: <Package className="h-5 w-5" />,
       href: "/products",
-      roles: [UserRoles.SUPER_ADMIN],
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Bookings",
       icon: <Calendar className="h-5 w-5" />,
       href: "/bookings",
-      roles: [UserRoles.SUPER_ADMIN],
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Driver",
@@ -65,7 +65,7 @@ export function Sidebar() {
       label: "Invoices & Payment",
       icon: <FileText className="h-5 w-5" />,
       href: "/invoices",
-      roles: [UserRoles.SUPER_ADMIN],
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
   ];
 
