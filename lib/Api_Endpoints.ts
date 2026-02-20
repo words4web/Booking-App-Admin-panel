@@ -20,6 +20,13 @@ const API_ENDPOINTS = {
     UPDATE: (companyId: string) => `${Admin_Base}/companies/${companyId}`,
     DELETE: (companyId: string) => `${Admin_Base}/companies/${companyId}`,
   },
+  CLIENTS: {
+    CREATE: `${Admin_Base}/clients`,
+    GET_ALL: `${Admin_Base}/clients`,
+    GET_BY_ID: (clientId: string) => `${Admin_Base}/clients/${clientId}`,
+    UPDATE: (clientId: string) => `${Admin_Base}/clients/${clientId}`,
+    DELETE: (clientId: string) => `${Admin_Base}/clients/${clientId}`,
+  },
 };
 
 export default API_ENDPOINTS;
