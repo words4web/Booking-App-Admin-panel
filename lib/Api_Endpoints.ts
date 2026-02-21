@@ -27,6 +27,16 @@ const API_ENDPOINTS = {
     UPDATE: (clientId: string) => `${Admin_Base}/clients/${clientId}`,
     DELETE: (clientId: string) => `${Admin_Base}/clients/${clientId}`,
   },
+  NOTIFICATIONS: {
+    GET_ALL: "/notification",
+    MARK_ALL_READ: "/notification/read-all",
+    MARK_READ: (id: string) => `/notification/${id}/read`,
+    UNREAD_COUNT: "/notification/unread-count",
+  },
+  SETTINGS: {
+    GET: "/admin/settings",
+    UPDATE_PREFERENCE: "/admin/settings/notification-preference",
+  },
 };
 
 export default API_ENDPOINTS;

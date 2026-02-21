@@ -14,6 +14,7 @@ import { type UserContext as IUserContext } from "@/src/types/auth.types";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { ACCESS_TOKEN } from "@/src/constants/user.constants";
 import { AuthService } from "./auth.service";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 const AuthContext = createContext<IUserContext | null>(null);
 
@@ -60,14 +61,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const removeUserContext = useCallback(() => {
     removeLocalStorageItem(ACCESS_TOKEN);
     setUser(null);
-    router.push("/login");
-  }, []);
+    router.push(ROUTES_PATH.AUTH.LOGIN);
+  }, [router, removeLocalStorageItem]);
 
-  const setUserContext = useCallback((newToken: string, userData: User) => {
-    setLocalStorage(ACCESS_TOKEN, newToken);
-    setUser(userData);
-    router.push("/dashboard");
-  }, []);
+  const setUserContext = useCallback(
+    (newToken: string, userData: User) => {
+      setLocalStorage(ACCESS_TOKEN, newToken);
+      setUser(userData);
+      router.push(ROUTES_PATH.DASHBOARD);
+    },
+    [router, setLocalStorage],
+  );
 
   return (
     <AuthContext.Provider

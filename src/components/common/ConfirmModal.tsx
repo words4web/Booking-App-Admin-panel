@@ -10,7 +10,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { LucideIcon, AlertTriangle } from "lucide-react";
+import { LucideIcon, AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ConfirmModalProps {
@@ -23,6 +23,7 @@ interface ConfirmModalProps {
   onConfirm: () => void;
   variant?: "destructive" | "primary" | "warning";
   icon?: LucideIcon;
+  isLoading?: boolean;
 }
 
 export function ConfirmModal({
@@ -35,6 +36,7 @@ export function ConfirmModal({
   onConfirm,
   variant = "destructive",
   icon: Icon = AlertTriangle,
+  isLoading,
 }: ConfirmModalProps) {
   const variantStyles = {
     destructive: "bg-destructive/10 text-destructive border-destructive/20",
@@ -86,8 +88,16 @@ export function ConfirmModal({
                 ? "border-destructive/20"
                 : "border-primary/20",
             )}
-            onClick={onConfirm}>
-            {confirmText}
+            onClick={onConfirm}
+            disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Processing...
+              </>
+            ) : (
+              confirmText
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

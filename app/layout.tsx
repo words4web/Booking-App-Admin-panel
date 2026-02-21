@@ -19,8 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <NotificationListener />
         <ReactQueryProvider>
+          <NotificationListener />
           <AuthProvider>
             {children}
             <ToastContainer

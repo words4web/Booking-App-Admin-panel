@@ -5,6 +5,12 @@ const ROUTES_PATH = {
   DASHBOARD: "/dashboard",
   COMPANIES: { BASE: "/companies", NEW: "/companies/new" },
   DRIVERS: "/drivers",
+  CLIENTS: { BASE: "/clients" },
+  PRODUCTS: "/products",
+  BOOKINGS: "/bookings",
+  INVOICES: "/invoices",
+  NOTIFICATIONS: "/notifications",
+  SETTINGS: "/settings",
 };
 
 export default ROUTES_PATH;
