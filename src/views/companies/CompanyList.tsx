@@ -6,33 +6,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
-
-const mockCompanies = [
-  {
-    id: "1",
-    name: "ABC Logistics Ltd",
-    regNo: "12345678",
-    vatNo: "GB123456789",
-    vatRegistered: true,
-    adminUsername: "admin_abc",
-  },
-  {
-    id: "2",
-    name: "XYZ Transport Co",
-    regNo: "87654321",
-    vatNo: "GB987654321",
-    vatRegistered: true,
-    adminUsername: "admin_xyz",
-  },
-  {
-    id: "3",
-    name: "Quick Delivery Inc",
-    regNo: "11223344",
-    vatNo: "N/A",
-    vatRegistered: false,
-    adminUsername: "admin_quick",
-  },
-];
+import { CommonLoader } from "@/src/components/common/CommonLoader";
+import {
+  useAllCompaniesQuery,
+  useDeleteCompanyMutation,
+} from "@/src/services/companyManager/useCompanyQueries";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
 
 export function CompanyList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -41,6 +21,17 @@ export function CompanyList() {
     name: string;
   } | null>(null);
 
+  const { user } = useAuth();
+  const { data: companies, isLoading } = useAllCompaniesQuery();
+  const deleteMutation = useDeleteCompanyMutation();
+
+  const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
+
+  // Filter companies based on role
+  const filteredCompanies = isSuperAdmin
+    ? companies
+    : companies?.filter((c) => c._id === user?.companyId);
+
   const handleDeleteClick = (company: { id: string; name: string }) => {
     setSelectedCompany(company);
     setDeleteDialogOpen(true);
@@ -48,12 +39,18 @@ export function CompanyList() {
 
   const confirmDelete = () => {
     if (selectedCompany) {
-      console.log(`Deleting company ${selectedCompany.id}`);
-      // Add actual delete logic here
-      setDeleteDialogOpen(false);
-      setSelectedCompany(null);
+      deleteMutation.mutate(selectedCompany.id, {
+        onSuccess: () => {
+          setDeleteDialogOpen(false);
+          setSelectedCompany(null);
+        },
+      });
     }
   };
+
+  if (isLoading) {
+    return <CommonLoader />;
+  }
 
   return (
     <div className="space-y-8 pb-12">
@@ -68,14 +65,16 @@ export function CompanyList() {
               Manage your network of transport companies
             </p>
           </div>
-          <Button
-            asChild
-            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-            <Link href="/companies/new">
-              <Plus className="h-5 w-5" />
-              Register New Company
-            </Link>
-          </Button>
+          {isSuperAdmin && (
+            <Button
+              asChild
+              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
+              <Link href="/companies/new">
+                <Plus className="h-5 w-5" />
+                Register New Company
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -86,94 +85,111 @@ export function CompanyList() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="relative w-full overflow-auto">
-            <table className="w-full text-sm font-medium">
-              <thead>
-                <tr className="bg-muted/10 border-b border-border/50">
-                  <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                    Company Details
-                  </th>
-                  <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                    Reg Number
-                  </th>
-                  <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                    VAT Info
-                  </th>
-                  <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                    Admin User
-                  </th>
-                  <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/30">
-                {mockCompanies.map((company) => (
-                  <tr
-                    key={company.id}
-                    className="transition-all hover:bg-slate-50 cursor-default">
-                    <td className="px-8 py-5 align-middle">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-foreground">
-                          {company.name}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-                          UID: {company.id}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
-                      {company.regNo}
-                    </td>
-                    <td className="px-8 py-5 align-middle">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-foreground">{company.vatNo}</span>
-                        <span
-                          className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
-                          {company.vatRegistered
-                            ? "Registered"
-                            : "Not Registered"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-8 py-5 align-middle">
-                      <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                        {company.adminUsername}
-                      </code>
-                    </td>
-                    <td className="px-8 py-5 align-middle text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                          asChild
-                          title="Edit Company">
-                          <Link href={`/companies/${company.id}/edit`}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Link>
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                          title="Delete Company"
-                          onClick={() =>
-                            handleDeleteClick({
-                              id: company.id,
-                              name: company.name,
-                            })
-                          }>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </td>
+          {!filteredCompanies || filteredCompanies.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-muted-foreground text-sm font-medium">
+                No companies registered yet.
+              </p>
+              <Button asChild variant="link" className="mt-2">
+                <Link href="/companies/new">Register your first company</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="relative w-full overflow-auto">
+              <table className="w-full text-sm font-medium">
+                <thead>
+                  <tr className="bg-muted/10 border-b border-border/50">
+                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      Company Details
+                    </th>
+                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      Reg Number
+                    </th>
+                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      VAT Info
+                    </th>
+                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      Admin Email
+                    </th>
+                    {isSuperAdmin && (
+                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Actions
+                      </th>
+                    )}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-border/30">
+                  {filteredCompanies.map((company) => (
+                    <tr
+                      key={company._id}
+                      className="transition-all hover:bg-slate-50 cursor-default">
+                      <td className="px-8 py-5 align-middle">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-foreground">
+                            {company.name}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                            {company.invoicePrefix}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
+                        {company.registrationNumber}
+                      </td>
+                      <td className="px-8 py-5 align-middle">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-foreground">
+                            {company.vatNumber}
+                          </span>
+                          <span
+                            className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
+                            {company.vatRegistered
+                              ? "Registered"
+                              : "Not Registered"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5 align-middle">
+                        <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                          {company.adminEmail}
+                        </code>
+                      </td>
+                      {isSuperAdmin && (
+                        <td className="px-8 py-5 align-middle text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
+                              asChild
+                              title="Edit Company">
+                              <Link href={`/companies/${company._id}/edit`}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Link>
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
+                              title="Delete Company"
+                              onClick={() =>
+                                handleDeleteClick({
+                                  id: company._id,
+                                  name: company.name,
+                                })
+                              }>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -181,12 +197,13 @@ export function CompanyList() {
         isOpen={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         title="Delete Company Profile"
-        description={`Are you sure you want to remove ${selectedCompany?.name}? This action will permanently delete all associated logistic records and cannot be undone.`}
+        description={`Are you sure you want to remove ${selectedCompany?.name}? This action will permanently delete the company and its associated admin account. This cannot be undone.`}
         confirmText="Remove Partner"
         cancelText="Keep Profile"
         onConfirm={confirmDelete}
         variant="destructive"
         icon={Trash2}
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );

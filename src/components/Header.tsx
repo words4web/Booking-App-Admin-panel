@@ -1,61 +1,28 @@
-import { LogOut, Key, ChevronDown } from "lucide-react";
+"use client";
+
+import { Bell, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useAuth } from "@/src/services/authManager";
+import { useUnreadCountQuery } from "../services/useNotificationQueries";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 interface HeaderProps {
   companyName?: string;
   userName?: string;
 }
 
-export function Header({
-  companyName = "Super Admin",
-  userName = "Super Admin",
-}: HeaderProps) {
-  const [mounted, setMounted] = useState(false);
+export function Header({ companyName = "Super Admin" }: HeaderProps) {
+  useAuth();
+  const { data: unreadCount } = useUnreadCountQuery();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 flex-shrink-0 h-20 sticky top-0">
-        <div className="flex items-center justify-between px-8 h-full">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-black text-2xl tracking-tighter">
-                  L
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <h1 className="text-xl font-black tracking-tight text-foreground leading-none">
-                  {companyName}
-                </h1>
-                <span className="text-[10px] uppercase tracking-widest font-bold text-primary/60 mt-1">
-                  Logistics Portal
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-    );
-  }
   return (
     <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 flex-shrink-0 h-20 sticky top-0">
       <div className="flex items-center justify-between px-8 h-full">
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-4 group">
+          <Link
+            href={ROUTES_PATH.DASHBOARD}
+            className="flex items-center gap-4 group">
             <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 transition-all group-hover:scale-110 group-hover:rotate-3">
               <span className="text-primary-foreground font-black text-2xl tracking-tighter">
                 L
@@ -72,80 +39,30 @@ export function Header({
           </Link>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <div className="flex items-center gap-4">
+          {/* Notifications Link */}
+          <Link href={ROUTES_PATH.NOTIFICATIONS} className="relative group">
+            <div className="h-12 w-12 rounded-2xl border border-border/50 flex items-center justify-center hover:bg-primary/5 hover:border-primary/20 transition-all group-hover:scale-110">
+              <Bell className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+              {unreadCount !== undefined && unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-black text-primary-foreground ring-4 ring-background">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </div>
+          </Link>
+
+          {/* Settings Link */}
+          <Link href={ROUTES_PATH.SETTINGS}>
             <Button
               variant="ghost"
-              className="h-14 pl-2 pr-4 rounded-full border border-border/50 hover:bg-primary/5 hover:border-primary/20 transition-all flex items-center gap-3 group">
-              <Avatar className="h-10 w-10 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all">
-                <AvatarImage src="/placeholder-user.jpg" alt={userName} />
-                <AvatarFallback className="bg-primary/5 text-primary font-black text-xs">
-                  {userName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col items-start pr-2">
-                <span className="text-sm font-black text-foreground leading-none">
-                  {userName}
-                </span>
-                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter mt-1">
-                  Master Access
-                </span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-y-0.5" />
+              size="icon"
+              className="h-12 w-12 rounded-2xl border border-border/50 hover:bg-primary/5 hover:border-primary/20 transition-all text-muted-foreground hover:text-primary"
+              title="Settings">
+              <Settings className="h-6 w-6" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-72 p-0 mt-3 shadow-2xl border border-primary/10 bg-card overflow-hidden rounded-2xl">
-            <div className="p-6 bg-gradient-to-br from-primary/[0.03] to-transparent">
-              <div className="flex flex-col items-center text-center gap-3">
-                <Avatar className="h-16 w-16 ring-4 ring-primary/5 shadow-xl">
-                  <AvatarFallback className="bg-background text-primary font-black text-lg">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-1">
-                  <h3 className="text-lg font-black tracking-tight">
-                    {userName}
-                  </h3>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    superadmin@logistics.com
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="px-2 pb-2">
-              <div className="p-2 space-y-1">
-                <Link href="/reset-password">
-                  <DropdownMenuItem className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-primary/5 group">
-                    <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 transition-colors">
-                      <Key className="h-4 w-4 group-hover:text-primary transition-colors" />
-                    </div>
-                    <span className="text-sm font-bold">Reset Password</span>
-                  </DropdownMenuItem>
-                </Link>
-              </div>
-
-              <DropdownMenuSeparator className="mx-4 my-2 opacity-50" />
-
-              <div className="p-2">
-                <DropdownMenuItem className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-destructive/5 group text-destructive">
-                  <div className="p-2 rounded-lg bg-destructive/10 group-hover:bg-destructive/20 transition-colors">
-                    <LogOut className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-black">Sign Out System</span>
-                </DropdownMenuItem>
-              </div>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </Link>
+        </div>
       </div>
     </header>
   );

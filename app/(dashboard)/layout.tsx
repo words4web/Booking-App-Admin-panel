@@ -1,14 +1,41 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Header } from "@/src/components/Header";
 import { Sidebar } from "@/src/components/Sidebar";
+import { useRouter } from "next/navigation";
+import { CommonLoader } from "@/src/components/common/CommonLoader";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const { user, token, isUserLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isUserLoading && !token) {
+      router.replace(ROUTES_PATH.AUTH.LOGIN);
+    }
+  }, [isUserLoading, token, router]);
+
+  if (isUserLoading) {
+    return <CommonLoader message="Verifying session..." />;
+  }
+
+  if (!token) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col h-screen w-screen min-h-0 overflow-hidden bg-slate-50/30">
       {/* 1. Fixed Header (Stationary) */}
-      <Header companyName="Super Admin" userName="Admin User" />
+      <Header
+        companyName={
+          user?.role === UserRoles.SUPER_ADMIN ? "Super Admin" : user?.fullName
+        }
+        userName={user?.fullName}
+      />
 
       {/* 2. Main Body Area */}
       <div className="flex flex-1 overflow-hidden min-h-0">

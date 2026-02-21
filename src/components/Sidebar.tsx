@@ -11,66 +11,80 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
 import { cn } from "@/lib/utils";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 interface NavItem {
   label: string;
   icon: React.ReactNode;
   href: string;
+  roles?: UserRoles[];
 }
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
 
-  const navItems: NavItem[] = [
+  const allNavItems: NavItem[] = [
     {
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
-      href: "/dashboard",
+      href: ROUTES_PATH.DASHBOARD,
     },
     {
       label: "Company",
       icon: <Building2 className="h-5 w-5" />,
-      href: "/companies",
+      href: ROUTES_PATH.COMPANIES.BASE,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
-      label: "Customer",
+      label: "Client",
       icon: <Users className="h-5 w-5" />,
-      href: "/customers",
+      href: ROUTES_PATH.CLIENTS.BASE,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Product",
       icon: <Package className="h-5 w-5" />,
-      href: "/products",
-    },
-    {
-      label: "Driver",
-      icon: <Truck className="h-5 w-5" />,
-      href: "/drivers",
-    },
-    {
-      label: "Invoices & Payment",
-      icon: <FileText className="h-5 w-5" />,
-      href: "/invoices",
+      href: ROUTES_PATH.PRODUCTS,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Bookings",
       icon: <Calendar className="h-5 w-5" />,
-      href: "/bookings",
+      href: ROUTES_PATH.BOOKINGS,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      label: "Driver",
+      icon: <Truck className="h-5 w-5" />,
+      href: ROUTES_PATH.DRIVERS,
+      roles: [UserRoles.SUPER_ADMIN],
+    },
+    {
+      label: "Invoices & Payment",
+      icon: <FileText className="h-5 w-5" />,
+      href: ROUTES_PATH.INVOICES,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
   ];
+
+  const navItems = allNavItems.filter(
+    (item) =>
+      !item.roles ||
+      (user?.role && item.roles.includes(user.role as UserRoles)),
+  );
 
   return (
     <aside className="w-72 border-r border-border/60 bg-white/50 backdrop-blur-xl flex flex-col h-full flex-shrink-0">
       <div className="flex-1 overflow-y-auto py-8">
         <div className="px-6 mb-8">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-4 mb-4">
-            Navigation Hub
-          </h2>
           <nav className="flex flex-col gap-1.5">
             {navItems.map((item) => {
               const isActive =
-                item.href === "/dashboard"
+                item.href === ROUTES_PATH.DASHBOARD
                   ? pathname === item.href
                   : pathname?.startsWith(item.href);
 
