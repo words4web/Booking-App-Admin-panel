@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/src/services/authManager";
 import { useUnreadCountQuery } from "../services/useNotificationQueries";
 import ROUTES_PATH from "@/lib/Route_Paths";
+import Image from "next/image";
 
 interface HeaderProps {
   companyName?: string;
@@ -23,17 +24,24 @@ export function Header({ companyName = "Super Admin" }: HeaderProps) {
           <Link
             href={ROUTES_PATH.DASHBOARD}
             className="flex items-center gap-4 group">
-            <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 transition-all group-hover:scale-110 group-hover:rotate-3">
+            <Image
+              src="/logoRKB.png"
+              alt="Logo"
+              width={142}
+              height={142}
+              className="rounded-2xl object-contain"
+            />
+            {/* <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 transition-all group-hover:scale-110 group-hover:rotate-3">
               <span className="text-primary-foreground font-black text-2xl tracking-tighter">
                 L
               </span>
-            </div>
+            </div> */}
             <div className="flex flex-col">
               <h1 className="text-xl font-black tracking-tight text-foreground leading-none group-hover:text-primary transition-colors">
                 {companyName}
               </h1>
               <span className="text-[10px] uppercase tracking-widest font-bold text-primary/60 mt-1">
-                Logistics Portal
+                RKB Booking System
               </span>
             </div>
           </Link>
