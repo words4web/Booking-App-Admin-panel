@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 // UK Validation Patterns
-const UK_PHONE_REGEX =
-  /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/;
+// const UK_PHONE_REGEX =
+//   /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/;
 // const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i;
 // const UK_SORT_CODE_REGEX = /^\d{6}$|^\d{2}-\d{2}-\d{2}$/;
 
@@ -28,10 +28,8 @@ export const ClientSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Invalid email address"),
-    phone: z
-      .string()
-      .min(1, "Phone number is required")
-      .regex(UK_PHONE_REGEX, "Invalid UK phone number"),
+    phone: z.string().min(1, "Phone number is required"),
+    // .regex(UK_PHONE_REGEX, "Invalid UK phone number"),
   }),
   legalDetails: z.object({
     legalName: z.string().min(1, "Legal name is required"),
@@ -64,10 +62,8 @@ export const DriverSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z
-    .string()
-    .min(1, "Phone number is required")
-    .regex(UK_PHONE_REGEX, "Invalid UK mobile number"),
+  phone: z.string().min(1, "Phone number is required"),
+  // .regex(UK_PHONE_REGEX, "Invalid UK mobile number"),
   licenseNumber: z.string().min(1, "License number is required"),
   licenseExpiryDate: z.string().min(1, "License expiry date is required"),
 });
