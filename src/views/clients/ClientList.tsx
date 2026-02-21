@@ -260,6 +260,7 @@ export function ClientList() {
         onConfirm={confirmDelete}
         variant="destructive"
         icon={Trash2}
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );

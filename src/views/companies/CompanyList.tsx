@@ -203,6 +203,7 @@ export function CompanyList() {
         onConfirm={confirmDelete}
         variant="destructive"
         icon={Trash2}
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );

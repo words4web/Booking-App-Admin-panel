@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAuth } from "@/src/services/authManager";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 export default function LoginPage() {
   const { token, isUserLoading } = useAuth();
@@ -12,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && token) {
-      router.replace("/dashboard");
+      router.replace(ROUTES_PATH.DASHBOARD);
     }
   }, [isUserLoading, token, router]);
 

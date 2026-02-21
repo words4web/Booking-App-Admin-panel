@@ -25,11 +25,16 @@ export const requestNotificationPermission = async () => {
   }
 };
 
-export const listenToForegroundMessages = async () => {
+export const listenToForegroundMessages = async (
+  callback?: (payload: {
+    notification?: { title?: string; body?: string };
+    [key: string]: any;
+  }) => void,
+) => {
   const messaging = await getFirebaseMessaging();
   if (!messaging) return;
 
-  onMessage(messaging, (payload) => {
+  return onMessage(messaging, (payload) => {
     console.log("Foreground message:", payload);
 
     const title = payload.notification?.title || "New Notification";
@@ -45,5 +50,8 @@ export const listenToForegroundMessages = async () => {
         icon: "/logo.png", // Ensure this exists or use a default
       });
     }
+
+    // 3. Execute callback if provided
+    if (callback) callback(payload);
   });
 };

@@ -14,6 +14,8 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { cn } from "@/lib/utils";
+import ROUTES_PATH from "@/lib/Route_Paths";
+
 interface NavItem {
   label: string;
   icon: React.ReactNode;
@@ -29,42 +31,42 @@ export function Sidebar() {
     {
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
-      href: "/dashboard",
+      href: ROUTES_PATH.DASHBOARD,
     },
     {
       label: "Company",
       icon: <Building2 className="h-5 w-5" />,
-      href: "/companies",
+      href: ROUTES_PATH.COMPANIES.BASE,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Client",
       icon: <Users className="h-5 w-5" />,
-      href: "/clients",
-      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN], // Added Company Admin as per requirements
+      href: ROUTES_PATH.CLIENTS.BASE,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Product",
       icon: <Package className="h-5 w-5" />,
-      href: "/products",
+      href: ROUTES_PATH.PRODUCTS,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Bookings",
       icon: <Calendar className="h-5 w-5" />,
-      href: "/bookings",
+      href: ROUTES_PATH.BOOKINGS,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Driver",
       icon: <Truck className="h-5 w-5" />,
-      href: "/drivers",
+      href: ROUTES_PATH.DRIVERS,
       roles: [UserRoles.SUPER_ADMIN],
     },
     {
       label: "Invoices & Payment",
       icon: <FileText className="h-5 w-5" />,
-      href: "/invoices",
+      href: ROUTES_PATH.INVOICES,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
   ];
@@ -82,7 +84,7 @@ export function Sidebar() {
           <nav className="flex flex-col gap-1.5">
             {navItems.map((item) => {
               const isActive =
-                item.href === "/dashboard"
+                item.href === ROUTES_PATH.DASHBOARD
                   ? pathname === item.href
                   : pathname?.startsWith(item.href);
 

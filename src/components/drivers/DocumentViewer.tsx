@@ -168,6 +168,7 @@ export function DocumentViewer({
         onConfirm={handleApprove}
         variant="primary"
         icon={CheckCircle}
+        isLoading={loading}
       />
 
       <ReasonModal

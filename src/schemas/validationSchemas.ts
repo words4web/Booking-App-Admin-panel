@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+// UK Validation Patterns
+const UK_PHONE_REGEX =
+  /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/;
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i;
+const UK_SORT_CODE_REGEX = /^\d{6}$|^\d{2}-\d{2}-\d{2}$/;
+
 export const CompanySchema = z.object({
   name: z.string().min(1, "Company name is required").max(255),
   registrationNumber: z.string().min(1, "Registration number is required"),
@@ -7,7 +13,13 @@ export const CompanySchema = z.object({
   vatRegistered: z.boolean().default(true),
   invoicePrefix: z.string().min(1, "Invoice prefix is required"),
   bankAccountNumber: z.string().optional(),
-  bankCode: z.string().optional(),
+  bankCode: z
+    .string()
+    .refine(
+      (val) => !val || UK_SORT_CODE_REGEX.test(val),
+      "Invalid UK sort code",
+    )
+    .optional(),
   adminEmail: z.string().email("Valid email is required"),
 });
 
@@ -19,26 +31,26 @@ export const ClientSchema = z.object({
     phone: z
       .string()
       .min(1, "Phone number is required")
-      .regex(
-        /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/,
-        "Invalid UK phone number",
-      ),
+      .regex(UK_PHONE_REGEX, "Invalid UK phone number"),
   }),
   legalDetails: z.object({
     legalName: z.string().min(1, "Legal name is required"),
     registrationNumber: z.string().min(1, "Registration number is required"),
     vatRegistered: z.boolean().default(false),
-    vatNumber: z.string().optional(), // Logic handled in form/backend
+    vatNumber: z.string().optional(),
   }),
   address: z.object({
     addressLine1: z.string().min(1, "Address Line 1 is required"),
     addressLine2: z.string().optional(),
     city: z.string().min(1, "City is required"),
     state: z.string().min(1, "State is required"),
-    postalCode: z.string().min(1, "Postal code is required"),
+    postalCode: z
+      .string()
+      .min(1, "Postal code is required")
+      .regex(UK_POSTCODE_REGEX, "Invalid UK postcode"),
     country: z.string().min(1, "Country is required"),
   }),
-  companyId: z.string().optional(), // Required for Super Admin
+  companyId: z.string().optional(),
 });
 
 export const ProductSchema = z.object({
@@ -54,7 +66,10 @@ export const DriverSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone number is required"),
+  phone: z
+    .string()
+    .min(1, "Phone number is required")
+    .regex(UK_PHONE_REGEX, "Invalid UK mobile number"),
   licenseNumber: z.string().min(1, "License number is required"),
   licenseExpiryDate: z.string().min(1, "License expiry date is required"),
 });
