@@ -3,8 +3,8 @@ import { z } from "zod";
 // UK Validation Patterns
 const UK_PHONE_REGEX =
   /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/;
-const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i;
-const UK_SORT_CODE_REGEX = /^\d{6}$|^\d{2}-\d{2}-\d{2}$/;
+// const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i;
+// const UK_SORT_CODE_REGEX = /^\d{6}$|^\d{2}-\d{2}-\d{2}$/;
 
 export const CompanySchema = z.object({
   name: z.string().min(1, "Company name is required").max(255),
@@ -15,10 +15,10 @@ export const CompanySchema = z.object({
   bankAccountNumber: z.string().optional(),
   bankCode: z
     .string()
-    .refine(
-      (val) => !val || UK_SORT_CODE_REGEX.test(val),
-      "Invalid UK sort code",
-    )
+    // .refine(
+    //   (val) => !val || UK_SORT_CODE_REGEX.test(val),
+    //   "Invalid UK sort code",
+    // )
     .optional(),
   adminEmail: z.string().email("Valid email is required"),
 });
@@ -44,10 +44,8 @@ export const ClientSchema = z.object({
     addressLine2: z.string().optional(),
     city: z.string().min(1, "City is required"),
     state: z.string().min(1, "State is required"),
-    postalCode: z
-      .string()
-      .min(1, "Postal code is required")
-      .regex(UK_POSTCODE_REGEX, "Invalid UK postcode"),
+    postalCode: z.string().min(1, "Postal code is required"),
+    // .regex(UK_POSTCODE_REGEX, "Invalid UK postcode"),
     country: z.string().min(1, "Country is required"),
   }),
   companyId: z.string().optional(),
