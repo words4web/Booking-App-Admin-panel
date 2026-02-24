@@ -78,6 +78,10 @@ export function ClientForm({
         registrationNumber: initialData?.legalDetails.registrationNumber || "",
         vatNumber: initialData?.legalDetails.vatNumber || "",
         vatRegistered: initialData?.legalDetails.vatRegistered ?? false,
+        purchaseOrderNumber:
+          initialData?.legalDetails.purchaseOrderNumber || "",
+        nationalInsuranceNumber:
+          initialData?.legalDetails.nationalInsuranceNumber || "",
       },
       address: {
         addressLine1: initialData?.address.addressLine1 || "",
@@ -345,6 +349,38 @@ export function ClientForm({
                         </p>
                       )}
                     </div>
+
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="legalDetails.purchaseOrderNumber"
+                        className="text-xs font-semibold text-slate-600">
+                        Purchase Order Number
+                      </Label>
+                      <Input
+                        id="legalDetails.purchaseOrderNumber"
+                        placeholder="PO-123456"
+                        {...formik.getFieldProps(
+                          "legalDetails.purchaseOrderNumber",
+                        )}
+                        className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.purchaseOrderNumber") ? "border-destructive" : ""}`}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="legalDetails.nationalInsuranceNumber"
+                        className="text-xs font-semibold text-slate-600">
+                        National Insurance Number
+                      </Label>
+                      <Input
+                        id="legalDetails.nationalInsuranceNumber"
+                        placeholder="QQ 12 34 56 C"
+                        {...formik.getFieldProps(
+                          "legalDetails.nationalInsuranceNumber",
+                        )}
+                        className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.nationalInsuranceNumber") ? "border-destructive" : ""}`}
+                      />
+                    </div>
                   </div>
 
                   <div
@@ -553,7 +589,6 @@ export function ClientForm({
                   <Button
                     type="submit"
                     disabled={
-                      formik.isSubmitting ||
                       !formik.isValid ||
                       isPending ||
                       (isSuperAdmin && !formik.values.companyId)

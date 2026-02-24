@@ -90,9 +90,11 @@ export function CompanyList() {
               <p className="text-muted-foreground text-sm font-medium">
                 No companies registered yet.
               </p>
-              <Button asChild variant="link" className="mt-2">
-                <Link href="/companies/new">Register your first company</Link>
-              </Button>
+              {isSuperAdmin && (
+                <Button asChild variant="link" className="mt-2">
+                  <Link href="/companies/new">Register your first company</Link>
+                </Button>
+              )}
             </div>
           ) : (
             <div className="relative w-full overflow-auto">

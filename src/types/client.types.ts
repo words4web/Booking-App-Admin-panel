@@ -19,6 +19,8 @@ export interface Client {
     registrationNumber: string;
     vatNumber?: string;
     vatRegistered: boolean;
+    purchaseOrderNumber?: string;
+    nationalInsuranceNumber?: string;
   };
   address: {
     addressLine1: string;
@@ -45,6 +47,8 @@ export interface ClientFormData {
     registrationNumber: string;
     vatNumber: string;
     vatRegistered: boolean;
+    purchaseOrderNumber: string;
+    nationalInsuranceNumber: string;
   };
   address: {
     addressLine1: string;

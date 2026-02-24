@@ -7,6 +7,7 @@ export interface Company {
   invoicePrefix: string;
   bankAccountNumber?: string;
   bankCode?: string;
+  bankName?: string;
   adminEmail: string;
   adminUserId: string;
   createdAt: string;

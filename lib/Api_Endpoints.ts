@@ -37,6 +37,13 @@ const API_ENDPOINTS = {
     GET: "/admin/settings",
     UPDATE_PREFERENCE: "/admin/settings/notification-preference",
   },
+  PRODUCTS: {
+    CREATE: `${Admin_Base}/products`,
+    GET_ALL: `${Admin_Base}/products`,
+    GET_BY_ID: (productId: string) => `${Admin_Base}/products/${productId}`,
+    UPDATE: (productId: string) => `${Admin_Base}/products/${productId}`,
+    DELETE: (productId: string) => `${Admin_Base}/products/${productId}`,
+  },
 };
 
 export default API_ENDPOINTS;

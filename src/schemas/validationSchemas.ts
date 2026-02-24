@@ -20,6 +20,7 @@ export const CompanySchema = z.object({
     //   "Invalid UK sort code",
     // )
     .optional(),
+  bankName: z.string().optional(),
   adminEmail: z.string().email("Valid email is required"),
 });
 
@@ -36,6 +37,8 @@ export const ClientSchema = z.object({
     registrationNumber: z.string().min(1, "Registration number is required"),
     vatRegistered: z.boolean().default(false),
     vatNumber: z.string().optional(),
+    purchaseOrderNumber: z.string().optional(),
+    nationalInsuranceNumber: z.string().optional(),
   }),
   address: z.object({
     addressLine1: z.string().min(1, "Address Line 1 is required"),
@@ -51,11 +54,9 @@ export const ClientSchema = z.object({
 
 export const ProductSchema = z.object({
   name: z.string().min(1, "Product name is required").max(255),
-  description: z.string().optional(),
-  unitType: z.enum(["trip", "hour", "load"]),
-  unitPrice: z.number().positive("Unit price must be positive"),
-  vatApplicable: z.boolean().default(true),
-  waitingTimeApplicable: z.boolean().default(false),
+  description: z.string().min(1, "Description is required"),
+  basePrice: z.number().min(0, "Base price cannot be negative"),
+  companyId: z.string().optional(),
 });
 
 export const DriverSchema = z.object({
