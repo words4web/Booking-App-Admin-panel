@@ -63,8 +63,16 @@ export function Sidebar() {
       href: ROUTES_PATH.DRIVERS,
       roles: [UserRoles.SUPER_ADMIN],
     },
+    {
+      label: "Vehicle",
+      icon: <Truck className="h-5 w-5" />,
+      href: ROUTES_PATH.VEHICLES,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+
     // {
     //   label: "Invoices & Payment",
+
     //   icon: <FileText className="h-5 w-5" />,
     //   href: ROUTES_PATH.INVOICES,
     //   roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
@@ -97,14 +105,16 @@ export function Sidebar() {
                     isActive
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-slate-600 hover:bg-primary/5 hover:text-primary",
-                  )}>
+                  )}
+                >
                   <div
                     className={cn(
                       "transition-transform duration-300 group-hover:scale-110",
                       isActive
                         ? "text-white"
                         : "text-slate-400 group-hover:text-primary",
-                    )}>
+                    )}
+                  >
                     {item.icon}
                   </div>
                   <span className="tracking-tight">{item.label}</span>

@@ -11,6 +11,7 @@ const ROUTES_PATH = {
   INVOICES: "/invoices",
   NOTIFICATIONS: "/notifications",
   SETTINGS: "/settings",
+  VEHICLES: "/vehicles",
 };
 
 export default ROUTES_PATH;

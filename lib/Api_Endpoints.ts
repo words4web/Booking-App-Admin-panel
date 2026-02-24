@@ -37,6 +37,14 @@ const API_ENDPOINTS = {
     GET: "/admin/settings",
     UPDATE_PREFERENCE: "/admin/settings/notification-preference",
   },
+  VEHICLES: {
+    CREATE: `${Admin_Base}/vehicles`,
+    GET_ALL: `${Admin_Base}/vehicles`,
+    GET_VEHICLE_DETAILS: (vehicleId: string) =>
+      `${Admin_Base}/vehicles/${vehicleId}`,
+    UPDATE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
+    DELETE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
+  },
 };
 
 export default API_ENDPOINTS;
