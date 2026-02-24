@@ -44,6 +44,14 @@ const API_ENDPOINTS = {
     UPDATE: (productId: string) => `${Admin_Base}/products/${productId}`,
     DELETE: (productId: string) => `${Admin_Base}/products/${productId}`,
   },
+  VEHICLES: {
+    CREATE: `${Admin_Base}/vehicles`,
+    GET_ALL: `${Admin_Base}/vehicles`,
+    GET_VEHICLE_DETAILS: (vehicleId: string) =>
+      `${Admin_Base}/vehicles/${vehicleId}`,
+    UPDATE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
+    DELETE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
+  },
 };
 
 export default API_ENDPOINTS;
