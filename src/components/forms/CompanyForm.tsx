@@ -60,13 +60,14 @@ export function CompanyForm({
       invoicePrefix: initialData?.invoicePrefix || "INV",
       bankAccountNumber: initialData?.bankAccountNumber || "",
       bankCode: initialData?.bankCode || "",
+      bankName: initialData?.bankName || "",
       adminEmail: initialData?.adminEmail || "",
     },
     validationSchema: toFormikValidationSchema(CompanySchema),
     enableReinitialize: true,
     validateOnChange: true,
-    onSubmit: (values) => {
-      onSubmit(values);
+    onSubmit: async (values) => {
+      await onSubmit(values);
     },
   });
 
@@ -265,6 +266,21 @@ export function CompanyForm({
                       />
                     </div>
 
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="bankName"
+                        className="text-xs font-semibold text-slate-600">
+                        Bank Name
+                      </Label>
+                      <Input
+                        id="bankName"
+                        placeholder="e.g., Barclays, HSBC"
+                        {...formik.getFieldProps("bankName")}
+                        className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
+                        disabled={!isSuperAdmin}
+                      />
+                    </div>
+
                     <div className="space-y-1.5 md:col-span-2">
                       <Label
                         htmlFor="bankCode"
@@ -348,9 +364,7 @@ export function CompanyForm({
                   {isSuperAdmin && (
                     <Button
                       type="submit"
-                      disabled={
-                        formik.isSubmitting || !formik.isValid || isPending
-                      }
+                      disabled={!formik.isValid || isPending}
                       className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
                       {isPending ? (
                         <>

@@ -91,6 +91,12 @@ api.interceptors.response.use(
         window.location.href = ROUTES_PATH.AUTH.LOGIN;
       }
     }
+
+    if (error.response?.status === 403) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("forbidden-error"));
+      }
+    }
     // Optionally log error for debugging
     console.error("API Error:", error.response?.data || error.message);
     return Promise.reject(error);

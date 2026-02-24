@@ -4,7 +4,7 @@ import {
   LayoutDashboard,
   Building2,
   Users,
-  // Package,
+  Package,
   Truck,
   // FileText,
   // Calendar,
@@ -45,12 +45,12 @@ export function Sidebar() {
       href: ROUTES_PATH.CLIENTS.BASE,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
-    // {
-    //   label: "Product",
-    //   icon: <Package className="h-5 w-5" />,
-    //   href: ROUTES_PATH.PRODUCTS,
-    //   roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
-    // },
+    {
+      label: "Product",
+      icon: <Package className="h-5 w-5" />,
+      href: ROUTES_PATH.PRODUCTS,
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
     // {
     //   label: "Bookings",
     //   icon: <Calendar className="h-5 w-5" />,

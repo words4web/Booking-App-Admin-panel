@@ -8,16 +8,34 @@ import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import ROUTES_PATH from "@/lib/Route_Paths";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { Forbidden } from "@/src/components/common/Forbidden";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, token, isUserLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const [isForbidden, setIsForbidden] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && !token) {
       router.replace(ROUTES_PATH.AUTH.LOGIN);
     }
   }, [isUserLoading, token, router]);
+
+  useEffect(() => {
+    const handleForbidden = () => setIsForbidden(true);
+    window.addEventListener("forbidden-error", (err) => {
+      console.log("addEventListener => ", err);
+      handleForbidden();
+    });
+    return () => window.removeEventListener("forbidden-error", handleForbidden);
+  }, []);
+
+  useEffect(() => {
+    setIsForbidden(false);
+  }, [pathname]);
 
   if (isUserLoading) {
     return <CommonLoader message="Verifying session..." />;
@@ -45,7 +63,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* 4. Scrollable Content Area */}
         <main className="flex-1 overflow-y-auto scroll-smooth bg-slate-50/20 shadow-inner custom-scrollbar">
           <div className="p-8 max-w-[1600px] mx-auto min-h-full">
-            {children}
+            {isForbidden ? <Forbidden /> : children}
           </div>
         </main>
       </div>

@@ -88,12 +88,7 @@ export function Login() {
             <Button
               type="submit"
               className="h-11 w-full text-sm font-medium"
-              disabled={
-                !formik.isValid ||
-                !formik.dirty ||
-                formik.isSubmitting ||
-                isPending
-              }>
+              disabled={!formik.isValid || !formik.dirty || isPending}>
               {isPending ? "Logging in..." : "Login"}
             </Button>
           </form>
