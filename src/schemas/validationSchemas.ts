@@ -88,3 +88,8 @@ export const LoginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
+
+export const VehicleSchema = z.object({
+  vehicleName: z.string().min(1, "Vehicle name is required"),
+  vehicleNumber: z.string().min(1, "Vehicle number is required"),
+});
