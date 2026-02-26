@@ -52,6 +52,23 @@ const API_ENDPOINTS = {
     UPDATE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
     DELETE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
   },
+  BOOKINGS: {
+    CREATE: `${Admin_Base}/bookings`,
+    GET_ALL: `${Admin_Base}/bookings`,
+    GET_BY_ID: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
+    UPDATE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
+    DELETE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
+    ASSIGN_DRIVER: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}/assign-driver`,
+    UPDATE_STATUS: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}/status`,
+    STATS: `${Admin_Base}/bookings/stats`,
+  },
+  INVOICES: {
+    CREATE: `${Admin_Base}/invoices`,
+    GET_ALL: `${Admin_Base}/invoices`,
+    GET_BY_ID: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+    UPDATE: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+    DELETE: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+  },
 };
 
 export default API_ENDPOINTS;

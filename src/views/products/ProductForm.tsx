@@ -167,26 +167,207 @@ export function ProductForm({
                     )}
                   </div>
 
-                  <div className="space-y-1.5 max-w-[200px]">
-                    <Label
-                      htmlFor="basePrice"
-                      className="text-xs font-semibold text-slate-600">
-                      Base Price (£)
-                    </Label>
-                    <Input
-                      id="basePrice"
-                      type="number"
-                      step="1"
-                      min={1}
-                      placeholder="0.00"
-                      {...formik.getFieldProps("basePrice")}
-                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("basePrice") ? "border-destructive" : ""}`}
-                    />
-                    {getFieldError("basePrice") && (
-                      <p className="text-xs text-destructive">
-                        {getFieldError("basePrice")}
-                      </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="unitType" className="text-xs font-semibold text-slate-600">Unit Type</Label>
+                      <Select
+                        onValueChange={(value) => formik.setFieldValue("unitType", value)}
+                        value={formik.values.unitType}
+                      >
+                        <SelectTrigger className="h-11 rounded-lg border-border">
+                          <SelectValue placeholder="Select unit type" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {Object.values(UnitType).map((type) => (
+                            <SelectItem key={type} value={type}>{type}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="basePrice" className="text-xs font-semibold text-slate-600">Base Price (£)</Label>
+                      <Input
+                        id="basePrice"
+                        type="number"
+                        step="1"
+                        min={1}
+                        placeholder="0.00"
+                        {...formik.getFieldProps("basePrice")}
+                        className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("basePrice") ? "border-destructive" : ""}`}
+                      />
+                      {getFieldError("basePrice") && (
+                        <p className="text-xs text-destructive">
+                          {getFieldError("basePrice")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing Details Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-50">
+                  <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                    Pricing Configuration
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 text-slate-400 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-slate-800 text-white border-none p-3 rounded-xl shadow-xl max-w-xs">
+                          <p className="text-xs font-medium">These rates appear as defaults in the booking form and can be overridden by admins.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="baseCharge" className="text-xs font-semibold text-slate-600">Base Charge (£)</Label>
+                      <Input
+                        id="baseCharge"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...formik.getFieldProps("baseCharge")}
+                        className="h-11 rounded-lg border-border"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="hourlyRate" className="text-xs font-semibold text-slate-600">Hourly Rate (£)</Label>
+                      <Input
+                        id="hourlyRate"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...formik.getFieldProps("hourlyRate")}
+                        className="h-11 rounded-lg border-border"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Waiting Time Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-50">
+                  <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">Waiting Time Setup</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="waitingTimeRate" className="text-xs font-semibold text-slate-600">Waiting Rate (£)</Label>
+                      <Input
+                        id="waitingTimeRate"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...formik.getFieldProps("waitingTimeRate")}
+                        className="h-11 rounded-lg border-border"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="waitingTimeUnit" className="text-xs font-semibold text-slate-600">Increment Unit</Label>
+                      <Select
+                        onValueChange={(value) => formik.setFieldValue("waitingTimeUnit", value)}
+                        value={formik.values.waitingTimeUnit}
+                      >
+                        <SelectTrigger className="h-11 rounded-lg border-border">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="15min">15 Minutes</SelectItem>
+                          <SelectItem value="30min">30 Minutes</SelectItem>
+                          <SelectItem value="60min">1 Hour</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Extra Charges Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-50">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-slate-700">Extra Charges</h4>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => formik.setFieldValue("extraCharges", [...formik.values.extraCharges, { label: "", amount: 0 }])}
+                      className="h-8 rounded-lg border-primary/20 text-primary hover:bg-primary/5 font-bold text-[10px] uppercase tracking-wider"
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> Add Charge
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {formik.values.extraCharges.map((_, index) => (
+                      <div key={index} className="flex gap-4 items-end animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="flex-1 space-y-1.5">
+                          <Label className="text-[10px] font-bold text-slate-500 uppercase">Label</Label>
+                          <Input
+                            placeholder="e.g. Congestion Charge"
+                            {...formik.getFieldProps(`extraCharges.${index}.label`)}
+                            className="h-10 rounded-lg border-border"
+                          />
+                        </div>
+                        <div className="w-32 space-y-1.5">
+                          <Label className="text-[10px] font-bold text-slate-500 uppercase">Amount (£)</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            {...formik.getFieldProps(`extraCharges.${index}.amount`)}
+                            className="h-10 rounded-lg border-border"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => formik.setFieldValue("extraCharges", formik.values.extraCharges.filter((__ , i) => i !== index))}
+                          className="h-10 w-10 text-destructive hover:text-destructive hover:bg-destructive/5 rounded-lg"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    {formik.values.extraCharges.length === 0 && (
+                      <p className="text-xs text-slate-400 italic">No extra charges defined.</p>
                     )}
+                  </div>
+                </div>
+
+                {/* Applicability Toggles */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-slate-100">
+                  <div className={cn(
+                    "flex items-center justify-between p-4 rounded-xl border transition-all",
+                    formik.values.vatApplicable ? "bg-primary/5 border-primary/10" : "bg-slate-50 border-slate-200"
+                  )}>
+                    <div className="space-y-0.5">
+                      <Label htmlFor="vatApplicable" className="text-sm font-bold cursor-pointer">VAT Applicable</Label>
+                      <p className="text-[11px] text-slate-500 font-medium">Charge VAT for this product</p>
+                    </div>
+                    <Switch
+                      id="vatApplicable"
+                      checked={formik.values.vatApplicable}
+                      onCheckedChange={(checked) => formik.setFieldValue("vatApplicable", checked)}
+                    />
+                  </div>
+
+                  <div className={cn(
+                    "flex items-center justify-between p-4 rounded-xl border transition-all",
+                    formik.values.defaultWaitingTimeApplicable ? "bg-amber-50 border-amber-100" : "bg-slate-50 border-slate-200"
+                  )}>
+                    <div className="space-y-0.5">
+                      <Label htmlFor="defaultWaitingTimeApplicable" className="text-sm font-bold cursor-pointer">Waiting Time Def.</Label>
+                      <p className="text-[11px] text-slate-500 font-medium">Apply waiting time by default</p>
+                    </div>
+                    <Switch
+                      id="defaultWaitingTimeApplicable"
+                      checked={formik.values.defaultWaitingTimeApplicable}
+                      onCheckedChange={(checked) => formik.setFieldValue("defaultWaitingTimeApplicable", checked)}
+                    />
                   </div>
                 </div>
               </div>

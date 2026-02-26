@@ -522,38 +522,38 @@ export function ClientForm({
 
                   <div className="space-y-1.5">
                     <Label
-                      htmlFor="address.state"
+                      htmlFor="address.county"
                       className="text-xs font-semibold text-slate-600">
-                      State / Province
+                      County (Optional)
                     </Label>
                     <Input
-                      id="address.state"
-                      placeholder="State"
-                      {...formik.getFieldProps("address.state")}
-                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.state") ? "border-destructive" : ""}`}
+                      id="address.county"
+                      placeholder="County"
+                      {...formik.getFieldProps("address.county")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.county") ? "border-destructive" : ""}`}
                     />
-                    {getFieldError("address.state") && (
+                    {getFieldError("address.county") && (
                       <p className="text-xs text-destructive">
-                        {getFieldError("address.state")}
+                        {getFieldError("address.county")}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-1.5">
                     <Label
-                      htmlFor="address.postalCode"
+                      htmlFor="address.postcode"
                       className="text-xs font-semibold text-slate-600">
-                      Postal Code
+                      Postcode
                     </Label>
                     <Input
-                      id="address.postalCode"
-                      placeholder="Postal Code"
-                      {...formik.getFieldProps("address.postalCode")}
-                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.postalCode") ? "border-destructive" : ""}`}
+                      id="address.postcode"
+                      placeholder="Postcode"
+                      {...formik.getFieldProps("address.postcode")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.postcode") ? "border-destructive" : ""}`}
                     />
-                    {getFieldError("address.postalCode") && (
+                    {getFieldError("address.postcode") && (
                       <p className="text-xs text-destructive">
-                        {getFieldError("address.postalCode")}
+                        {getFieldError("address.postcode")}
                       </p>
                     )}
                   </div>

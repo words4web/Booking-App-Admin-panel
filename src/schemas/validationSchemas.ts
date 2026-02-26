@@ -1,11 +1,19 @@
 import { z } from "zod";
+import { UnitType } from "@/src/enums/product.enum";
+import { BookingStatus, ServiceType } from "@/src/enums/booking.enum";
+import { TransactionType } from "@/src/enums/invoice.enum";
 
-// UK Validation Patterns
-// const UK_PHONE_REGEX =
-//   /^(?:(?:\+44\s?|0)7(?:\d\s?){9}|(?:\+44\s?|0)(?:(?:\d\s?){10}))$/;
-// const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i;
-// const UK_SORT_CODE_REGEX = /^\d{6}$|^\d{2}-\d{2}-\d{2}$/;
+// ─── UK Address Schema (shared) ───────────────────────────────────────────────
+export const AddressSchema = z.object({
+  addressLine1: z.string().min(1, "Address Line 1 is required"),
+  addressLine2: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  county: z.string().optional(),
+  postcode: z.string().min(1, "Postcode is required"),
+  country: z.string().default("United Kingdom"),
+});
 
+// ─── Company ──────────────────────────────────────────────────────────────────
 export const CompanySchema = z.object({
   name: z.string().min(1, "Company name is required").max(255),
   registrationNumber: z.string().min(1, "Registration number is required"),
@@ -13,24 +21,18 @@ export const CompanySchema = z.object({
   vatRegistered: z.boolean().default(true),
   invoicePrefix: z.string().min(1, "Invoice prefix is required"),
   bankAccountNumber: z.string().optional(),
-  bankCode: z
-    .string()
-    // .refine(
-    //   (val) => !val || UK_SORT_CODE_REGEX.test(val),
-    //   "Invalid UK sort code",
-    // )
-    .optional(),
+  bankCode: z.string().optional(),
   bankName: z.string().optional(),
   adminEmail: z.string().email("Valid email is required"),
 });
 
+// ─── Client ───────────────────────────────────────────────────────────────────
 export const ClientSchema = z.object({
   contactInfo: z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Invalid email address"),
     phone: z.string().min(1, "Phone number is required"),
-    // .regex(UK_PHONE_REGEX, "Invalid UK phone number"),
   }),
   legalDetails: z.object({
     legalName: z.string().min(1, "Legal name is required"),
@@ -40,49 +42,85 @@ export const ClientSchema = z.object({
     purchaseOrderNumber: z.string().optional(),
     nationalInsuranceNumber: z.string().optional(),
   }),
-  address: z.object({
-    addressLine1: z.string().min(1, "Address Line 1 is required"),
-    addressLine2: z.string().optional(),
-    city: z.string().min(1, "City is required"),
-    state: z.string().min(1, "State is required"),
-    postalCode: z.string().min(1, "Postal code is required"),
-    // .regex(UK_POSTCODE_REGEX, "Invalid UK postcode"),
-    country: z.string().min(1, "Country is required"),
-  }),
+  address: AddressSchema,
+  vatExempt: z.boolean().default(false),
   companyId: z.string().optional(),
+});
+
+// ─── Product ──────────────────────────────────────────────────────────────────
+export const ExtraChargeSchema = z.object({
+  label: z.string().min(1, "Label is required"),
+  amount: z.number().min(0, "Amount cannot be negative"),
 });
 
 export const ProductSchema = z.object({
+  companyId: z.string().optional(),
   name: z.string().min(1, "Product name is required").max(255),
   description: z.string().min(1, "Description is required"),
+  unitType: z.nativeEnum(UnitType, { required_error: "Unit type is required" }),
   basePrice: z.number().min(0, "Base price cannot be negative"),
-  companyId: z.string().optional(),
+  baseCharge: z.number().min(0).default(0),
+  hourlyRate: z.number().min(0).default(0),
+  waitingTimeRate: z.number().min(0).default(0),
+  waitingTimeUnit: z.enum(["15min", "30min", "60min"]).default("30min"),
+  extraCharges: z.array(ExtraChargeSchema).default([]),
+  vatApplicable: z.boolean().default(true),
+  defaultWaitingTimeApplicable: z.boolean().default(false),
 });
 
+// ─── Booking ──────────────────────────────────────────────────────────────────
+export const BookingProductSchema = z.object({
+  productId: z.string().min(1, "Product is required"),
+  name: z.string().min(1),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  rate: z.number().min(0, "Rate cannot be negative"),
+  baseCharge: z.number().min(0).optional(),
+  hourlyRate: z.number().min(0).optional(),
+});
+
+export const BookingSchema = z.object({
+  companyId: z.string().optional(),
+  clientId: z.string().min(1, "Client selection is required"),
+  serviceType: z.nativeEnum(ServiceType, { required_error: "Service type is required" }),
+  pickupLocation: AddressSchema,
+  dropLocation: AddressSchema,
+  scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
+  assignedDriverId: z.string().optional(),
+  vehicleId: z.string().optional(),
+  vehicleType: z.string().optional(),
+  products: z.array(BookingProductSchema).min(1, "At least one product is required"),
+  jobDetails: z.string().optional(),
+});
+
+// ─── Invoice ──────────────────────────────────────────────────────────────────
+export const InvoiceLineSchema = z.object({
+  productId: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
+  account: z.string().default("Income"),
+  quantity: z.number().min(0).default(1),
+  unitPrice: z.number().min(0, "Unit price cannot be negative"),
+  vatPercent: z.number().min(0).max(100).default(20),
+});
+
+export const InvoiceSchema = z.object({
+  companyId: z.string().optional(),
+  clientId: z.string().min(1, "Client is required"),
+  bookingId: z.string().min(1, "Booking reference is required"),
+  dueDate: z.string().optional(),
+  transactionType: z.nativeEnum(TransactionType).default(TransactionType.SALES),
+  lineItems: z.array(InvoiceLineSchema).min(1, "At least one line item is required"),
+  notes: z.string().optional(),
+  paymentLink: z.string().optional(),
+});
+
+// ─── Other ────────────────────────────────────────────────────────────────────
 export const DriverSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
-  // .regex(UK_PHONE_REGEX, "Invalid UK mobile number"),
   licenseNumber: z.string().min(1, "License number is required"),
   licenseExpiryDate: z.string().min(1, "License expiry date is required"),
-});
-
-export const BookingSchema = z.object({
-  clientId: z.string().min(1, "Client selection is required"),
-  driverId: z.string().min(1, "Driver selection is required"),
-  bookingDate: z.string().min(1, "Booking date is required"),
-  products: z
-    .array(
-      z.object({
-        productId: z.string(),
-        quantity: z.number().positive(),
-        unitPrice: z.number().positive(),
-      }),
-    )
-    .min(1, "At least one product is required"),
-  notes: z.string().optional(),
 });
 
 export const LoginSchema = z.object({
