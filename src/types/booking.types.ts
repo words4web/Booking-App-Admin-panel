@@ -1,4 +1,9 @@
-import { BookingStatus, ServiceType, WaitingTimeStatus, WaitingTimeUnit } from '../enums/booking.enum';
+import {
+  BookingStatus,
+  ServiceType,
+  WaitingTimeStatus,
+  WaitingTimeUnit,
+} from "../enums/booking.enum";
 
 export interface IAddress {
   addressLine1: string;
@@ -10,7 +15,7 @@ export interface IAddress {
 }
 
 export interface IBookingProduct {
-  productId: string;
+  productId: string | { _id: string };
   name: string;
   quantity: number;
   rate: number;
@@ -34,13 +39,23 @@ export interface Booking {
   _id: string;
   bookingId: string;
   companyId: string | { _id: string; name: string };
-  clientId: string | { _id: string; contactInfo: { firstName: string; lastName: string }; legalDetails: { legalName: string } };
+  clientId:
+    | string
+    | {
+        _id: string;
+        contactInfo: { firstName: string; lastName: string };
+        legalDetails: { legalName: string };
+      };
   serviceType: ServiceType;
   pickupLocation: IAddress;
   dropLocation: IAddress;
   scheduledDateTime: string;
-  assignedDriverId?: string | { _id: string; firstName: string; lastName: string };
-  vehicleId?: string | { _id: string; vehicleName: string; vehicleNumber: string };
+  assignedDriverId?:
+    | string
+    | { _id: string; firstName: string; lastName: string };
+  vehicleId?:
+    | string
+    | { _id: string; vehicleName: string; vehicleNumber: string };
   vehicleType?: string;
   products: IBookingProduct[];
   jobDetails?: string;

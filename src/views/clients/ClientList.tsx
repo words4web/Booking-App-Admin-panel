@@ -89,7 +89,8 @@ export function ClientList() {
               <div className="w-[200px]">
                 <Select
                   value={selectedCompanyId}
-                  onValueChange={setSelectedCompanyId}>
+                  onValueChange={setSelectedCompanyId}
+                >
                   <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                     <div className="flex items-center gap-2">
                       <Filter className="h-4 w-4 text-primary" />
@@ -99,14 +100,16 @@ export function ClientList() {
                   <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100] min-w-[220px]">
                     <SelectItem
                       value="all"
-                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors"
+                    >
                       All Companies
                     </SelectItem>
                     {companies?.map((company) => (
                       <SelectItem
                         key={company._id}
                         value={company._id}
-                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors"
+                      >
                         {company.name}
                       </SelectItem>
                     ))}
@@ -116,7 +119,8 @@ export function ClientList() {
             )}
             <Button
               asChild
-              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
+              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2"
+            >
               <Link href="/clients/new">
                 <Plus className="h-5 w-5" />
                 Add New Client
@@ -170,7 +174,8 @@ export function ClientList() {
                   {clients.map((client) => (
                     <tr
                       key={client._id}
-                      className="transition-all hover:bg-slate-50 cursor-default">
+                      className="transition-all hover:bg-slate-50 cursor-default"
+                    >
                       <td className="px-8 py-5 align-middle">
                         <div className="flex flex-col">
                           <span className="font-bold text-foreground">
@@ -204,7 +209,7 @@ export function ClientList() {
                         <div className="flex flex-col text-xs text-muted-foreground max-w-[200px]">
                           <span>{client.address.addressLine1}</span>
                           <span>
-                            {client.address.city}, {client.address.postalCode}
+                            {client.address.city}, {client.address.postcode}
                           </span>
                           <span>{client.address.country}</span>
                         </div>
@@ -225,7 +230,8 @@ export function ClientList() {
                             size="icon"
                             className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                             asChild
-                            title="Edit Client">
+                            title="Edit Client"
+                          >
                             <Link href={`/clients/${client._id}/edit`}>
                               <Pencil className="h-3.5 w-3.5" />
                             </Link>
@@ -236,7 +242,8 @@ export function ClientList() {
                             size="icon"
                             className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
                             title="Delete Client"
-                            onClick={() => handleDeleteClick(client)}>
+                            onClick={() => handleDeleteClick(client)}
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>

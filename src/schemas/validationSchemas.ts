@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { UnitType } from "@/src/enums/product.enum";
-import { BookingStatus, ServiceType } from "@/src/enums/booking.enum";
+import { ServiceType } from "@/src/enums/booking.enum";
 import { TransactionType } from "@/src/enums/invoice.enum";
 
 // ─── UK Address Schema (shared) ───────────────────────────────────────────────
@@ -81,14 +81,18 @@ export const BookingProductSchema = z.object({
 export const BookingSchema = z.object({
   companyId: z.string().optional(),
   clientId: z.string().min(1, "Client selection is required"),
-  serviceType: z.nativeEnum(ServiceType, { required_error: "Service type is required" }),
+  serviceType: z.nativeEnum(ServiceType, {
+    required_error: "Service type is required",
+  }),
   pickupLocation: AddressSchema,
   dropLocation: AddressSchema,
   scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
   assignedDriverId: z.string().optional(),
   vehicleId: z.string().optional(),
   vehicleType: z.string().optional(),
-  products: z.array(BookingProductSchema).min(1, "At least one product is required"),
+  products: z
+    .array(BookingProductSchema)
+    .min(1, "At least one product is required"),
   jobDetails: z.string().optional(),
 });
 
@@ -108,7 +112,9 @@ export const InvoiceSchema = z.object({
   bookingId: z.string().min(1, "Booking reference is required"),
   dueDate: z.string().optional(),
   transactionType: z.nativeEnum(TransactionType).default(TransactionType.SALES),
-  lineItems: z.array(InvoiceLineSchema).min(1, "At least one line item is required"),
+  lineItems: z
+    .array(InvoiceLineSchema)
+    .min(1, "At least one line item is required"),
   notes: z.string().optional(),
   paymentLink: z.string().optional(),
 });
