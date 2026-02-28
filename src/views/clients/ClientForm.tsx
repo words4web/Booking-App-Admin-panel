@@ -80,8 +80,8 @@ export function ClientForm({
         vatRegistered: initialData?.legalDetails.vatRegistered ?? false,
         purchaseOrderNumber:
           initialData?.legalDetails.purchaseOrderNumber || "",
-        nationalInsuranceNumber:
-          initialData?.legalDetails.nationalInsuranceNumber || "",
+        // nationalInsuranceNumber:
+        //   initialData?.legalDetails.nationalInsuranceNumber || "",
       },
       address: {
         addressLine1: initialData?.address.addressLine1 || "",
@@ -135,8 +135,7 @@ export function ClientForm({
                   <TabsTrigger
                     key={data.id}
                     value={data.id}
-                    className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg pointer-events-none"
-                  >
+                    className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg pointer-events-none">
                     {data.label}
                   </TabsTrigger>
                 ))}
@@ -147,14 +146,12 @@ export function ClientForm({
               {/* Tab 1: Contact Info */}
               <TabsContent
                 value="contact"
-                className="mt-0 focus-visible:outline-none space-y-8"
-              >
+                className="mt-0 focus-visible:outline-none space-y-8">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="contactInfo.firstName"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       First Name
                     </Label>
                     <Input
@@ -173,8 +170,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="contactInfo.lastName"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Last Name
                     </Label>
                     <Input
@@ -193,8 +189,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="contactInfo.email"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Email Address
                     </Label>
                     <Input
@@ -214,8 +209,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="contactInfo.phone"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Phone Number (UK Format)
                     </Label>
                     <Input
@@ -267,8 +261,7 @@ export function ClientForm({
                   <Button
                     type="button"
                     onClick={handleNext}
-                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider"
-                  >
+                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">
                     Next
                   </Button>
                 </div>
@@ -277,15 +270,13 @@ export function ClientForm({
               {/* Tab 2: Legal & Business */}
               <TabsContent
                 value="legal"
-                className="mt-0 focus-visible:outline-none space-y-8"
-              >
+                className="mt-0 focus-visible:outline-none space-y-8">
                 <div className="space-y-6">
                   {isSuperAdmin && (
                     <div className="space-y-2 w-full">
                       <Label
                         htmlFor="companyId"
-                        className="text-xs font-bold text-slate-600 uppercase tracking-wider"
-                      >
+                        className="text-xs font-bold text-slate-600 uppercase tracking-wider">
                         Assign Company / Organization
                       </Label>
                       <Select
@@ -293,8 +284,7 @@ export function ClientForm({
                           formik.setFieldValue("companyId", value)
                         }
                         value={formik.values.companyId}
-                        disabled={mode === "edit"}
-                      >
+                        disabled={mode === "edit"}>
                         <SelectTrigger className="w-full h-12 rounded-xl border-border/80 bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm">
                           <div className="flex items-center gap-3 w-full">
                             <Building2 className="h-5 w-5 text-primary" />
@@ -306,8 +296,7 @@ export function ClientForm({
                             <SelectItem
                               key={company._id}
                               value={company._id}
-                              className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-4 px-4 mb-1 transition-colors"
-                            >
+                              className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-4 px-4 mb-1 transition-colors">
                               {company.name}
                             </SelectItem>
                           ))}
@@ -325,8 +314,7 @@ export function ClientForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="legalDetails.legalName"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Legal Entity Name
                       </Label>
                       <Input
@@ -345,8 +333,7 @@ export function ClientForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="legalDetails.registrationNumber"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Registration Number
                       </Label>
                       <Input
@@ -367,8 +354,7 @@ export function ClientForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="legalDetails.purchaseOrderNumber"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Purchase Order Number
                       </Label>
                       <Input
@@ -381,11 +367,10 @@ export function ClientForm({
                       />
                     </div>
 
-                    <div className="space-y-1.5">
+                    {/* <div className="space-y-1.5">
                       <Label
                         htmlFor="legalDetails.nationalInsuranceNumber"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         National Insurance Number
                       </Label>
                       <Input
@@ -396,7 +381,7 @@ export function ClientForm({
                         )}
                         className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.nationalInsuranceNumber") ? "border-destructive" : ""}`}
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div
@@ -405,8 +390,7 @@ export function ClientForm({
                       formik.values.legalDetails.vatRegistered
                         ? "bg-emerald-50/50 border-emerald-200 ring-4 ring-emerald-50"
                         : "bg-slate-50 border-slate-200",
-                    )}
-                  >
+                    )}>
                     <div className="space-y-0.5">
                       <Label
                         htmlFor="vatRegistered"
@@ -415,8 +399,7 @@ export function ClientForm({
                           formik.values.legalDetails.vatRegistered
                             ? "text-emerald-700"
                             : "text-slate-900",
-                        )}
-                      >
+                        )}>
                         VAT Registered Status
                       </Label>
                       <p className="text-[11px] text-slate-500 font-medium leading-none">
@@ -431,7 +414,9 @@ export function ClientForm({
                           "legalDetails.vatRegistered",
                           checked,
                         );
-                        if (!checked) {
+                        if (checked) {
+                          formik.setFieldValue("vatExempt", false);
+                        } else {
                           formik.setFieldValue("legalDetails.vatNumber", "");
                         }
                       }}
@@ -445,8 +430,7 @@ export function ClientForm({
                       formik.values.vatExempt
                         ? "bg-amber-50/50 border-amber-200 ring-4 ring-amber-50"
                         : "bg-slate-50 border-slate-200",
-                    )}
-                  >
+                    )}>
                     <div className="space-y-0.5">
                       <Label
                         htmlFor="vatExempt"
@@ -455,8 +439,7 @@ export function ClientForm({
                           formik.values.vatExempt
                             ? "text-amber-700"
                             : "text-slate-900",
-                        )}
-                      >
+                        )}>
                         VAT Exempt
                       </Label>
                       <p className="text-[11px] text-slate-500 font-medium leading-none">
@@ -466,9 +449,16 @@ export function ClientForm({
                     <Switch
                       id="vatExempt"
                       checked={formik.values.vatExempt}
-                      onCheckedChange={(checked) =>
-                        formik.setFieldValue("vatExempt", checked)
-                      }
+                      onCheckedChange={(checked) => {
+                        formik.setFieldValue("vatExempt", checked);
+                        if (checked) {
+                          formik.setFieldValue(
+                            "legalDetails.vatRegistered",
+                            false,
+                          );
+                          formik.setFieldValue("legalDetails.vatNumber", "");
+                        }
+                      }}
                       className="data-[state=checked]:bg-amber-600"
                     />
                   </div>
@@ -477,8 +467,7 @@ export function ClientForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="legalDetails.vatNumber"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         VAT Number
                       </Label>
                       <div className="relative group">
@@ -504,15 +493,13 @@ export function ClientForm({
                     type="button"
                     variant="outline"
                     onClick={handleBack}
-                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider"
-                  >
+                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">
                     Previous
                   </Button>
                   <Button
                     type="button"
                     onClick={handleNext}
-                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider"
-                  >
+                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">
                     Next
                   </Button>
                 </div>
@@ -521,14 +508,12 @@ export function ClientForm({
               {/* Tab 3: Address */}
               <TabsContent
                 value="address"
-                className="mt-0 focus-visible:outline-none space-y-8"
-              >
+                className="mt-0 focus-visible:outline-none space-y-8">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-1.5 md:col-span-2">
                     <Label
                       htmlFor="address.addressLine1"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Address Line 1
                     </Label>
                     <Input
@@ -547,8 +532,7 @@ export function ClientForm({
                   <div className="space-y-1.5 md:col-span-2">
                     <Label
                       htmlFor="address.addressLine2"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Address Line 2 (Optional)
                     </Label>
                     <Input
@@ -562,8 +546,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="address.city"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       City
                     </Label>
                     <Input
@@ -582,8 +565,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="address.county"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       County (Optional)
                     </Label>
                     <Input
@@ -602,8 +584,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="address.postcode"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Postcode
                     </Label>
                     <Input
@@ -622,8 +603,7 @@ export function ClientForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="address.country"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Country
                     </Label>
                     <Input
@@ -645,8 +625,7 @@ export function ClientForm({
                     type="button"
                     variant="outline"
                     onClick={handleBack}
-                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider"
-                  >
+                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider">
                     Previous
                   </Button>
                   <Button
@@ -656,8 +635,7 @@ export function ClientForm({
                       isPending ||
                       (isSuperAdmin && !formik.values.companyId)
                     }
-                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2"
-                  >
+                    className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
                     {isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -684,8 +662,7 @@ export function ClientForm({
               variant="ghost"
               onClick={() => formik.resetForm()}
               disabled={isPending}
-              className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide"
-            >
+              className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
               <RotateCcw className="h-4 w-4" />
               {mode === "create" ? "Clear Form" : "Reset Changes"}
             </Button>

@@ -18,31 +18,28 @@ import { BookingStatus } from "@/src/enums/booking.enum";
 const STATUS_LABELS: Record<BookingStatus, string> = {
   [BookingStatus.SCHEDULED]: "Scheduled",
   [BookingStatus.ACCEPTED]: "Accepted",
-  [BookingStatus.ON_THE_WAY]: "On the Way",
   [BookingStatus.JOB_STARTED]: "Job Started",
+  [BookingStatus.JOB_SUBMITTED]: "Job Submitted",
   [BookingStatus.COMPLETED]: "Completed",
-  [BookingStatus.CANCELLED]: "Cancelled",
 };
 
 const STATUS_CLASSES: Record<BookingStatus, string> = {
   [BookingStatus.SCHEDULED]: "bg-amber-50 text-amber-700 border-amber-200",
   [BookingStatus.ACCEPTED]: "bg-blue-50 text-blue-700 border-blue-200",
-  [BookingStatus.ON_THE_WAY]: "bg-violet-50 text-violet-700 border-violet-200",
-  [BookingStatus.JOB_STARTED]: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  [BookingStatus.JOB_STARTED]: "bg-blue-50 text-blue-700 border-blue-200",
+  [BookingStatus.JOB_SUBMITTED]: "bg-blue-50 text-blue-700 border-blue-200",
   [BookingStatus.COMPLETED]:
     "bg-emerald-50 text-emerald-700 border-emerald-200",
-  [BookingStatus.CANCELLED]: "bg-muted text-muted-foreground/60 border-border",
 };
 
 function getClientName(clientId: Booking["clientId"]): string {
-  if (typeof clientId === "string") return clientId;
-  return `${clientId.contactInfo?.firstName ?? ""} ${clientId.contactInfo?.lastName ?? ""}`.trim();
+  return `${clientId.legalDetails?.legalName ?? ""}`.trim();
 }
 
 function getDriverName(driverId: Booking["assignedDriverId"]): string {
   if (!driverId) return "—";
   if (typeof driverId === "string") return driverId;
-  return `${driverId.firstName ?? ""} ${driverId.lastName ?? ""}`.trim();
+  return driverId.fullName || "—";
 }
 
 function formatDateTime(dt: string) {
@@ -54,6 +51,9 @@ function formatDateTime(dt: string) {
     minute: "2-digit",
   });
 }
+
+const tableHeaderCss =
+  "h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70";
 
 export function BookingList() {
   const [deleteDialog, setDeleteDialog] = useState<{
@@ -84,8 +84,7 @@ export function BookingList() {
           </div>
           <Button
             asChild
-            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2"
-          >
+            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
             <Link href="/bookings/new">
               <Plus className="h-5 w-5" />
               Create Booking
@@ -101,7 +100,7 @@ export function BookingList() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {bookings.length === 0 ? (
+          {bookings?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-muted-foreground text-sm font-medium">
                 No bookings found.
@@ -115,55 +114,41 @@ export function BookingList() {
               <table className="w-full text-sm font-medium">
                 <thead>
                   <tr className="bg-muted/10 border-b border-border/50">
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Booking ID
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Client
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Scheduled
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Status
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Driver
-                    </th>
-                    <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Actions
-                    </th>
+                    <th className={tableHeaderCss}>Booking ID</th>
+                    <th className={tableHeaderCss}>Client</th>
+                    <th className={tableHeaderCss}>Scheduled</th>
+                    <th className={tableHeaderCss}>Status</th>
+                    <th className={tableHeaderCss}>Driver</th>
+                    <th className={tableHeaderCss}>Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
-                  {bookings.map((booking) => {
-                    const status = booking.status as BookingStatus;
+                  {bookings?.map((booking) => {
+                    const status = booking?.status as BookingStatus;
                     return (
                       <tr
-                        key={booking._id}
-                        className="transition-all hover:bg-slate-50 cursor-default"
-                      >
+                        key={booking?._id}
+                        className="transition-all hover:bg-slate-50 cursor-default">
                         <td className="px-8 py-5 align-middle">
                           <span className="font-bold text-foreground">
-                            {booking.bookingId}
+                            {booking?.bookingId}
                           </span>
                         </td>
                         <td className="px-8 py-5 align-middle text-muted-foreground">
-                          {getClientName(booking.clientId)}
+                          {getClientName(booking?.clientId)}
                         </td>
                         <td className="px-8 py-5 align-middle text-muted-foreground">
-                          {formatDateTime(booking.scheduledDateTime)}
+                          {formatDateTime(booking?.scheduledDateTime)}
                         </td>
                         <td className="px-8 py-5 align-middle">
                           <Badge
                             variant="outline"
-                            className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}
-                          >
+                            className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}>
                             {STATUS_LABELS[status] ?? status}
                           </Badge>
                         </td>
                         <td className="px-8 py-5 align-middle text-muted-foreground">
-                          {getDriverName(booking.assignedDriverId)}
+                          {getDriverName(booking?.assignedDriverId)}
                         </td>
                         <td className="px-8 py-5 align-middle text-right">
                           <div className="flex justify-end gap-2">
@@ -172,9 +157,8 @@ export function BookingList() {
                               size="icon"
                               className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                               asChild
-                              title="Edit Booking"
-                            >
-                              <Link href={`/bookings/${booking._id}/edit`}>
+                              title="Edit Booking">
+                              <Link href={`/bookings/${booking?._id}/edit`}>
                                 <Pencil className="h-3.5 w-3.5" />
                               </Link>
                             </Button>
@@ -185,11 +169,10 @@ export function BookingList() {
                               title="Delete Booking"
                               onClick={() =>
                                 setDeleteDialog({
-                                  id: booking._id,
-                                  bookingId: booking.bookingId,
+                                  id: booking?._id,
+                                  bookingId: booking?.bookingId,
                                 })
-                              }
-                            >
+                              }>
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>

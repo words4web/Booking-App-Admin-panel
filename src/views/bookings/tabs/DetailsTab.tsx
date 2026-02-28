@@ -46,8 +46,7 @@ export function DetailsTab({
             <div className="w-full">
               <Select
                 onValueChange={onCompanyChange}
-                value={formik.values.companyId}
-              >
+                value={formik.values.companyId}>
                 <SelectTrigger className="w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all">
                   <SelectValue placeholder="Select a company" />
                 </SelectTrigger>
@@ -74,9 +73,18 @@ export function DetailsTab({
             <Select
               onValueChange={(val) => formik.setFieldValue("clientId", val)}
               value={formik.values.clientId}
-            >
-              <SelectTrigger className="w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all">
-                <SelectValue placeholder="Select a client" />
+              disabled={
+                !formik.values.companyId ||
+                (isSuperAdmin && clients?.length === 0)
+              }>
+              <SelectTrigger className="w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <SelectValue
+                  placeholder={
+                    !formik.values.companyId
+                      ? "Select a company first"
+                      : "Select a client"
+                  }
+                />
               </SelectTrigger>
               <SelectContent className="bg-white w-[--radix-select-trigger-width]">
                 {clients?.length > 0 ? (
@@ -109,8 +117,7 @@ export function DetailsTab({
           <div className="w-full">
             <Select
               onValueChange={(val) => formik.setFieldValue("serviceType", val)}
-              value={formik.values.serviceType}
-            >
+              value={formik.values.serviceType}>
               <SelectTrigger className="w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all">
                 <SelectValue />
               </SelectTrigger>
@@ -132,8 +139,9 @@ export function DetailsTab({
           <div className="relative">
             <Input
               type="datetime-local"
+              min={new Date().toISOString().slice(0, 16)}
               {...formik.getFieldProps("scheduledDateTime")}
-              className="h-12 rounded-xl border-slate-200 bg-slate-50/50 pl-10 focus:bg-white transition-all"
+              className="h-12 rounded-xl border-slate-200 bg-slate-50/50 pl-10 focus:bg-white transition-all font-medium"
             />
             <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
           </div>

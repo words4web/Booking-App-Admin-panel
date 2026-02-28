@@ -18,9 +18,12 @@ export interface IBookingProduct {
   productId: string | { _id: string };
   name: string;
   quantity: number;
-  rate: number;
+  rate: number; // basePrice from product
   baseCharge?: number;
   hourlyRate?: number;
+  waitingRate?: number;
+  waitingTimeUnit?: string;
+  extraCharges?: { label: string; amount: number }[];
 }
 
 export interface IWaitingTime {
@@ -39,24 +42,20 @@ export interface Booking {
   _id: string;
   bookingId: string;
   companyId: string | { _id: string; name: string };
-  clientId:
-    | string
-    | {
-        _id: string;
-        contactInfo: { firstName: string; lastName: string };
-        legalDetails: { legalName: string };
-      };
+  clientId: {
+    _id: string;
+    legalDetails: { legalName: string };
+  };
   serviceType: ServiceType;
   pickupLocation: IAddress;
   dropLocation: IAddress;
   scheduledDateTime: string;
   assignedDriverId?:
     | string
-    | { _id: string; firstName: string; lastName: string };
+    | { _id: string; fullName: string; mobileNumber: string };
   vehicleId?:
     | string
     | { _id: string; vehicleName: string; vehicleNumber: string };
-  vehicleType?: string;
   products: IBookingProduct[];
   jobDetails?: string;
   status: BookingStatus;
@@ -71,7 +70,7 @@ export interface Booking {
 }
 
 export interface BookingFormData {
-  companyId?: string;
+  companyId: string;
   clientId: string;
   serviceType: ServiceType;
   pickupLocation: IAddress;
@@ -79,7 +78,6 @@ export interface BookingFormData {
   scheduledDateTime: string;
   assignedDriverId?: string;
   vehicleId?: string;
-  vehicleType?: string;
   products: IBookingProduct[];
   jobDetails?: string;
 }
@@ -89,6 +87,7 @@ export interface BookingFilters {
   limit?: number;
   companyId?: string;
   clientId?: string;
+  assignedDriverId?: string;
   status?: BookingStatus;
   search?: string;
 }

@@ -28,7 +28,6 @@ const STATUS_LABELS: Record<InvoiceStatus, string> = {
   [InvoiceStatus.SENT]: "Sent",
   [InvoiceStatus.PAID]: "Paid",
   [InvoiceStatus.OVERDUE]: "Overdue",
-  [InvoiceStatus.CANCELLED]: "Cancelled",
 };
 
 const STATUS_CLASSES: Record<InvoiceStatus, string> = {
@@ -36,7 +35,6 @@ const STATUS_CLASSES: Record<InvoiceStatus, string> = {
   [InvoiceStatus.SENT]: "bg-blue-50 text-blue-700 border-blue-200",
   [InvoiceStatus.PAID]: "bg-emerald-50 text-emerald-700 border-emerald-200",
   [InvoiceStatus.OVERDUE]: "bg-red-50 text-red-700 border-red-200",
-  [InvoiceStatus.CANCELLED]: "bg-muted text-muted-foreground/60 border-border",
 };
 
 function getClientName(clientId: Invoice["clientId"]): string {
@@ -102,24 +100,21 @@ export function InvoiceList() {
                 onValueChange={(v) => {
                   setStatusFilter(v);
                   setPage(1);
-                }}
-              >
+                }}>
                 <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                   <SelectValue placeholder="Filter by Status" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
                   <SelectItem
                     value="all"
-                    className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1"
-                  >
+                    className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1">
                     All Statuses
                   </SelectItem>
                   {Object.values(InvoiceStatus).map((s) => (
                     <SelectItem
                       key={s}
                       value={s}
-                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1"
-                    >
+                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1">
                       {STATUS_LABELS[s]}
                     </SelectItem>
                   ))}
@@ -129,8 +124,7 @@ export function InvoiceList() {
 
             <Button
               asChild
-              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2"
-            >
+              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
               <Link href="/invoices/new">
                 <Plus className="h-5 w-5" />
                 Create Invoice
@@ -193,8 +187,7 @@ export function InvoiceList() {
                       return (
                         <tr
                           key={inv._id}
-                          className="transition-all hover:bg-slate-50 cursor-default"
-                        >
+                          className="transition-all hover:bg-slate-50 cursor-default">
                           <td className="px-8 py-5 align-middle">
                             <span className="font-bold text-foreground">
                               {inv.invoiceNumber}
@@ -212,8 +205,7 @@ export function InvoiceList() {
                           <td className="px-8 py-5 align-middle">
                             <Badge
                               variant="outline"
-                              className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}
-                            >
+                              className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}>
                               {STATUS_LABELS[status] ?? status}
                             </Badge>
                           </td>
@@ -227,8 +219,7 @@ export function InvoiceList() {
                                 size="icon"
                                 className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                 title="View PDF"
-                                onClick={() => setPdfInvoice(inv)}
-                              >
+                                onClick={() => setPdfInvoice(inv)}>
                                 <FileText className="h-3.5 w-3.5" />
                               </Button>
                               <Button
@@ -236,8 +227,7 @@ export function InvoiceList() {
                                 size="icon"
                                 className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                 asChild
-                                title="View Details"
-                              >
+                                title="View Details">
                                 <Link href={`/invoices/${inv._id}`}>
                                   <Eye className="h-3.5 w-3.5" />
                                 </Link>
@@ -247,8 +237,7 @@ export function InvoiceList() {
                                 size="icon"
                                 className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                 asChild
-                                title="Edit Invoice"
-                              >
+                                title="Edit Invoice">
                                 <Link href={`/invoices/${inv._id}/edit`}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Link>
@@ -263,8 +252,7 @@ export function InvoiceList() {
                                     id: inv._id,
                                     number: inv.invoiceNumber,
                                   })
-                                }
-                              >
+                                }>
                                 <Trash2 className="h-3.5 w-3.5" />
                               </Button>
                             </div>
@@ -288,8 +276,7 @@ export function InvoiceList() {
                       size="sm"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="rounded-lg h-8 text-xs font-bold"
-                    >
+                      className="rounded-lg h-8 text-xs font-bold">
                       Previous
                     </Button>
                     <Button
@@ -297,8 +284,7 @@ export function InvoiceList() {
                       size="sm"
                       onClick={() => setPage((p) => p + 1)}
                       disabled={page >= pagination.pages}
-                      className="rounded-lg h-8 text-xs font-bold"
-                    >
+                      className="rounded-lg h-8 text-xs font-bold">
                       Next
                     </Button>
                   </div>

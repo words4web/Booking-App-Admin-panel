@@ -1,7 +1,6 @@
 import api from "@/src/lib/axios";
 import API_ENDPOINTS from "@/lib/Api_Endpoints";
 import {
-  Booking,
   BookingFilters,
   BookingFormData,
   BookingResponse,
@@ -17,16 +16,18 @@ export const BookingService = {
     if (filters.clientId) params.append("clientId", filters.clientId);
     if (filters.status) params.append("status", filters.status);
     if (filters.search) params.append("search", filters.search);
+    if (filters.assignedDriverId)
+      params.append("assignedDriverId", filters.assignedDriverId);
 
     const response = await api.get<BookingsResponse>(
-      `${API_ENDPOINTS.BOOKINGS.GET_ALL}?${params.toString()}`
+      `${API_ENDPOINTS.BOOKINGS.GET_ALL}?${params.toString()}`,
     );
     return response.data.data;
   },
 
   getById: async (id: string) => {
     const response = await api.get<BookingResponse>(
-      API_ENDPOINTS.BOOKINGS.GET_BY_ID(id)
+      API_ENDPOINTS.BOOKINGS.GET_BY_ID(id),
     );
     return response.data.data.booking;
   },
@@ -34,7 +35,7 @@ export const BookingService = {
   create: async (data: BookingFormData) => {
     const response = await api.post<BookingResponse>(
       API_ENDPOINTS.BOOKINGS.CREATE,
-      data
+      data,
     );
     return response.data.data.booking;
   },
@@ -42,21 +43,24 @@ export const BookingService = {
   update: async (id: string, data: Partial<BookingFormData>) => {
     const response = await api.patch<BookingResponse>(
       API_ENDPOINTS.BOOKINGS.UPDATE(id),
-      data
+      data,
     );
     return response.data.data.booking;
   },
 
   delete: async (id: string) => {
     await api.delete<{ success: boolean; message: string }>(
-      API_ENDPOINTS.BOOKINGS.DELETE(id)
+      API_ENDPOINTS.BOOKINGS.DELETE(id),
     );
   },
 
-  assignDriver: async (id: string, data: { assignedDriverId: string; vehicleId: string }) => {
+  assignDriver: async (
+    id: string,
+    data: { assignedDriverId: string; vehicleId: string },
+  ) => {
     const response = await api.post<BookingResponse>(
       API_ENDPOINTS.BOOKINGS.ASSIGN_DRIVER(id),
-      data
+      data,
     );
     return response.data.data.booking;
   },
@@ -64,7 +68,7 @@ export const BookingService = {
   updateStatus: async (id: string, status: string) => {
     const response = await api.patch<BookingResponse>(
       API_ENDPOINTS.BOOKINGS.UPDATE_STATUS(id),
-      { status }
+      { status },
     );
     return response.data.data.booking;
   },

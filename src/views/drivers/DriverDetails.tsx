@@ -127,17 +127,21 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                 <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <DetailItem
                     label="Full Name"
-                    value={driver.fullName}
+                    value={driver?.fullName}
                     highlight
                   />
-                  <DetailItem label="Email Address" value={driver.email} />
+                  <DetailItem label="Email Address" value={driver?.email} />
                   <DetailItem
                     label="Mobile Number"
-                    value={driver.mobileNumber}
+                    value={driver?.mobileNumber}
+                  />
+                  <DetailItem
+                    label="National Insurance Number"
+                    value={driver?.nationalInsuranceNumber as string}
                   />
                   <DetailItem
                     label="Account Created"
-                    value={new Date(driver.createdAt).toLocaleDateString(
+                    value={new Date(driver?.createdAt).toLocaleDateString(
                       "en-US",
                       {
                         year: "numeric",
@@ -156,18 +160,18 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentViewer
                   title="Front Side"
-                  imageUrl={driver.license?.frontImage?.url || null}
-                  isVerified={driver.license?.frontImage?.isVerified || false}
-                  reason={driver.license?.frontImage?.reason || null}
+                  imageUrl={driver?.license?.frontImage?.url || null}
+                  isVerified={driver?.license?.frontImage?.isVerified || false}
+                  reason={driver?.license?.frontImage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument("license.frontImage", verified, reason)
                   }
                 />
                 <DocumentViewer
                   title="Back Side"
-                  imageUrl={driver.license?.backImage?.url || null}
-                  isVerified={driver.license?.backImage?.isVerified || false}
-                  reason={driver.license?.backImage?.reason || null}
+                  imageUrl={driver?.license?.backImage?.url || null}
+                  isVerified={driver?.license?.backImage?.isVerified || false}
+                  reason={driver?.license?.backImage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument("license.backImage", verified, reason)
                   }
@@ -181,9 +185,11 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentViewer
                   title="Bio Data Page"
-                  imageUrl={driver.passport?.bioDataPage?.url || null}
-                  isVerified={driver.passport?.bioDataPage?.isVerified || false}
-                  reason={driver.passport?.bioDataPage?.reason || null}
+                  imageUrl={driver?.passport?.bioDataPage?.url || null}
+                  isVerified={
+                    driver?.passport?.bioDataPage?.isVerified || false
+                  }
+                  reason={driver?.passport?.bioDataPage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument(
                       "passport.bioDataPage",
@@ -194,11 +200,11 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                 />
                 <DocumentViewer
                   title="Signature Page"
-                  imageUrl={driver.passport?.signaturePage?.url || null}
+                  imageUrl={driver?.passport?.signaturePage?.url || null}
                   isVerified={
-                    driver.passport?.signaturePage?.isVerified || false
+                    driver?.passport?.signaturePage?.isVerified || false
                   }
-                  reason={driver.passport?.signaturePage?.reason || null}
+                  reason={driver?.passport?.signaturePage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument(
                       "passport.signaturePage",

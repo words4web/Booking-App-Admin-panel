@@ -121,8 +121,7 @@ export function ProductForm({
                   <div className="space-y-2 w-full">
                     <Label
                       htmlFor="companyId"
-                      className="text-xs font-bold text-slate-600 uppercase tracking-wider"
-                    >
+                      className="text-xs font-bold text-slate-600 uppercase tracking-wider">
                       Assign Company / Organization
                     </Label>
                     <Select
@@ -130,8 +129,7 @@ export function ProductForm({
                         formik.setFieldValue("companyId", value)
                       }
                       value={formik.values.companyId}
-                      disabled={mode === "edit"}
-                    >
+                      disabled={mode === "edit"}>
                       <SelectTrigger className="w-full h-12 rounded-xl border-border/80 bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm">
                         <div className="flex items-center gap-3 w-full">
                           <Building2 className="h-5 w-5 text-primary" />
@@ -143,8 +141,7 @@ export function ProductForm({
                           <SelectItem
                             key={company._id}
                             value={company._id}
-                            className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-4 px-4 mb-1 transition-colors"
-                          >
+                            className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-4 px-4 mb-1 transition-colors">
                             {company.name}
                           </SelectItem>
                         ))}
@@ -162,8 +159,7 @@ export function ProductForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="name"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Product Name
                     </Label>
                     <Input
@@ -182,8 +178,7 @@ export function ProductForm({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="description"
-                      className="text-xs font-semibold text-slate-600"
-                    >
+                      className="text-xs font-semibold text-slate-600">
                       Description
                     </Label>
                     <Textarea
@@ -203,20 +198,18 @@ export function ProductForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="unitType"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Unit Type
                       </Label>
                       <Select
                         onValueChange={(value) =>
                           formik.setFieldValue("unitType", value)
                         }
-                        value={formik.values.unitType}
-                      >
-                        <SelectTrigger className="h-11 rounded-lg border-border">
+                        value={formik.values.unitType}>
+                        <SelectTrigger className="w-full h-11 rounded-lg border-border">
                           <SelectValue placeholder="Select unit type" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white">
+                        <SelectContent className="bg-white border-border shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-xl w-[var(--radix-select-trigger-width)]">
                           {Object.values(UnitType).map((type) => (
                             <SelectItem key={type} value={type}>
                               {type}
@@ -229,17 +222,27 @@ export function ProductForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="basePrice"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Base Price (£)
                       </Label>
                       <Input
                         id="basePrice"
                         type="number"
                         step="1"
-                        min={1}
+                        min={0}
                         placeholder="0.00"
                         {...formik.getFieldProps("basePrice")}
+                        value={
+                          formik.values.basePrice === 0 &&
+                          !formik.getFieldMeta("basePrice").touched
+                            ? ""
+                            : formik.values.basePrice
+                        }
+                        onChange={(e) => {
+                          const val =
+                            e.target.value === "" ? 0 : Number(e.target.value);
+                          formik.setFieldValue("basePrice", val);
+                        }}
                         className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("basePrice") ? "border-destructive" : ""}`}
                       />
                       {getFieldError("basePrice") && (
@@ -274,8 +277,7 @@ export function ProductForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="baseCharge"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Base Charge (£)
                       </Label>
                       <Input
@@ -285,14 +287,24 @@ export function ProductForm({
                         min="0"
                         placeholder="0.00"
                         {...formik.getFieldProps("baseCharge")}
+                        value={
+                          formik.values.baseCharge === 0 &&
+                          !formik.getFieldMeta("baseCharge").touched
+                            ? ""
+                            : formik.values.baseCharge
+                        }
+                        onChange={(e) => {
+                          const val =
+                            e.target.value === "" ? 0 : Number(e.target.value);
+                          formik.setFieldValue("baseCharge", val);
+                        }}
                         className="h-11 rounded-lg border-border"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="hourlyRate"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Hourly Rate (£)
                       </Label>
                       <Input
@@ -302,6 +314,17 @@ export function ProductForm({
                         min="0"
                         placeholder="0.00"
                         {...formik.getFieldProps("hourlyRate")}
+                        value={
+                          formik.values.hourlyRate === 0 &&
+                          !formik.getFieldMeta("hourlyRate").touched
+                            ? ""
+                            : formik.values.hourlyRate
+                        }
+                        onChange={(e) => {
+                          const val =
+                            e.target.value === "" ? 0 : Number(e.target.value);
+                          formik.setFieldValue("hourlyRate", val);
+                        }}
                         className="h-11 rounded-lg border-border"
                       />
                     </div>
@@ -317,8 +340,7 @@ export function ProductForm({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="waitingTimeRate"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Waiting Rate (£)
                       </Label>
                       <Input
@@ -328,26 +350,35 @@ export function ProductForm({
                         min="0"
                         placeholder="0.00"
                         {...formik.getFieldProps("waitingTimeRate")}
+                        value={
+                          formik.values.waitingTimeRate === 0 &&
+                          !formik.getFieldMeta("waitingTimeRate").touched
+                            ? ""
+                            : formik.values.waitingTimeRate
+                        }
+                        onChange={(e) => {
+                          const val =
+                            e.target.value === "" ? 0 : Number(e.target.value);
+                          formik.setFieldValue("waitingTimeRate", val);
+                        }}
                         className="h-11 rounded-lg border-border"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="waitingTimeUnit"
-                        className="text-xs font-semibold text-slate-600"
-                      >
+                        className="text-xs font-semibold text-slate-600">
                         Increment Unit
                       </Label>
                       <Select
                         onValueChange={(value) =>
                           formik.setFieldValue("waitingTimeUnit", value)
                         }
-                        value={formik.values.waitingTimeUnit}
-                      >
-                        <SelectTrigger className="h-11 rounded-lg border-border">
+                        value={formik.values.waitingTimeUnit}>
+                        <SelectTrigger className="w-full h-11 rounded-lg border-border">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-white">
+                        <SelectContent className="bg-white border-border shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-xl w-[var(--radix-select-trigger-width)]">
                           <SelectItem value="15min">15 Minutes</SelectItem>
                           <SelectItem value="30min">30 Minutes</SelectItem>
                           <SelectItem value="60min">1 Hour</SelectItem>
@@ -373,8 +404,7 @@ export function ProductForm({
                           { label: "", amount: 0 },
                         ])
                       }
-                      className="h-8 rounded-lg border-primary/20 text-primary hover:bg-primary/5 font-bold text-[10px] uppercase tracking-wider"
-                    >
+                      className="h-8 rounded-lg border-primary/20 text-primary hover:bg-primary/5 font-bold text-[10px] uppercase tracking-wider">
                       <Plus className="h-3 w-3 mr-1" /> Add Charge
                     </Button>
                   </div>
@@ -383,8 +413,7 @@ export function ProductForm({
                     {formik.values.extraCharges.map((_, index) => (
                       <div
                         key={index}
-                        className="flex gap-4 items-end animate-in fade-in slide-in-from-top-2 duration-300"
-                      >
+                        className="flex gap-4 items-end animate-in fade-in slide-in-from-top-2 duration-300">
                         <div className="flex-1 space-y-1.5">
                           <Label className="text-[10px] font-bold text-slate-500 uppercase">
                             Label
@@ -409,6 +438,24 @@ export function ProductForm({
                             {...formik.getFieldProps(
                               `extraCharges.${index}.amount`,
                             )}
+                            value={
+                              formik.values.extraCharges[index].amount === 0 &&
+                              !formik.getFieldMeta(
+                                `extraCharges.${index}.amount`,
+                              ).touched
+                                ? ""
+                                : formik.values.extraCharges[index].amount
+                            }
+                            onChange={(e) => {
+                              const val =
+                                e.target.value === ""
+                                  ? 0
+                                  : Number(e.target.value);
+                              formik.setFieldValue(
+                                `extraCharges.${index}.amount`,
+                                val,
+                              );
+                            }}
                             className="h-10 rounded-lg border-border"
                           />
                         </div>
@@ -424,8 +471,7 @@ export function ProductForm({
                               ),
                             )
                           }
-                          className="h-10 w-10 text-destructive hover:text-destructive hover:bg-destructive/5 rounded-lg"
-                        >
+                          className="h-10 w-10 text-destructive hover:text-destructive hover:bg-destructive/5 rounded-lg">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -442,17 +488,15 @@ export function ProductForm({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-slate-100">
                   <div
                     className={cn(
-                      "flex items-center justify-between p-4 rounded-xl border transition-all",
+                      "flex items-center justify-between p-4 rounded-xl border transition-all duration-300",
                       formik.values.vatApplicable
-                        ? "bg-primary/5 border-primary/10"
+                        ? "bg-primary/5 border-primary/20"
                         : "bg-slate-50 border-slate-200",
-                    )}
-                  >
+                    )}>
                     <div className="space-y-0.5">
                       <Label
                         htmlFor="vatApplicable"
-                        className="text-sm font-bold cursor-pointer"
-                      >
+                        className="text-sm font-bold cursor-pointer">
                         VAT Applicable
                       </Label>
                       <p className="text-[11px] text-slate-500 font-medium">
@@ -465,22 +509,21 @@ export function ProductForm({
                       onCheckedChange={(checked) =>
                         formik.setFieldValue("vatApplicable", checked)
                       }
+                      className="data-[state=checked]:bg-primary"
                     />
                   </div>
 
                   <div
                     className={cn(
-                      "flex items-center justify-between p-4 rounded-xl border transition-all",
+                      "flex items-center justify-between p-4 rounded-xl border transition-all duration-300",
                       formik.values.defaultWaitingTimeApplicable
-                        ? "bg-amber-50 border-amber-100"
+                        ? "bg-amber-50 border-amber-200"
                         : "bg-slate-50 border-slate-200",
-                    )}
-                  >
+                    )}>
                     <div className="space-y-0.5">
                       <Label
                         htmlFor="defaultWaitingTimeApplicable"
-                        className="text-sm font-bold cursor-pointer"
-                      >
+                        className="text-sm font-bold cursor-pointer">
                         Waiting Time Def.
                       </Label>
                       <p className="text-[11px] text-slate-500 font-medium">
@@ -496,6 +539,7 @@ export function ProductForm({
                           checked,
                         )
                       }
+                      className="data-[state=checked]:bg-amber-600"
                     />
                   </div>
                 </div>
@@ -507,8 +551,7 @@ export function ProductForm({
                   variant="ghost"
                   onClick={() => formik.resetForm()}
                   disabled={isPending}
-                  className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide"
-                >
+                  className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
                   <RotateCcw className="h-4 w-4" />
                   {mode === "create" ? "Clear" : "Reset"}
                 </Button>
@@ -520,8 +563,7 @@ export function ProductForm({
                     isPending ||
                     (isSuperAdmin && !formik.values.companyId)
                   }
-                  className="h-12 px-10 rounded-xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-primary/20 transition-all gap-2"
-                >
+                  className="h-12 px-10 rounded-xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-primary/20 transition-all gap-2">
                   {isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />

@@ -15,7 +15,6 @@ const STATUS_LABELS: Record<InvoiceStatus, string> = {
   [InvoiceStatus.SENT]: "Sent",
   [InvoiceStatus.PAID]: "Paid",
   [InvoiceStatus.OVERDUE]: "Overdue",
-  [InvoiceStatus.CANCELLED]: "Cancelled",
 };
 
 const STATUS_CLASSES: Record<InvoiceStatus, string> = {
@@ -23,7 +22,6 @@ const STATUS_CLASSES: Record<InvoiceStatus, string> = {
   [InvoiceStatus.SENT]: "bg-blue-50 text-blue-700 border-blue-200",
   [InvoiceStatus.PAID]: "bg-emerald-50 text-emerald-700 border-emerald-200",
   [InvoiceStatus.OVERDUE]: "bg-red-50 text-red-700 border-red-200",
-  [InvoiceStatus.CANCELLED]: "bg-muted text-muted-foreground/60 border-border",
 };
 
 function getClientName(clientId: Invoice["clientId"]): string {
@@ -78,8 +76,7 @@ export function InvoiceDetails() {
         <Button
           variant="outline"
           onClick={() => router.push("/invoices")}
-          className="rounded-xl"
-        >
+          className="rounded-xl">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Invoices
         </Button>
@@ -101,8 +98,7 @@ export function InvoiceDetails() {
               variant="ghost"
               size="sm"
               onClick={() => router.push("/invoices")}
-              className="rounded-xl h-9 gap-2 font-bold text-muted-foreground"
-            >
+              className="rounded-xl h-9 gap-2 font-bold text-muted-foreground">
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
@@ -114,8 +110,7 @@ export function InvoiceDetails() {
               <div className="flex items-center gap-3 mt-1">
                 <Badge
                   variant="outline"
-                  className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}
-                >
+                  className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}>
                   {STATUS_LABELS[status] ?? status}
                 </Badge>
                 <span className="text-muted-foreground font-medium text-sm uppercase tracking-widest">
@@ -128,16 +123,14 @@ export function InvoiceDetails() {
             <Button
               variant="outline"
               onClick={() => window.print()}
-              className="h-12 px-5 rounded-xl font-bold border-border/80 shadow-sm gap-2"
-            >
+              className="h-12 px-5 rounded-xl font-bold border-border/80 shadow-sm gap-2">
               <Printer className="h-4 w-4" />
               Print
             </Button>
             <Button
               variant="outline"
               onClick={() => window.print()}
-              className="h-12 px-5 rounded-xl font-bold border-border/80 shadow-sm gap-2"
-            >
+              className="h-12 px-5 rounded-xl font-bold border-border/80 shadow-sm gap-2">
               <Download className="h-4 w-4" />
               Download PDF
             </Button>
@@ -384,8 +377,7 @@ export function InvoiceDetails() {
                 href={invoice.paymentLink}
                 className="text-primary underline"
                 target="_blank"
-                rel="noreferrer"
-              >
+                rel="noreferrer">
                 {invoice.paymentLink}
               </a>
             </p>
@@ -398,8 +390,7 @@ export function InvoiceDetails() {
         <Button
           asChild
           variant="outline"
-          className="h-10 px-5 rounded-xl font-bold border-border/80 gap-2"
-        >
+          className="h-10 px-5 rounded-xl font-bold border-border/80 gap-2">
           <Link href="/invoices">
             <ArrowLeft className="h-4 w-4" />
             Back to Invoices

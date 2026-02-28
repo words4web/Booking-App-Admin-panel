@@ -36,7 +36,7 @@ function getBookingLabel(b: Booking): string {
     typeof c === "string"
       ? c
       : (c.legalDetails?.legalName ??
-        `${c.contactInfo?.firstName ?? ""} ${c.contactInfo?.lastName ?? ""}`.trim());
+        `${c.legalDetails?.legalName ?? ""}`.trim());
   const dt = new Date(b.scheduledDateTime).toLocaleDateString("en-GB");
   return `${b.bookingId} — ${clientName} (${dt})`;
 }
@@ -180,8 +180,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
               variant="ghost"
               size="sm"
               asChild
-              className="rounded-xl h-9 gap-2 font-bold text-muted-foreground"
-            >
+              className="rounded-xl h-9 gap-2 font-bold text-muted-foreground">
               <Link href="/invoices">
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -200,8 +199,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
             type="submit"
             form="invoice-form"
             disabled={createMutation.isPending}
-            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40"
-          >
+            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40">
             {createMutation.isPending ? "Creating..." : "Create Invoice"}
           </Button>
         </div>
@@ -210,8 +208,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
       <form
         id="invoice-form"
         onSubmit={formik.handleSubmit}
-        className="space-y-6"
-      >
+        className="space-y-6">
         {/* Invoice Details Card */}
         <Card className="border-none shadow-sm bg-white overflow-hidden rounded-2xl ring-1 ring-border/50">
           <CardHeader className="bg-muted/30 border-b border-border/50 px-8 py-5">
@@ -230,8 +227,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                 </Label>
                 <Select
                   onValueChange={handleBookingSelect}
-                  value={formik.values.bookingId}
-                >
+                  value={formik.values.bookingId}>
                   <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                     <SelectValue placeholder="Select a completed booking..." />
                   </SelectTrigger>
@@ -245,8 +241,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                         <SelectItem
                           key={b._id}
                           value={b._id}
-                          className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1"
-                        >
+                          className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1">
                           {getBookingLabel(b)}
                         </SelectItem>
                       ))
@@ -269,8 +264,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                   onValueChange={(v) =>
                     formik.setFieldValue("transactionType", v)
                   }
-                  value={formik.values.transactionType}
-                >
+                  value={formik.values.transactionType}>
                   <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                     <SelectValue />
                   </SelectTrigger>
@@ -279,8 +273,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                       <SelectItem
                         key={t}
                         value={t}
-                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1"
-                      >
+                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1">
                         {t}
                       </SelectItem>
                     ))}
@@ -340,8 +333,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                 variant="outline"
                 size="sm"
                 onClick={addLineItem}
-                className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold gap-1.5"
-              >
+                className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold gap-1.5">
                 <Plus className="h-4 w-4" />
                 Add Line
               </Button>
@@ -455,8 +447,7 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                           size="icon"
                           onClick={() => removeLineItem(i)}
                           disabled={formik.values.lineItems.length === 1}
-                          className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                        >
+                          className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm">
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </td>

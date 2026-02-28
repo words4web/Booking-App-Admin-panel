@@ -5,6 +5,7 @@ export interface Company {
   vatNumber: string;
   vatRegistered: boolean;
   invoicePrefix: string;
+  invoiceCounter: number;
   bankAccountNumber?: string;
   bankCode?: string;
   bankName?: string;
@@ -16,7 +17,12 @@ export interface Company {
 
 export interface AllCompaniesResponse {
   companies: Company[];
-  total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }
 
 export interface CompanyDetailsResponse {

@@ -71,6 +71,16 @@ export function LocationsTab({ formik }: LocationsTabProps) {
               placeholder="e.g. SW1A 1AA"
             />
           </div>
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Country
+            </Label>
+            <Input
+              {...formik.getFieldProps("pickupLocation.country")}
+              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
+              placeholder="e.g. United Kingdom"
+            />
+          </div>
         </div>
       </div>
 
@@ -131,6 +141,16 @@ export function LocationsTab({ formik }: LocationsTabProps) {
               {...formik.getFieldProps("dropLocation.postcode")}
               className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
               placeholder="e.g. SW1A 1AA"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Country
+            </Label>
+            <Input
+              {...formik.getFieldProps("dropLocation.country")}
+              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
+              placeholder="e.g. United Kingdom"
             />
           </div>
         </div>

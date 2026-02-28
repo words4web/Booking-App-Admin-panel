@@ -14,38 +14,61 @@ export const AddressSchema = z.object({
 });
 
 // ─── Company ──────────────────────────────────────────────────────────────────
-export const CompanySchema = z.object({
-  name: z.string().min(1, "Company name is required").max(255),
-  registrationNumber: z.string().min(1, "Registration number is required"),
-  vatNumber: z.string().min(1, "VAT number is required"),
-  vatRegistered: z.boolean().default(true),
-  invoicePrefix: z.string().min(1, "Invoice prefix is required"),
-  bankAccountNumber: z.string().optional(),
-  bankCode: z.string().optional(),
-  bankName: z.string().optional(),
-  adminEmail: z.string().email("Valid email is required"),
-});
+export const CompanySchema = z
+  .object({
+    name: z.string().min(1, "Company name is required").max(255),
+    registrationNumber: z.string().min(1, "Registration number is required"),
+    vatNumber: z.string().optional(),
+    vatRegistered: z.boolean().default(false),
+    invoicePrefix: z.string().min(1, "Invoice prefix is required"),
+    bankAccountNumber: z.string().optional(),
+    bankCode: z.string().optional(),
+    bankName: z.string().optional(),
+    adminEmail: z.string().email("Valid email is required"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.vatRegistered && !data.vatNumber?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "VAT number is required",
+        path: ["vatNumber"],
+      });
+    }
+  });
 
 // ─── Client ───────────────────────────────────────────────────────────────────
-export const ClientSchema = z.object({
-  contactInfo: z.object({
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    email: z.string().email("Invalid email address"),
-    phone: z.string().min(1, "Phone number is required"),
-  }),
-  legalDetails: z.object({
-    legalName: z.string().min(1, "Legal name is required"),
-    registrationNumber: z.string().min(1, "Registration number is required"),
-    vatRegistered: z.boolean().default(false),
-    vatNumber: z.string().optional(),
-    purchaseOrderNumber: z.string().optional(),
-    nationalInsuranceNumber: z.string().optional(),
-  }),
-  address: AddressSchema,
-  vatExempt: z.boolean().default(false),
-  companyId: z.string().optional(),
-});
+export const ClientSchema = z
+  .object({
+    contactInfo: z.object({
+      firstName: z.string().min(1, "First name is required"),
+      lastName: z.string().min(1, "Last name is required"),
+      email: z.string().email("Invalid email address"),
+      phone: z.string().min(1, "Phone number is required"),
+    }),
+    legalDetails: z.object({
+      legalName: z.string().min(1, "Legal name is required"),
+      registrationNumber: z.string().min(1, "Registration number is required"),
+      vatRegistered: z.boolean().default(false),
+      vatNumber: z.string().optional(),
+      purchaseOrderNumber: z.string().optional(),
+      // nationalInsuranceNumber: z.string().optional(),
+    }),
+    address: AddressSchema,
+    vatExempt: z.boolean().default(false),
+    companyId: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.legalDetails.vatRegistered &&
+      !data.legalDetails.vatNumber?.trim()
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "VAT number is required",
+        path: ["legalDetails", "vatNumber"],
+      });
+    }
+  });
 
 // ─── Product ──────────────────────────────────────────────────────────────────
 export const ExtraChargeSchema = z.object({
@@ -73,13 +96,16 @@ export const BookingProductSchema = z.object({
   productId: z.string().min(1, "Product is required"),
   name: z.string().min(1),
   quantity: z.number().min(1, "Quantity must be at least 1"),
-  rate: z.number().min(0, "Rate cannot be negative"),
+  rate: z.number().min(0, "Rate cannot be negative"), // This is basePrice
   baseCharge: z.number().min(0).optional(),
   hourlyRate: z.number().min(0).optional(),
+  waitingRate: z.number().min(0).optional(),
+  waitingTimeUnit: z.string().optional(),
+  extraCharges: z.array(ExtraChargeSchema).optional(),
 });
 
 export const BookingSchema = z.object({
-  companyId: z.string().optional(),
+  companyId: z.string().min(1, "Company selection is required"),
   clientId: z.string().min(1, "Client selection is required"),
   serviceType: z.nativeEnum(ServiceType, {
     required_error: "Service type is required",
@@ -89,7 +115,6 @@ export const BookingSchema = z.object({
   scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
   assignedDriverId: z.string().optional(),
   vehicleId: z.string().optional(),
-  vehicleType: z.string().optional(),
   products: z
     .array(BookingProductSchema)
     .min(1, "At least one product is required"),
@@ -121,12 +146,10 @@ export const InvoiceSchema = z.object({
 
 // ─── Other ────────────────────────────────────────────────────────────────────
 export const DriverSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone number is required"),
-  licenseNumber: z.string().min(1, "License number is required"),
-  licenseExpiryDate: z.string().min(1, "License expiry date is required"),
+  mobileNumber: z.string().min(1, "Phone number is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export const LoginSchema = z.object({

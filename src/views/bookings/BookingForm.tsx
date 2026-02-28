@@ -104,7 +104,6 @@ export function BookingForm({
         typeof initialData?.vehicleId === "string"
           ? initialData.vehicleId
           : initialData?.vehicleId?._id || "",
-      vehicleType: initialData?.vehicleType || "",
       jobDetails: initialData?.jobDetails || "",
     },
     validationSchema: toFormikValidationSchema(BookingSchema),
@@ -122,6 +121,7 @@ export function BookingForm({
   const handleCompanyChange = (companyId: string) => {
     formik.setFieldValue("companyId", companyId);
     formik.setFieldValue("clientId", ""); // Reset client when company changes
+    formik.setFieldValue("products", []); // Reset products when company changes
   };
 
   const getFieldError = (name: string): string | null => {
@@ -139,16 +139,29 @@ export function BookingForm({
     const product = products.find((p) => p._id === productId);
     if (!product) return;
 
-    const newProduct: IBookingProduct = {
-      productId: product._id,
-      name: product.name,
-      quantity: 1,
-      rate: product.basePrice,
-      baseCharge: product.baseCharge,
-      hourlyRate: product.hourlyRate,
-    };
+    const existingProductIndex = formik.values.products.findIndex(
+      (p) => p.productId === productId,
+    );
 
-    formik.setFieldValue("products", [...formik.values.products, newProduct]);
+    if (existingProductIndex !== -1) {
+      const updatedProducts = [...formik.values.products];
+      updatedProducts[existingProductIndex].quantity += 1;
+      formik.setFieldValue("products", updatedProducts);
+    } else {
+      const newProduct: IBookingProduct = {
+        productId: product._id,
+        name: product.name,
+        quantity: 1,
+        rate: product.basePrice,
+        baseCharge: product.baseCharge,
+        hourlyRate: product.hourlyRate,
+        waitingRate: product.waitingTimeRate,
+        waitingTimeUnit: product.waitingTimeUnit,
+        extraCharges: product.extraCharges,
+      };
+
+      formik.setFieldValue("products", [...formik.values.products, newProduct]);
+    }
   };
 
   const removeProduct = (index: number) => {
@@ -160,8 +173,7 @@ export function BookingForm({
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="space-y-6 max-w-5xl mx-auto pb-20"
-    >
+      className="space-y-6 max-w-5xl mx-auto pb-20">
       <div className="flex items-center justify-between bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
@@ -176,15 +188,13 @@ export function BookingForm({
             type="button"
             variant="outline"
             className="rounded-xl px-6 h-11 font-bold"
-            onClick={() => window.history.back()}
-          >
+            onClick={() => window.history.back()}>
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isLoading}
-            className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20"
-          >
+            className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
             {isLoading
               ? "Saving..."
               : initialData
@@ -198,26 +208,22 @@ export function BookingForm({
         <TabsList className="grid w-full grid-cols-4 h-14 p-1 bg-slate-100 rounded-2xl mb-8">
           <TabsTrigger
             value="details"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"
-          >
+            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Calendar className="h-4 w-4 mr-2" /> Details
           </TabsTrigger>
           <TabsTrigger
             value="locations"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"
-          >
+            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <MapPin className="h-4 w-4 mr-2" /> Locations
           </TabsTrigger>
           <TabsTrigger
             value="products"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"
-          >
+            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Package className="h-4 w-4 mr-2" /> Products
           </TabsTrigger>
           <TabsTrigger
             value="driver"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"
-          >
+            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Truck className="h-4 w-4 mr-2" /> Assignment
           </TabsTrigger>
         </TabsList>
