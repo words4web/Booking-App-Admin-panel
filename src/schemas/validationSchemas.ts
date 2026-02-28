@@ -84,11 +84,8 @@ export const ProductSchema = z.object({
   basePrice: z.number().min(0, "Base price cannot be negative"),
   baseCharge: z.number().min(0).default(0),
   hourlyRate: z.number().min(0).default(0),
-  waitingTimeRate: z.number().min(0).default(0),
-  waitingTimeUnit: z.enum(["15min", "30min", "60min"]).default("30min"),
   extraCharges: z.array(ExtraChargeSchema).default([]),
   vatApplicable: z.boolean().default(true),
-  defaultWaitingTimeApplicable: z.boolean().default(false),
 });
 
 // ─── Booking ──────────────────────────────────────────────────────────────────

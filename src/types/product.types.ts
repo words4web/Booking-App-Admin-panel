@@ -1,4 +1,4 @@
-import { UnitType } from '../enums/product.enum';
+import { UnitType } from "../enums/product.enum";
 
 export interface IExtraCharge {
   label: string;
@@ -14,11 +14,8 @@ export interface Product {
   basePrice: number;
   baseCharge: number;
   hourlyRate: number;
-  waitingTimeRate: number;
-  waitingTimeUnit: '15min' | '30min' | '60min';
   extraCharges: IExtraCharge[];
   vatApplicable: boolean;
-  defaultWaitingTimeApplicable: boolean;
   isDeleted: boolean;
   createdBy: string;
   createdAt: string;
@@ -33,11 +30,8 @@ export interface ProductFormData {
   basePrice: number;
   baseCharge: number;
   hourlyRate: number;
-  waitingTimeRate: number;
-  waitingTimeUnit: '15min' | '30min' | '60min';
   extraCharges: IExtraCharge[];
   vatApplicable: boolean;
-  defaultWaitingTimeApplicable: boolean;
 }
 
 export interface ProductFilters {

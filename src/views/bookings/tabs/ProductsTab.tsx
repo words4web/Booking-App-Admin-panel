@@ -81,18 +81,18 @@ export function ProductsTab({
                           addProduct(p._id);
                           setOpen(false);
                         }}
-                        disabled={
-                          formik.values.companyId !==
-                          (typeof p.companyId === "string"
-                            ? p.companyId
-                            : p.companyId?._id)
-                        }
+                        // disabled={
+                        //   formik.values.companyId !==
+                        //   (typeof p.companyId === "string"
+                        //     ? p.companyId
+                        //     : p.companyId?._id)
+                        // }
                         className={cn(
                           "py-3 px-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors",
-                          formik.values.companyId !==
-                            (typeof p.companyId === "string"
-                              ? p.companyId
-                              : p.companyId?._id) && "hidden",
+                          // formik.values.companyId !==
+                          //   (typeof p.companyId === "string"
+                          //     ? p.companyId
+                          //     : p.companyId?._id) && "hidden",
                         )}>
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-900">
@@ -250,8 +250,8 @@ export function ProductsTab({
                 </p>
                 <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                   <p className="text-sm font-bold text-slate-700">
-                    £{product.waitingRate || 0} per{" "}
-                    {product.waitingTimeUnit || "N/A"}
+                    {/* £{product.waitingRate || 0} per{" "}
+                    {product.waitingTimeUnit || "N/A"} */}
                   </p>
                   <p className="text-[10px] text-slate-400 mt-1 font-medium">
                     This rate will be applied for any waiting duration.

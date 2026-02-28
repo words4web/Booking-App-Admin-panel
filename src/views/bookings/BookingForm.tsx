@@ -27,6 +27,8 @@ import { LocationsTab } from "./tabs/LocationsTab";
 import { ProductsTab } from "./tabs/ProductsTab";
 import { AssignmentTab } from "./tabs/AssignmentTab";
 
+const tabClassName =
+  "rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm";
 interface BookingFormProps {
   initialData?: Booking;
   onSubmit: (values: BookingFormData) => void;
@@ -121,7 +123,6 @@ export function BookingForm({
   const handleCompanyChange = (companyId: string) => {
     formik.setFieldValue("companyId", companyId);
     formik.setFieldValue("clientId", ""); // Reset client when company changes
-    formik.setFieldValue("products", []); // Reset products when company changes
   };
 
   const getFieldError = (name: string): string | null => {
@@ -155,8 +156,6 @@ export function BookingForm({
         rate: product.basePrice,
         baseCharge: product.baseCharge,
         hourlyRate: product.hourlyRate,
-        waitingRate: product.waitingTimeRate,
-        waitingTimeUnit: product.waitingTimeUnit,
         extraCharges: product.extraCharges,
       };
 
@@ -206,24 +205,16 @@ export function BookingForm({
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 h-14 p-1 bg-slate-100 rounded-2xl mb-8">
-          <TabsTrigger
-            value="details"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="details" className={tabClassName}>
             <Calendar className="h-4 w-4 mr-2" /> Details
           </TabsTrigger>
-          <TabsTrigger
-            value="locations"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="locations" className={tabClassName}>
             <MapPin className="h-4 w-4 mr-2" /> Locations
           </TabsTrigger>
-          <TabsTrigger
-            value="products"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="products" className={tabClassName}>
             <Package className="h-4 w-4 mr-2" /> Products
           </TabsTrigger>
-          <TabsTrigger
-            value="driver"
-            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+          <TabsTrigger value="driver" className={tabClassName}>
             <Truck className="h-4 w-4 mr-2" /> Assignment
           </TabsTrigger>
         </TabsList>

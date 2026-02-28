@@ -53,28 +53,4 @@ export const BookingService = {
       API_ENDPOINTS.BOOKINGS.DELETE(id),
     );
   },
-
-  assignDriver: async (
-    id: string,
-    data: { assignedDriverId: string; vehicleId: string },
-  ) => {
-    const response = await api.post<BookingResponse>(
-      API_ENDPOINTS.BOOKINGS.ASSIGN_DRIVER(id),
-      data,
-    );
-    return response.data.data.booking;
-  },
-
-  updateStatus: async (id: string, status: string) => {
-    const response = await api.patch<BookingResponse>(
-      API_ENDPOINTS.BOOKINGS.UPDATE_STATUS(id),
-      { status },
-    );
-    return response.data.data.booking;
-  },
-
-  getStats: async () => {
-    const response = await api.get<any>(API_ENDPOINTS.BOOKINGS.STATS);
-    return response.data.data;
-  },
 };

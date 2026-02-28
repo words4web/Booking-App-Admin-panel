@@ -65,12 +65,8 @@ export function ProductForm({
       basePrice: initialData?.basePrice || 0,
       baseCharge: initialData?.baseCharge || 0,
       hourlyRate: initialData?.hourlyRate || 0,
-      waitingTimeRate: initialData?.waitingTimeRate || 0,
-      waitingTimeUnit: initialData?.waitingTimeUnit || "15min",
       extraCharges: initialData?.extraCharges || [],
       vatApplicable: initialData?.vatApplicable ?? true,
-      defaultWaitingTimeApplicable:
-        initialData?.defaultWaitingTimeApplicable ?? false,
       companyId:
         (typeof initialData?.companyId === "string"
           ? initialData.companyId
@@ -331,63 +327,6 @@ export function ProductForm({
                   </div>
                 </div>
 
-                {/* Waiting Time Section */}
-                <div className="space-y-4 pt-4 border-t border-slate-50">
-                  <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                    Waiting Time Setup
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1.5">
-                      <Label
-                        htmlFor="waitingTimeRate"
-                        className="text-xs font-semibold text-slate-600">
-                        Waiting Rate (£)
-                      </Label>
-                      <Input
-                        id="waitingTimeRate"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        {...formik.getFieldProps("waitingTimeRate")}
-                        value={
-                          formik.values.waitingTimeRate === 0 &&
-                          !formik.getFieldMeta("waitingTimeRate").touched
-                            ? ""
-                            : formik.values.waitingTimeRate
-                        }
-                        onChange={(e) => {
-                          const val =
-                            e.target.value === "" ? 0 : Number(e.target.value);
-                          formik.setFieldValue("waitingTimeRate", val);
-                        }}
-                        className="h-11 rounded-lg border-border"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label
-                        htmlFor="waitingTimeUnit"
-                        className="text-xs font-semibold text-slate-600">
-                        Increment Unit
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          formik.setFieldValue("waitingTimeUnit", value)
-                        }
-                        value={formik.values.waitingTimeUnit}>
-                        <SelectTrigger className="w-full h-11 rounded-lg border-border">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border-border shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-xl w-[var(--radix-select-trigger-width)]">
-                          <SelectItem value="15min">15 Minutes</SelectItem>
-                          <SelectItem value="30min">30 Minutes</SelectItem>
-                          <SelectItem value="60min">1 Hour</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Extra Charges Section */}
                 <div className="space-y-4 pt-4 border-t border-slate-50">
                   <div className="flex items-center justify-between">
@@ -510,36 +449,6 @@ export function ProductForm({
                         formik.setFieldValue("vatApplicable", checked)
                       }
                       className="data-[state=checked]:bg-primary"
-                    />
-                  </div>
-
-                  <div
-                    className={cn(
-                      "flex items-center justify-between p-4 rounded-xl border transition-all duration-300",
-                      formik.values.defaultWaitingTimeApplicable
-                        ? "bg-amber-50 border-amber-200"
-                        : "bg-slate-50 border-slate-200",
-                    )}>
-                    <div className="space-y-0.5">
-                      <Label
-                        htmlFor="defaultWaitingTimeApplicable"
-                        className="text-sm font-bold cursor-pointer">
-                        Waiting Time Def.
-                      </Label>
-                      <p className="text-[11px] text-slate-500 font-medium">
-                        Apply waiting time by default
-                      </p>
-                    </div>
-                    <Switch
-                      id="defaultWaitingTimeApplicable"
-                      checked={formik.values.defaultWaitingTimeApplicable}
-                      onCheckedChange={(checked) =>
-                        formik.setFieldValue(
-                          "defaultWaitingTimeApplicable",
-                          checked,
-                        )
-                      }
-                      className="data-[state=checked]:bg-amber-600"
                     />
                   </div>
                 </div>

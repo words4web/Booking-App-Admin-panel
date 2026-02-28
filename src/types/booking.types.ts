@@ -1,9 +1,4 @@
-import {
-  BookingStatus,
-  ServiceType,
-  WaitingTimeStatus,
-  WaitingTimeUnit,
-} from "../enums/booking.enum";
+import { BookingStatus, ServiceType } from "../enums/booking.enum";
 
 export interface IAddress {
   addressLine1: string;
@@ -21,18 +16,13 @@ export interface IBookingProduct {
   rate: number; // basePrice from product
   baseCharge?: number;
   hourlyRate?: number;
-  waitingRate?: number;
-  waitingTimeUnit?: string;
   extraCharges?: { label: string; amount: number }[];
 }
 
 export interface IWaitingTime {
   durationMinutes?: number;
-  waitingTimeRate?: number;
-  waitingTimeUnit?: WaitingTimeUnit;
   reason?: string;
   reasonNotes?: string;
-  status?: WaitingTimeStatus;
   adminNotes?: string;
   reviewedBy?: string;
   reviewedAt?: string;

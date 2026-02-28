@@ -58,9 +58,6 @@ const API_ENDPOINTS = {
     GET_BY_ID: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
     UPDATE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
     DELETE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
-    ASSIGN_DRIVER: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}/assign-driver`,
-    UPDATE_STATUS: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}/status`,
-    STATS: `${Admin_Base}/bookings/stats`,
   },
   INVOICES: {
     CREATE: `${Admin_Base}/invoices`,
