@@ -62,7 +62,7 @@ export function CompanyList() {
   return (
     <div className="space-y-8 pb-12">
       <div className="flex flex-col gap-2 relative">
-        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" />
+        {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-black tracking-tighter text-foreground">

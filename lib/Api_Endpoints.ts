@@ -59,6 +59,7 @@ const API_ENDPOINTS = {
     UPDATE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
     DELETE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
     REVIEW: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}/review`,
+    CALENDAR: `${Admin_Base}/bookings/calendar`,
   },
   INVOICES: {
     CREATE: `${Admin_Base}/invoices`,

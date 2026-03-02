@@ -7,7 +7,12 @@ const ROUTES_PATH = {
   DRIVERS: "/drivers",
   CLIENTS: { BASE: "/clients" },
   PRODUCTS: "/products",
-  BOOKINGS: "/bookings",
+  BOOKINGS: {
+    BASE: "/bookings",
+    NEW: "/bookings/new",
+    EDIT: (bookingId: string) => `/bookings/${bookingId}/edit`,
+  },
+  CALENDAR: "/calendar",
   INVOICES: "/invoices",
   NOTIFICATIONS: "/notifications",
   SETTINGS: "/settings",

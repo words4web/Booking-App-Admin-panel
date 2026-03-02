@@ -91,7 +91,7 @@ export function InvoiceDetails() {
     <div className="space-y-8 pb-12">
       {/* Action Bar */}
       <div className="flex flex-col gap-6 relative print:hidden">
-        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" />
+        {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button
