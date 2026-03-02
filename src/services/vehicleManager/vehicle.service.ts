@@ -9,8 +9,13 @@ import {
 import { ApiResponse } from "../../types/api.types";
 
 export const VehicleService = {
-  getAllVehicles: async (): Promise<ApiResponse<AllVehiclesResponse>> => {
-    const response = await api.get(API_ENDPOINTS.VEHICLES.GET_ALL);
+  getAllVehicles: async (
+    page = 1,
+    limit = 10,
+  ): Promise<ApiResponse<AllVehiclesResponse>> => {
+    const response = await api.get(
+      `${API_ENDPOINTS.VEHICLES.GET_ALL}?page=${page}&limit=${limit}`,
+    );
     return response.data;
   },
 

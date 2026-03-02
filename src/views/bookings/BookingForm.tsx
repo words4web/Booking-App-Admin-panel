@@ -1,105 +1,283 @@
-'use client'
+"use client";
+
 import { useState } from "react";
-
-import { useRouter } from "next/navigation";
+import { useFormik } from "formik";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import { BookingSchema } from "@/src/schemas/validationSchemas";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+  BookingFormData,
+  IBookingProduct,
+  Booking,
+} from "@/src/types/booking.types";
+import { ServiceType } from "@/src/enums/booking.enum";
+import { useAllClientsQuery } from "@/src/services/clientManager/useClientQueries";
+import { useAllProductsQuery } from "@/src/services/productManager/useProductQueries";
+import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
+import { useVehiclesQuery } from "@/src/services/vehicleManager/useVehicleQueries";
+import { useAuth } from "@/src/services/authManager";
+import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { mockCustomers, mockProducts, mockDrivers } from "@/src/lib/dummy-data";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, MapPin, Package, Truck } from "lucide-react";
 
-export function BookingForm() {
-  const router = useRouter();
-  const [selectedProduct, setSelectedProduct] = useState("");
+// Import tab components
+import { DetailsTab } from "./tabs/DetailsTab";
+import { LocationsTab } from "./tabs/LocationsTab";
+import { ProductsTab } from "./tabs/ProductsTab";
+import { AssignmentTab } from "./tabs/AssignmentTab";
+import { CompletionReviewTab } from "./tabs/CompletionReviewTab";
+import { BookingStatus } from "@/src/enums/booking.enum";
+import { ClipboardCheck } from "lucide-react";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Logic to save booking would go here
-    router.push("/bookings");
+const tabClassName =
+  "rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm";
+interface BookingFormProps {
+  initialData?: Booking;
+  onSubmit: (values: BookingFormData) => void;
+  isLoading?: boolean;
+}
+
+export function BookingForm({
+  initialData,
+  onSubmit,
+  isLoading,
+}: BookingFormProps) {
+  const [activeTab, setActiveTab] = useState("details");
+
+  const { user } = useAuth();
+
+  const { data: companiesData } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData?.companies || [];
+
+  const formik = useFormik<BookingFormData>({
+    initialValues: {
+      companyId:
+        typeof initialData?.companyId === "string"
+          ? initialData.companyId
+          : (initialData?.companyId as { _id: string })?._id ||
+            user?.companyId ||
+            "",
+      clientId:
+        typeof initialData?.clientId === "string"
+          ? initialData.clientId
+          : initialData?.clientId?._id || "",
+      serviceType: initialData?.serviceType || ServiceType.RMC,
+      scheduledDateTime: initialData?.scheduledDateTime
+        ? new Date(initialData.scheduledDateTime).toISOString().slice(0, 16)
+        : "",
+      pickupLocation: {
+        addressLine1: initialData?.pickupLocation?.addressLine1 || "",
+        addressLine2: initialData?.pickupLocation?.addressLine2 || "",
+        city: initialData?.pickupLocation?.city || "",
+        county: initialData?.pickupLocation?.county || "",
+        postcode: initialData?.pickupLocation?.postcode || "",
+        country: initialData?.pickupLocation?.country || "United Kingdom",
+      },
+      dropLocation: {
+        addressLine1: initialData?.dropLocation?.addressLine1 || "",
+        addressLine2: initialData?.dropLocation?.addressLine2 || "",
+        city: initialData?.dropLocation?.city || "",
+        county: initialData?.dropLocation?.county || "",
+        postcode: initialData?.dropLocation?.postcode || "",
+        country: initialData?.dropLocation?.country || "United Kingdom",
+      },
+      products:
+        initialData?.products?.map((p) => ({
+          productId:
+            typeof p.productId === "string"
+              ? p.productId
+              : (p.productId as { _id: string })?._id || "",
+          name: p.name,
+          quantity: p.quantity,
+          rate: p.rate,
+          baseCharge: p.baseCharge,
+          hourlyRate: p.hourlyRate,
+        })) || [],
+      assignedDriverId:
+        typeof initialData?.assignedDriverId === "string"
+          ? initialData.assignedDriverId
+          : initialData?.assignedDriverId?._id || "",
+      vehicleId:
+        typeof initialData?.vehicleId === "string"
+          ? initialData.vehicleId
+          : initialData?.vehicleId?._id || "",
+      jobDetails: initialData?.jobDetails || "",
+    },
+    validationSchema: toFormikValidationSchema(BookingSchema),
+    onSubmit: (values) => {
+      onSubmit(values);
+    },
+  });
+
+  // Client filtering based on company
+  const { data: filteredClientsData } = useAllClientsQuery({
+    companyId: formik.values.companyId,
+  });
+  const filteredClients = filteredClientsData?.clients || [];
+
+  const { data: productsData } = useAllProductsQuery({});
+  const { data: driversData } = useAllDriversQuery(1, 200);
+  const { data: vehiclesData } = useVehiclesQuery(1, 200);
+
+  const products = productsData?.products || [];
+  const drivers = driversData?.drivers || [];
+  const vehicles = vehiclesData?.vehicles || [];
+
+  const handleCompanyChange = (companyId: string) => {
+    formik.setFieldValue("companyId", companyId);
+    formik.setFieldValue("clientId", ""); // Reset client when company changes
+  };
+
+  const getFieldError = (name: string): string | null => {
+    const error = formik.errors as Record<string, any>;
+    const touched = formik.touched as Record<string, any>;
+
+    if (name.includes(".")) {
+      const parts = name.split(".");
+      return touched[parts[0]]?.[parts[1]] ? error[parts[0]]?.[parts[1]] : null;
+    }
+    return touched[name] ? error[name] : null;
+  };
+
+  const addProduct = (productId: string) => {
+    const product = products.find((p) => p._id === productId);
+    if (!product) return;
+
+    const existingProductIndex = formik.values.products.findIndex(
+      (p) => p.productId === productId,
+    );
+
+    if (existingProductIndex !== -1) {
+      const updatedProducts = [...formik.values.products];
+      updatedProducts[existingProductIndex].quantity += 1;
+      formik.setFieldValue("products", updatedProducts);
+    } else {
+      const newProduct: IBookingProduct = {
+        productId: product._id,
+        name: product.name,
+        quantity: 1,
+        rate: product.basePrice,
+        baseCharge: product.baseCharge,
+        hourlyRate: product.hourlyRate,
+        extraCharges: product.extraCharges,
+      };
+
+      formik.setFieldValue("products", [...formik.values.products, newProduct]);
+    }
+  };
+
+  const removeProduct = (index: number) => {
+    const newProducts = [...formik.values.products];
+    newProducts.splice(index, 1);
+    formik.setFieldValue("products", newProducts);
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">New Booking</h1>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Booking Details</CardTitle>
-          <CardDescription>Create a new job for a customer</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="customer">Customer</Label>
-              <select
-                id="customer"
-                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                required>
-                <option value="">Select a customer</option>
-                {mockCustomers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
-              <Input id="date" type="date" required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="product">Product / Service</Label>
-              <select
-                id="product"
-                value={selectedProduct}
-                onChange={(e) => setSelectedProduct(e.target.value)}
-                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                required>
-                <option value="">Select a product</option>
-                {mockProducts.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} - £{p.price}/{p.unitType}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="driver">Assign Driver (Optional)</Label>
-              <select
-                id="driver"
-                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                <option value="">Select a driver</option>
-                {mockDrivers.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} ({d.status})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
+    <form
+      onSubmit={formik.handleSubmit}
+      className="space-y-6 max-w-5xl mx-auto pb-20">
+      <div className="flex items-center justify-between bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {initialData ? "Edit Booking" : "Create New Booking"}
+          </h1>
+          <p className="text-sm text-slate-500 font-medium">
+            Setup job details, locations, and pricing.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          {initialData?.status === BookingStatus.SCHEDULED ||
+          initialData?.status === BookingStatus.ACCEPTED ? (
+            <>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/bookings")}>
+                className="rounded-xl px-6 h-11 font-bold"
+                onClick={() => window.history.back()}>
                 Cancel
               </Button>
-              <Button type="submit">Create Booking</Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
+                {isLoading
+                  ? "Saving..."
+                  : initialData
+                    ? "Update Booking"
+                    : "Confirm Booking"}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl px-6 h-11 font-bold"
+              onClick={() => window.history.back()}>
+              Back
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList
+          className={`grid w-full ${initialData?.status === BookingStatus.JOB_SUBMITTED || initialData?.status === BookingStatus.JOB_REJECTED || BookingStatus.COMPLETED ? "grid-cols-5" : "grid-cols-4"} h-14 p-1 bg-slate-100 rounded-2xl mb-8`}>
+          <TabsTrigger value="details" className={tabClassName}>
+            <Calendar className="h-4 w-4 mr-2" /> Details
+          </TabsTrigger>
+          <TabsTrigger value="locations" className={tabClassName}>
+            <MapPin className="h-4 w-4 mr-2" /> Locations
+          </TabsTrigger>
+          <TabsTrigger value="products" className={tabClassName}>
+            <Package className="h-4 w-4 mr-2" /> Products
+          </TabsTrigger>
+          <TabsTrigger value="driver" className={tabClassName}>
+            <Truck className="h-4 w-4 mr-2" /> Assignment
+          </TabsTrigger>
+          {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
+            initialData?.status === BookingStatus.JOB_REJECTED ||
+            initialData?.status === BookingStatus.COMPLETED) && (
+            <TabsTrigger value="review" className={tabClassName}>
+              <ClipboardCheck className="h-4 w-4 mr-2" /> Review
+            </TabsTrigger>
+          )}
+        </TabsList>
+
+        <Card className="border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden">
+          <CardContent className="p-8">
+            {activeTab === "details" && (
+              <DetailsTab
+                formik={formik}
+                clients={filteredClients}
+                getFieldError={getFieldError}
+                companies={companies}
+                userRole={user?.role}
+                onCompanyChange={handleCompanyChange}
+              />
+            )}
+            {activeTab === "locations" && <LocationsTab formik={formik} />}
+            {activeTab === "products" && (
+              <ProductsTab
+                formik={formik}
+                products={products}
+                addProduct={addProduct}
+                removeProduct={removeProduct}
+              />
+            )}
+            {activeTab === "driver" && (
+              <AssignmentTab
+                formik={formik}
+                drivers={drivers}
+                vehicles={vehicles}
+              />
+            )}
+            {activeTab === "review" && initialData && (
+              <CompletionReviewTab booking={initialData} />
+            )}
+          </CardContent>
+        </Card>
+      </Tabs>
+    </form>
   );
 }

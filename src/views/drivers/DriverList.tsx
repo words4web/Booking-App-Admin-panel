@@ -5,9 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
+import { PAGINATION_LIMIT } from "@/src/constants/pagination";
+import { useState } from "react";
 
 export function DriverList() {
-  const { data: drivers, isLoading, error } = useAllDriversQuery();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, error } = useAllDriversQuery(page, PAGINATION_LIMIT);
+
+  const drivers = data?.drivers || [];
+  const pagination = data?.pagination;
 
   if (isLoading) {
     return <CommonLoader fullScreen={false} message="Loading drivers..." />;
@@ -101,6 +107,33 @@ export function DriverList() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
+              <p className="text-xs text-muted-foreground font-medium">
+                Page {pagination.page} of {pagination.pages}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="rounded-lg h-8 text-xs font-bold">
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={page >= pagination.pages}
+                  className="rounded-lg h-8 text-xs font-bold">
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

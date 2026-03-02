@@ -12,9 +12,17 @@ import {
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { useState } from "react";
+import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function VehicleList() {
-  const { data: vehicles, isLoading, error } = useVehiclesQuery();
+  const [page, setPage] = useState(1);
+  const {
+    data: vehiclesData,
+    isLoading,
+    error,
+  } = useVehiclesQuery(page, PAGINATION_LIMIT);
+  const vehicles = vehiclesData?.vehicles || [];
+  const pagination = vehiclesData?.pagination;
   const deleteMutation = useDeleteVehicleMutation();
   const [vehicleToDelete, setVehicleToDelete] = useState<{
     id: string;
@@ -39,8 +47,7 @@ export function VehicleList() {
         <h1 className="text-3xl font-bold tracking-tight">Vehicles</h1>
         <Button
           asChild
-          className="rounded-2xl px-6 py-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 gap-2"
-        >
+          className="rounded-2xl px-6 py-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 gap-2">
           <Link href={`${ROUTES_PATH.VEHICLES}/new`}>
             <Plus className="h-5 w-5" />
             Add Vehicle
@@ -79,12 +86,11 @@ export function VehicleList() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {!vehicles?.vehicles || vehicles?.vehicles?.length === 0 ? (
+                {!vehicles || vehicles.length === 0 ? (
                   <tr>
                     <td
                       colSpan={3}
-                      className="p-12 text-center text-slate-400 font-medium bg-white"
-                    >
+                      className="p-12 text-center text-slate-400 font-medium bg-white">
                       <div className="flex flex-col items-center gap-3">
                         <Truck className="h-12 w-12 opacity-20" />
                         <p>
@@ -95,11 +101,10 @@ export function VehicleList() {
                     </td>
                   </tr>
                 ) : (
-                  vehicles?.vehicles?.map((vehicle) => (
+                  vehicles.map((vehicle) => (
                     <tr
                       key={vehicle._id}
-                      className="border-b border-slate-50 transition-all hover:bg-primary/5 group"
-                    >
+                      className="border-b border-slate-50 transition-all hover:bg-primary/5 group">
                       <td className="px-8 py-5 align-middle">
                         <span className="font-bold text-slate-700 block text-base group-hover:text-primary transition-colors">
                           {vehicle.vehicleName}
@@ -128,11 +133,9 @@ export function VehicleList() {
                             variant="ghost"
                             size="icon"
                             className="h-9 w-9 rounded-xl hover:bg-amber-100 hover:text-amber-600 transition-all"
-                            asChild
-                          >
+                            asChild>
                             <Link
-                              href={`${ROUTES_PATH.VEHICLES}/${vehicle._id}/edit`}
-                            >
+                              href={`${ROUTES_PATH.VEHICLES}/${vehicle._id}/edit`}>
                               <Pencil className="h-4 w-4" />
                             </Link>
                           </Button>
@@ -146,8 +149,7 @@ export function VehicleList() {
                                 id: vehicle._id,
                                 name: vehicle.vehicleName,
                               })
-                            }
-                          >
+                            }>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -158,6 +160,33 @@ export function VehicleList() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
+              <p className="text-xs text-muted-foreground font-medium">
+                Page {pagination.page} of {pagination.pages}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="rounded-lg h-8 text-xs font-bold">
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={page >= pagination.pages}
+                  className="rounded-lg h-8 text-xs font-bold">
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

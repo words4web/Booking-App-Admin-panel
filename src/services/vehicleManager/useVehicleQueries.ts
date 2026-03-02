@@ -13,10 +13,11 @@ export const vehicleKeys = {
   detail: (id: string) => [...vehicleKeys.details(), id] as const,
 };
 
-export const useVehiclesQuery = () => {
+export const useVehiclesQuery = (page = 1, limit = 10) => {
   return useQuery({
-    queryKey: vehicleKeys.lists(),
-    queryFn: () => VehicleService.getAllVehicles().then((res) => res.data),
+    queryKey: [...vehicleKeys.lists(), { page, limit }],
+    queryFn: () =>
+      VehicleService.getAllVehicles(page, limit).then((res) => res.data),
   });
 };
 

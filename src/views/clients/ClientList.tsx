@@ -22,6 +22,7 @@ import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQu
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { Client } from "@/src/types/client.types";
+import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function ClientList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -30,6 +31,7 @@ export function ClientList() {
     name: string;
   } | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -38,13 +40,17 @@ export function ClientList() {
   const { data: clientsData, isLoading: isClientsLoading } = useAllClientsQuery(
     {
       companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
+      page,
+      limit: PAGINATION_LIMIT,
     },
   );
 
   const clients = clientsData?.clients || [];
+  const pagination = clientsData?.pagination;
 
   // Fetch companies for filter (Super Admin only)
-  const { data: companies = [] } = useAllCompaniesQuery();
+  const { data: companiesData2 } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData2?.companies || [];
 
   const deleteMutation = useDeleteClientMutation();
 
@@ -143,109 +149,138 @@ export function ClientList() {
               </Button>
             </div>
           ) : (
-            <div className="relative w-full overflow-auto">
-              <table className="w-full text-sm font-medium">
-                <thead>
-                  <tr className="bg-muted/10 border-b border-border/50">
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Contact Person
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Legal Entity
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Address
-                    </th>
-                    {isSuperAdmin && (
+            <>
+              <div className="relative w-full overflow-auto">
+                <table className="w-full text-sm font-medium">
+                  <thead>
+                    <tr className="bg-muted/10 border-b border-border/50">
                       <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        Company
+                        Contact Person
                       </th>
-                    )}
-                    <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {clients.map((client) => (
-                    <tr
-                      key={client._id}
-                      className="transition-all hover:bg-slate-50 cursor-default">
-                      <td className="px-8 py-5 align-middle">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-foreground">
-                            {client.contactInfo.firstName}{" "}
-                            {client.contactInfo.lastName}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground lowercase">
-                            {client.contactInfo.email}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {client.contactInfo.phone}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-5 align-middle">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-foreground">
-                            {client.legalDetails.legalName}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">
-                            Reg: {client.legalDetails.registrationNumber}
-                          </span>
-                          {client.legalDetails.vatRegistered && (
-                            <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider">
-                              VAT: {client.legalDetails.vatNumber}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-8 py-5 align-middle">
-                        <div className="flex flex-col text-xs text-muted-foreground max-w-[200px]">
-                          <span>{client.address.addressLine1}</span>
-                          <span>
-                            {client.address.city}, {client.address.postalCode}
-                          </span>
-                          <span>{client.address.country}</span>
-                        </div>
-                      </td>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Legal Entity
+                      </th>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Address
+                      </th>
                       {isSuperAdmin && (
-                        <td className="px-8 py-5 align-middle">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700">
-                            {typeof client.companyId === "object"
-                              ? client.companyId.name
-                              : "Unknown"}
-                          </span>
-                        </td>
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Company
+                        </th>
                       )}
-                      <td className="px-8 py-5 align-middle text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                            asChild
-                            title="Edit Client">
-                            <Link href={`/clients/${client._id}/edit`}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Link>
-                          </Button>
-
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                            title="Delete Client"
-                            onClick={() => handleDeleteClick(client)}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
+                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {clients.map((client) => (
+                      <tr
+                        key={client._id}
+                        className="transition-all hover:bg-slate-50 cursor-default">
+                        <td className="px-8 py-5 align-middle">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-foreground">
+                              {client.contactInfo.firstName}{" "}
+                              {client.contactInfo.lastName}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground lowercase">
+                              {client.contactInfo.email}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {client.contactInfo.phone}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-5 align-middle">
+                          <div className="flex flex-col">
+                            <span className="font-medium text-foreground">
+                              {client.legalDetails.legalName}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              Reg: {client.legalDetails.registrationNumber}
+                            </span>
+                            {client.legalDetails.vatRegistered && (
+                              <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider">
+                                VAT: {client.legalDetails.vatNumber}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-8 py-5 align-middle">
+                          <div className="flex flex-col text-xs text-muted-foreground max-w-[200px]">
+                            <span>{client.address.addressLine1}</span>
+                            <span>
+                              {client.address.city}, {client.address.postcode}
+                            </span>
+                            <span>{client.address.country}</span>
+                          </div>
+                        </td>
+                        {isSuperAdmin && (
+                          <td className="px-8 py-5 align-middle">
+                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700">
+                              {typeof client.companyId === "object"
+                                ? client.companyId.name
+                                : "Unknown"}
+                            </span>
+                          </td>
+                        )}
+                        <td className="px-8 py-5 align-middle text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
+                              asChild
+                              title="Edit Client">
+                              <Link href={`/clients/${client._id}/edit`}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Link>
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
+                              title="Delete Client"
+                              onClick={() => handleDeleteClick(client)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {pagination && pagination.pages > 1 && (
+                <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Page {pagination.page} of {pagination.pages}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="rounded-lg h-8 text-xs font-bold">
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={page >= pagination.pages}
+                      className="rounded-lg h-8 text-xs font-bold">
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

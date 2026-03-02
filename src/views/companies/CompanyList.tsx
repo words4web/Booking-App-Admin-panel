@@ -13,6 +13,7 @@ import {
 } from "@/src/services/companyManager/useCompanyQueries";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
+import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function CompanyList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -21,8 +22,14 @@ export function CompanyList() {
     name: string;
   } | null>(null);
 
+  const [page, setPage] = useState(1);
   const { user } = useAuth();
-  const { data: companies, isLoading } = useAllCompaniesQuery();
+  const { data: companiesData, isLoading } = useAllCompaniesQuery(
+    page,
+    PAGINATION_LIMIT,
+  );
+  const companies = companiesData?.companies || [];
+  const pagination = companiesData?.pagination;
   const deleteMutation = useDeleteCompanyMutation();
 
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -97,100 +104,129 @@ export function CompanyList() {
               )}
             </div>
           ) : (
-            <div className="relative w-full overflow-auto">
-              <table className="w-full text-sm font-medium">
-                <thead>
-                  <tr className="bg-muted/10 border-b border-border/50">
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Company Details
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Reg Number
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      VAT Info
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Admin Email
-                    </th>
-                    {isSuperAdmin && (
-                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        Actions
+            <>
+              <div className="relative w-full overflow-auto">
+                <table className="w-full text-sm font-medium">
+                  <thead>
+                    <tr className="bg-muted/10 border-b border-border/50">
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Company Details
                       </th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {filteredCompanies.map((company) => (
-                    <tr
-                      key={company._id}
-                      className="transition-all hover:bg-slate-50 cursor-default">
-                      <td className="px-8 py-5 align-middle">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-foreground">
-                            {company.name}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-                            {company.invoicePrefix}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
-                        {company.registrationNumber}
-                      </td>
-                      <td className="px-8 py-5 align-middle">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-foreground">
-                            {company.vatNumber}
-                          </span>
-                          <span
-                            className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
-                            {company.vatRegistered
-                              ? "Registered"
-                              : "Not Registered"}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-5 align-middle">
-                        <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                          {company.adminEmail}
-                        </code>
-                      </td>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Reg Number
+                      </th>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        VAT Info
+                      </th>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Admin Email
+                      </th>
                       {isSuperAdmin && (
-                        <td className="px-8 py-5 align-middle text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                              asChild
-                              title="Edit Company">
-                              <Link href={`/companies/${company._id}/edit`}>
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Link>
-                            </Button>
-
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                              title="Delete Company"
-                              onClick={() =>
-                                handleDeleteClick({
-                                  id: company._id,
-                                  name: company.name,
-                                })
-                              }>
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </td>
+                        <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Actions
+                        </th>
                       )}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {filteredCompanies.map((company) => (
+                      <tr
+                        key={company._id}
+                        className="transition-all hover:bg-slate-50 cursor-default">
+                        <td className="px-8 py-5 align-middle">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-foreground">
+                              {company.name}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                              {company.invoicePrefix}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
+                          {company.registrationNumber}
+                        </td>
+                        <td className="px-8 py-5 align-middle">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-foreground">
+                              {company.vatNumber}
+                            </span>
+                            <span
+                              className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
+                              {company.vatRegistered
+                                ? "Registered"
+                                : "Not Registered"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-5 align-middle">
+                          <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                            {company.adminEmail}
+                          </code>
+                        </td>
+                        {isSuperAdmin && (
+                          <td className="px-8 py-5 align-middle text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
+                                asChild
+                                title="Edit Company">
+                                <Link href={`/companies/${company._id}/edit`}>
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Link>
+                              </Button>
+
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
+                                title="Delete Company"
+                                onClick={() =>
+                                  handleDeleteClick({
+                                    id: company._id,
+                                    name: company.name,
+                                  })
+                                }>
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {pagination && pagination.pages > 1 && (
+                <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Page {pagination.page} of {pagination.pages}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="rounded-lg h-8 text-xs font-bold">
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={page >= pagination.pages}
+                      className="rounded-lg h-8 text-xs font-bold">
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

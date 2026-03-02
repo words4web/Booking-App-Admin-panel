@@ -1,9 +1,21 @@
+import { UnitType } from "../enums/product.enum";
+
+export interface IExtraCharge {
+  label: string;
+  amount: number;
+}
+
 export interface Product {
   _id: string;
+  companyId: string | { _id: string; name: string };
   name: string;
   description: string;
+  unitType: UnitType;
   basePrice: number;
-  companyId: string | { _id: string; name: string };
+  baseCharge: number;
+  hourlyRate: number;
+  extraCharges: IExtraCharge[];
+  vatApplicable: boolean;
   isDeleted: boolean;
   createdBy: string;
   createdAt: string;
@@ -11,10 +23,15 @@ export interface Product {
 }
 
 export interface ProductFormData {
+  companyId?: string;
   name: string;
   description: string;
+  unitType: UnitType;
   basePrice: number;
-  companyId?: string;
+  baseCharge: number;
+  hourlyRate: number;
+  extraCharges: IExtraCharge[];
+  vatApplicable: boolean;
 }
 
 export interface ProductFilters {

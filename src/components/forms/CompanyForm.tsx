@@ -56,7 +56,7 @@ export function CompanyForm({
       name: initialData?.name || "",
       registrationNumber: initialData?.registrationNumber || "",
       vatNumber: initialData?.vatNumber || "",
-      vatRegistered: initialData?.vatRegistered ?? true,
+      vatRegistered: initialData?.vatRegistered ?? false,
       invoicePrefix: initialData?.invoicePrefix || "INV",
       bankAccountNumber: initialData?.bankAccountNumber || "",
       bankCode: initialData?.bankCode || "",

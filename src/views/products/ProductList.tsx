@@ -22,6 +22,7 @@ import {
   useDeleteProductMutation,
 } from "@/src/services/productManager/useProductQueries";
 import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
+import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function ProductList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -30,6 +31,7 @@ export function ProductList() {
     name: string;
   } | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -38,12 +40,16 @@ export function ProductList() {
   const { data: productsData, isLoading: isProductsLoading } =
     useAllProductsQuery({
       companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
+      page,
+      limit: PAGINATION_LIMIT,
     });
 
   const products = productsData?.products || [];
+  const pagination = productsData?.pagination;
 
   // Fetch companies for filter (Super Admin only)
-  const { data: companies = [] } = useAllCompaniesQuery();
+  const { data: companiesData } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData?.companies || [];
 
   const deleteMutation = useDeleteProductMutation();
 
@@ -145,86 +151,115 @@ export function ProductList() {
               </Button>
             </div>
           ) : (
-            <div className="relative w-full overflow-auto">
-              <table className="w-full text-sm font-medium">
-                <thead>
-                  <tr className="bg-muted/10 border-b border-border/50">
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Product Name
-                    </th>
-                    <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Description
-                    </th>
-                    <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Base Price
-                    </th>
-                    {isSuperAdmin && (
+            <>
+              <div className="relative w-full overflow-auto">
+                <table className="w-full text-sm font-medium">
+                  <thead>
+                    <tr className="bg-muted/10 border-b border-border/50">
                       <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        Company
+                        Product Name
                       </th>
-                    )}
-                    <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {products.map((product: Product) => (
-                    <tr
-                      key={product._id}
-                      className="transition-all hover:bg-slate-50 cursor-default">
-                      <td className="px-8 py-6 align-middle">
-                        <span className="font-bold text-foreground block">
-                          {product.name}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6 align-middle">
-                        <span className="text-xs text-muted-foreground line-clamp-1 max-w-[300px]">
-                          {product.description}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6 align-middle text-right">
-                        <span className="font-bold text-primary">
-                          £{product.basePrice.toFixed(2)}
-                        </span>
-                      </td>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Description
+                      </th>
+                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Base Price
+                      </th>
                       {isSuperAdmin && (
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Company
+                        </th>
+                      )}
+                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {products.map((product: Product) => (
+                      <tr
+                        key={product._id}
+                        className="transition-all hover:bg-slate-50 cursor-default">
                         <td className="px-8 py-6 align-middle">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 border border-slate-200 uppercase tracking-tighter">
-                            {typeof product.companyId === "object"
-                              ? product.companyId.name
-                              : "N/A"}
+                          <span className="font-bold text-foreground block">
+                            {product.name}
                           </span>
                         </td>
-                      )}
-                      <td className="px-8 py-6 align-middle text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9 rounded-xl border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                            asChild
-                            title="Edit Product">
-                            <Link href={`/products/${product._id}/edit`}>
-                              <Pencil className="h-4 w-4" />
-                            </Link>
-                          </Button>
+                        <td className="px-8 py-6 align-middle">
+                          <span className="text-xs text-muted-foreground line-clamp-1 max-w-[300px]">
+                            {product.description}
+                          </span>
+                        </td>
+                        <td className="px-8 py-6 align-middle text-right">
+                          <span className="font-bold text-primary">
+                            £{product.basePrice.toFixed(2)}
+                          </span>
+                        </td>
+                        {isSuperAdmin && (
+                          <td className="px-8 py-6 align-middle">
+                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 border border-slate-200 uppercase tracking-tighter">
+                              {typeof product.companyId === "object"
+                                ? product.companyId.name
+                                : "N/A"}
+                            </span>
+                          </td>
+                        )}
+                        <td className="px-8 py-6 align-middle text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-9 w-9 rounded-xl border-border hover:bg-slate-100 text-slate-600 shadow-sm"
+                              asChild
+                              title="Edit Product">
+                              <Link href={`/products/${product._id}/edit`}>
+                                <Pencil className="h-4 w-4" />
+                              </Link>
+                            </Button>
 
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9 rounded-xl border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                            title="Delete Product"
-                            onClick={() => handleDeleteClick(product)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-9 w-9 rounded-xl border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
+                              title="Delete Product"
+                              onClick={() => handleDeleteClick(product)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {pagination && pagination.pages > 1 && (
+                <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Page {pagination.page} of {pagination.pages}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="rounded-lg h-8 text-xs font-bold">
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={page >= pagination.pages}
+                      className="rounded-lg h-8 text-xs font-bold">
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
