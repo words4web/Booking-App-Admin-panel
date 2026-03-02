@@ -61,3 +61,24 @@ export const useDeleteBookingMutation = () => {
     },
   });
 };
+
+export const useReviewJobMutation = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: {
+      status: string;
+      adminNotes: string;
+      durationMinutes?: number;
+    }) => BookingService.reviewJob(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["booking", id] });
+      toast.success("Job review submitted successfully");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Failed to submit job review",
+      );
+    },
+  });
+};

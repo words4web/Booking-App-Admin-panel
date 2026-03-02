@@ -26,6 +26,9 @@ import { DetailsTab } from "./tabs/DetailsTab";
 import { LocationsTab } from "./tabs/LocationsTab";
 import { ProductsTab } from "./tabs/ProductsTab";
 import { AssignmentTab } from "./tabs/AssignmentTab";
+import { CompletionReviewTab } from "./tabs/CompletionReviewTab";
+import { BookingStatus } from "@/src/enums/booking.enum";
+import { ClipboardCheck } from "lucide-react";
 
 const tabClassName =
   "rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm";
@@ -44,15 +47,8 @@ export function BookingForm({
 
   const { user } = useAuth();
 
-  const { data: productsData } = useAllProductsQuery();
-  const { data: driversData } = useAllDriversQuery(1, 100);
-  const { data: vehiclesData } = useVehiclesQuery();
   const { data: companiesData } = useAllCompaniesQuery(1, 100);
-
-  const products = productsData?.products || [];
-  const drivers = driversData || [];
-  const vehicles = vehiclesData?.vehicles || [];
-  const companies = companiesData || [];
+  const companies = companiesData?.companies || [];
 
   const formik = useFormik<BookingFormData>({
     initialValues: {
@@ -120,6 +116,14 @@ export function BookingForm({
   });
   const filteredClients = filteredClientsData?.clients || [];
 
+  const { data: productsData } = useAllProductsQuery({});
+  const { data: driversData } = useAllDriversQuery(1, 200);
+  const { data: vehiclesData } = useVehiclesQuery(1, 200);
+
+  const products = productsData?.products || [];
+  const drivers = driversData?.drivers || [];
+  const vehicles = vehiclesData?.vehicles || [];
+
   const handleCompanyChange = (companyId: string) => {
     formik.setFieldValue("companyId", companyId);
     formik.setFieldValue("clientId", ""); // Reset client when company changes
@@ -183,28 +187,42 @@ export function BookingForm({
           </p>
         </div>
         <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-xl px-6 h-11 font-bold"
-            onClick={() => window.history.back()}>
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
-            {isLoading
-              ? "Saving..."
-              : initialData
-                ? "Update Booking"
-                : "Confirm Booking"}
-          </Button>
+          {initialData?.status === BookingStatus.SCHEDULED ||
+          initialData?.status === BookingStatus.ACCEPTED ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl px-6 h-11 font-bold"
+                onClick={() => window.history.back()}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
+                {isLoading
+                  ? "Saving..."
+                  : initialData
+                    ? "Update Booking"
+                    : "Confirm Booking"}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl px-6 h-11 font-bold"
+              onClick={() => window.history.back()}>
+              Back
+            </Button>
+          )}
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-14 p-1 bg-slate-100 rounded-2xl mb-8">
+        <TabsList
+          className={`grid w-full ${initialData?.status === BookingStatus.JOB_SUBMITTED || initialData?.status === BookingStatus.JOB_REJECTED || BookingStatus.COMPLETED ? "grid-cols-5" : "grid-cols-4"} h-14 p-1 bg-slate-100 rounded-2xl mb-8`}>
           <TabsTrigger value="details" className={tabClassName}>
             <Calendar className="h-4 w-4 mr-2" /> Details
           </TabsTrigger>
@@ -217,6 +235,13 @@ export function BookingForm({
           <TabsTrigger value="driver" className={tabClassName}>
             <Truck className="h-4 w-4 mr-2" /> Assignment
           </TabsTrigger>
+          {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
+            initialData?.status === BookingStatus.JOB_REJECTED ||
+            initialData?.status === BookingStatus.COMPLETED) && (
+            <TabsTrigger value="review" className={tabClassName}>
+              <ClipboardCheck className="h-4 w-4 mr-2" /> Review
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <Card className="border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden">
@@ -246,6 +271,9 @@ export function BookingForm({
                 drivers={drivers}
                 vehicles={vehicles}
               />
+            )}
+            {activeTab === "review" && initialData && (
+              <CompletionReviewTab booking={initialData} />
             )}
           </CardContent>
         </Card>

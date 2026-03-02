@@ -55,7 +55,8 @@ export function ProductForm({
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
 
-  const { data: companies = [] } = useAllCompaniesQuery();
+  const { data: companiesData } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData?.companies || [];
 
   const formik = useFormik<ProductFormData>({
     initialValues: {

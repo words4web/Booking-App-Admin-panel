@@ -53,4 +53,18 @@ export const BookingService = {
       API_ENDPOINTS.BOOKINGS.DELETE(id),
     );
   },
+  reviewJob: async (
+    id: string,
+    data: {
+      status: string;
+      adminNotes: string;
+      durationMinutes?: number;
+    },
+  ) => {
+    const response = await api.patch<BookingResponse>(
+      API_ENDPOINTS.BOOKINGS.REVIEW(id),
+      data,
+    );
+    return response.data.data.booking;
+  },
 };

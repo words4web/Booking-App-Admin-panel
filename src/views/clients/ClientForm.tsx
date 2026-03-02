@@ -59,7 +59,8 @@ export function ClientForm({
   };
 
   // Fetch companies for Super Admin dropdown
-  const { data: companies = [] } = useAllCompaniesQuery();
+  const { data: companiesData } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData?.companies || [];
 
   const formik = useFormik<ClientFormData>({
     initialValues: {

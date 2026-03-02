@@ -22,6 +22,7 @@ import {
 import { Invoice } from "@/src/types/invoice.types";
 import { InvoiceStatus } from "@/src/enums/invoice.enum";
 import { InvoicePDFModal } from "./InvoicePDFModal";
+import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
   [InvoiceStatus.DRAFT]: "Draft",
@@ -64,7 +65,7 @@ export function InvoiceList() {
 
   const { data, isLoading } = useInvoicesQuery({
     page,
-    limit: 20,
+    limit: PAGINATION_LIMIT,
     status:
       statusFilter !== "all" ? (statusFilter as InvoiceStatus) : undefined,
   });

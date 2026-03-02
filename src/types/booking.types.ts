@@ -21,11 +21,14 @@ export interface IBookingProduct {
 
 export interface IWaitingTime {
   durationMinutes?: number;
-  reason?: string;
-  reasonNotes?: string;
   adminNotes?: string;
   reviewedBy?: string;
   reviewedAt?: string;
+}
+
+export interface IJobPhoto {
+  key: string;
+  url: string;
 }
 
 export interface Booking {
@@ -51,7 +54,7 @@ export interface Booking {
   status: BookingStatus;
   startTime?: string;
   endTime?: string;
-  jobPhotos: string[];
+  jobPhotos: IJobPhoto[];
   driverNotes?: string;
   waitingTime?: IWaitingTime;
   createdBy: string;

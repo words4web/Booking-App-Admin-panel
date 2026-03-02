@@ -14,7 +14,7 @@ export function useAllDriversQuery(page = 1, limit = 10) {
   return useQuery({
     queryKey: driverKeys.list(page, limit),
     queryFn: () => DriverService.getAllDrivers(page, limit),
-    select: (data) => data.data.drivers,
+    select: (data) => data.data,
   });
 }
 

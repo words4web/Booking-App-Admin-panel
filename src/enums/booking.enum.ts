@@ -3,6 +3,7 @@ export enum BookingStatus {
   ACCEPTED = "Accepted",
   JOB_STARTED = "Job Started",
   JOB_SUBMITTED = "Job Submitted",
+  JOB_REJECTED = "Job Rejected",
   COMPLETED = "Completed",
 }
 
