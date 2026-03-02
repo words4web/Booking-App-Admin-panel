@@ -81,7 +81,7 @@ export function InvoiceList() {
     <div className="space-y-8 pb-12">
       {/* Page Header */}
       <div className="flex flex-col gap-6 relative">
-        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" />
+        {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-black tracking-tighter text-foreground">

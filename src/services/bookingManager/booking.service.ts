@@ -5,6 +5,7 @@ import {
   BookingFormData,
   BookingResponse,
   BookingsResponse,
+  CalendarResponse,
 } from "../../types/booking.types";
 
 export const BookingService = {
@@ -23,6 +24,18 @@ export const BookingService = {
       `${API_ENDPOINTS.BOOKINGS.GET_ALL}?${params.toString()}`,
     );
     return response.data.data;
+  },
+
+  getCalendar: async (year: number, month: number, companyId?: string) => {
+    const params = new URLSearchParams({
+      year: year.toString(),
+      month: month.toString(),
+    });
+    if (companyId) params.append("companyId", companyId);
+    const response = await api.get<CalendarResponse>(
+      `${API_ENDPOINTS.BOOKINGS.CALENDAR}?${params.toString()}`,
+    );
+    return response.data.data.bookings;
   },
 
   getById: async (id: string) => {

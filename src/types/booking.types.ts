@@ -106,3 +106,18 @@ export interface BookingsResponse {
   message: string;
   success: boolean;
 }
+
+export interface CalendarBooking {
+  _id: string;
+  bookingId: string;
+  scheduledDateTime: string;
+  status: BookingStatus;
+  serviceType: ServiceType;
+  clientName: string;
+}
+
+export interface CalendarResponse {
+  data: { bookings: CalendarBooking[] };
+  success: boolean;
+  message: string;
+}

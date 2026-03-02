@@ -14,9 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "lucide-react";
+import { DateTimePicker } from "@/src/components/DateTimePicker";
 
 interface DetailsTabProps {
   formik: FormikProps<BookingFormData>;
@@ -136,15 +135,11 @@ export function DetailsTab({
           <Label className="text-sm font-bold text-slate-700">
             Scheduled Date & Time
           </Label>
-          <div className="relative">
-            <Input
-              type="datetime-local"
-              min={new Date().toISOString().slice(0, 16)}
-              {...formik.getFieldProps("scheduledDateTime")}
-              className="h-12 rounded-xl border-slate-200 bg-slate-50/50 pl-10 focus:bg-white transition-all font-medium"
-            />
-            <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-          </div>
+          <DateTimePicker
+            value={formik.values.scheduledDateTime}
+            onChange={(iso) => formik.setFieldValue("scheduledDateTime", iso)}
+            minDate={new Date().toISOString()}
+          />
           {getFieldError("scheduledDateTime") && (
             <p className="text-xs text-destructive font-medium">
               {getFieldError("scheduledDateTime")}

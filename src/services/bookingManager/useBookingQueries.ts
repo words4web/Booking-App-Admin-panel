@@ -10,6 +10,18 @@ export const useBookingsQuery = (filters: BookingFilters = {}) => {
   });
 };
 
+export const useCalendarBookingsQuery = (
+  year: number,
+  month: number,
+  companyId?: string,
+) => {
+  return useQuery({
+    queryKey: ["bookings-calendar", year, month, companyId],
+    queryFn: () => BookingService.getCalendar(year, month, companyId),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
+};
+
 export const useBookingDetailsQuery = (id: string) => {
   return useQuery({
     queryKey: ["booking", id],

@@ -66,7 +66,7 @@ export function Overview() {
   return (
     <div className="space-y-12 pb-12">
       <div className="flex flex-col gap-2 relative">
-        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" />
+        {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <h1 className="text-5xl font-black tracking-tighter lg:text-6xl text-foreground">
           RKB <span className="text-primary">Dashboard</span>
         </h1>
