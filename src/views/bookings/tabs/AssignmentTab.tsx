@@ -39,6 +39,7 @@ export function AssignmentTab({
       BookingService.getAll({
         assignedDriverId: selectedDriverId,
         limit: 100,
+        getAll: true,
       }),
     enabled: !!selectedDriverId,
   });

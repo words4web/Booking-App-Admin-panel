@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Building2,
+  Mail,
+  Landmark,
+  CreditCard,
+  Hash,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -105,100 +114,232 @@ export function CompanyList() {
             </div>
           ) : (
             <>
-              <div className="relative w-full overflow-auto">
-                <table className="w-full text-sm font-medium">
-                  <thead>
-                    <tr className="bg-muted/10 border-b border-border/50">
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        Company Details
-                      </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        Reg Number
-                      </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        VAT Info
-                      </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                        Admin Email
-                      </th>
-                      {isSuperAdmin && (
-                        <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                          Actions
+              {isSuperAdmin ? (
+                <div className="relative w-full overflow-auto">
+                  <table className="w-full text-sm font-medium">
+                    <thead>
+                      <tr className="bg-muted/10 border-b border-border/50">
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Company Details
                         </th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/30">
-                    {filteredCompanies.map((company) => (
-                      <tr
-                        key={company._id}
-                        className="transition-all hover:bg-slate-50 cursor-default">
-                        <td className="px-8 py-5 align-middle">
-                          <div className="flex flex-col">
-                            <span className="font-bold text-foreground">
-                              {company.name}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-                              {company.invoicePrefix}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
-                          {company.registrationNumber}
-                        </td>
-                        <td className="px-8 py-5 align-middle">
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-foreground">
-                              {company.vatNumber}
-                            </span>
-                            <span
-                              className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
-                              {company.vatRegistered
-                                ? "Registered"
-                                : "Not Registered"}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-8 py-5 align-middle">
-                          <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                            {company.adminEmail}
-                          </code>
-                        </td>
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Reg Number
+                        </th>
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          VAT Info
+                        </th>
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Admin Email
+                        </th>
                         {isSuperAdmin && (
-                          <td className="px-8 py-5 align-middle text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                                asChild
-                                title="Edit Company">
-                                <Link href={`/companies/${company._id}/edit`}>
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </Link>
-                              </Button>
-
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                                title="Delete Company"
-                                onClick={() =>
-                                  handleDeleteClick({
-                                    id: company._id,
-                                    name: company.name,
-                                  })
-                                }>
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          </td>
+                          <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                            Actions
+                          </th>
                         )}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
+                      {filteredCompanies.map((company) => (
+                        <tr
+                          key={company._id}
+                          className="transition-all hover:bg-slate-50 cursor-default">
+                          <td className="px-8 py-5 align-middle">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-foreground">
+                                {company.name}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                                {company.invoicePrefix}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
+                            {company.registrationNumber}
+                          </td>
+                          <td className="px-8 py-5 align-middle">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-foreground">
+                                {company.vatNumber}
+                              </span>
+                              <span
+                                className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
+                                {company.vatRegistered
+                                  ? "Registered"
+                                  : "Not Registered"}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-5 align-middle">
+                            <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                              {company.adminEmail}
+                            </code>
+                          </td>
+                          {isSuperAdmin && (
+                            <td className="px-8 py-5 align-middle text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
+                                  asChild
+                                  title="Edit Company">
+                                  <Link href={`/companies/${company._id}/edit`}>
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </Link>
+                                </Button>
+
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
+                                  title="Delete Company"
+                                  onClick={() =>
+                                    handleDeleteClick({
+                                      id: company._id,
+                                      name: company.name,
+                                    })
+                                  }>
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-4 sm:p-12 bg-slate-50/30 flex flex-col items-center">
+                  {filteredCompanies.map((company) => (
+                    <div
+                      key={company._id}
+                      className="w-full max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      {/* Hero Section */}
+                      <Card className="relative overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.08)] bg-white rounded-[2.5rem]">
+                        <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-primary via-blue-500 to-emerald-400" />
+                        <CardContent className="p-8 sm:p-12">
+                          <div className="flex flex-col md:flex-row gap-8 items-start justify-between">
+                            <div className="flex-1 space-y-4">
+                              <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1 text-xs font-black uppercase tracking-widest text-primary">
+                                Company Profile
+                              </div>
+                              <h2 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                                {company.name}
+                              </h2>
+                              <div className="flex flex-wrap gap-4 items-center text-slate-500 font-bold">
+                                <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl">
+                                  <Hash className="h-4 w-4 text-primary" />
+                                  <span className="text-sm">
+                                    Prefix: {company.invoicePrefix}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl">
+                                  <Mail className="h-4 w-4 text-primary" />
+                                  <span className="text-sm">
+                                    {company.adminEmail}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-blue-500/10 flex items-center justify-center text-primary shadow-inner border border-white">
+                              <Building2 className="h-12 w-12 sm:h-16 sm:w-16" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Legal & Tax Details */}
+                        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
+                          <CardHeader className="border-b border-slate-50 px-8 py-6">
+                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">
+                              Legal & Tax
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-8 space-y-6">
+                            <div className="space-y-1.5">
+                              <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                                Registration Number
+                              </p>
+                              <p className="text-lg font-bold text-slate-800">
+                                {company.registrationNumber}
+                              </p>
+                            </div>
+                            <div className="space-y-1.5 pt-4 border-t border-slate-50">
+                              <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                                VAT Reference
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <p className="text-lg font-bold text-slate-800">
+                                  {company.vatNumber}
+                                </p>
+                                <span
+                                  className={`text-[10px] uppercase font-black tracking-widest px-4 py-1.5 rounded-full ${company.vatRegistered ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                                  {company.vatRegistered
+                                    ? "Registered"
+                                    : "Not Registered"}
+                                </span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Financial / Bank Details */}
+                        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
+                          <CardHeader className="border-b border-slate-50 px-8 py-6">
+                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">
+                              Banking Details
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-8 space-y-6">
+                            <div className="flex items-center gap-4">
+                              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                <Landmark className="h-5 w-5" />
+                              </div>
+                              <div className="space-y-0.5">
+                                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                                  Bank Name
+                                </p>
+                                <p className="font-bold text-slate-800">
+                                  {company.bankName || "Not Provided"}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4 pt-4 border-t border-slate-50">
+                              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                <CreditCard className="h-5 w-5" />
+                              </div>
+                              <div className="space-y-0.5">
+                                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                                  Account Number
+                                </p>
+                                <p className="font-bold text-slate-800 tracking-[0.1em]">
+                                  {company.bankAccountNumber ||
+                                    "•••• •••• ••••"}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4 pt-4 border-t border-slate-50">
+                              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                                <Pencil className="h-5 w-5" />
+                              </div>
+                              <div className="space-y-0.5">
+                                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                                  Sort Code / Swift / BIC
+                                </p>
+                                <p className="font-bold text-slate-800 uppercase">
+                                  {company.bankCode || "Not Provided"}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Pagination */}
               {pagination && pagination.pages > 1 && (

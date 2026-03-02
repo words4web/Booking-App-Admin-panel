@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import {
   CheckCircle2,
   XCircle,
@@ -30,10 +31,15 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
   const [durationMinutes, setDurationMinutes] = useState(
     booking.waitingTime?.durationMinutes || 0,
   );
+  const [confirmDialog, setConfirmDialog] = useState<{
+    status: BookingStatus.COMPLETED | BookingStatus.JOB_REJECTED;
+    title: string;
+    description: string;
+  } | null>(null);
 
   const mutation = useReviewJobMutation(booking._id);
 
-  const handleReview = async (
+  const handleReviewClick = (
     status: BookingStatus.COMPLETED | BookingStatus.JOB_REJECTED,
   ) => {
     if (status === BookingStatus.JOB_REJECTED && !adminNotes.trim()) {
@@ -41,11 +47,32 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
       return;
     }
 
-    mutation.mutate({
+    setConfirmDialog({
       status,
-      adminNotes,
-      durationMinutes,
+      title:
+        status === BookingStatus.COMPLETED
+          ? "Approve Job Completion"
+          : "Reject Job Completion",
+      description:
+        status === BookingStatus.COMPLETED
+          ? "Are you sure you want to approve this job completion? This will mark the booking as completed."
+          : "Are you sure you want to reject this job completion? The driver will be notified.",
     });
+  };
+
+  const handleConfirmReview = async () => {
+    if (!confirmDialog) return;
+
+    mutation.mutate(
+      {
+        status: confirmDialog.status,
+        adminNotes,
+        durationMinutes,
+      },
+      {
+        onSuccess: () => setConfirmDialog(null),
+      },
+    );
   };
 
   const isPendingReview = booking.status === BookingStatus.JOB_SUBMITTED;
@@ -189,14 +216,14 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
                 type="button"
                 variant="destructive"
                 className="flex-1 rounded-xl h-12 font-bold shadow-lg border-red-600 border"
-                onClick={() => handleReview(BookingStatus.JOB_REJECTED)}
+                onClick={() => handleReviewClick(BookingStatus.JOB_REJECTED)}
                 disabled={mutation.isPending}>
                 <XCircle className="h-4 w-4 mr-2" /> Reject Completion
               </Button>
               <Button
                 type="button"
                 className="flex-1 rounded-xl h-12 font-bold shadow-lg shadow-primary/20"
-                onClick={() => handleReview(BookingStatus.COMPLETED)}
+                onClick={() => handleReviewClick(BookingStatus.COMPLETED)}
                 disabled={mutation.isPending}>
                 <CheckCircle2 className="h-4 w-4 mr-2" /> Approve & Complete
               </Button>
@@ -204,6 +231,31 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!confirmDialog}
+        onOpenChange={(open) => !open && setConfirmDialog(null)}
+        title={confirmDialog?.title || "Confirm Action"}
+        description={confirmDialog?.description || "Are you sure?"}
+        confirmText={
+          confirmDialog?.status === BookingStatus.COMPLETED
+            ? "Approve"
+            : "Reject"
+        }
+        cancelText="Cancel"
+        onConfirm={handleConfirmReview}
+        variant={
+          confirmDialog?.status === BookingStatus.JOB_REJECTED
+            ? "destructive"
+            : "primary"
+        }
+        icon={
+          confirmDialog?.status === BookingStatus.JOB_REJECTED
+            ? XCircle
+            : CheckCircle2
+        }
+        isLoading={mutation.isPending}
+      />
     </div>
   );
 }

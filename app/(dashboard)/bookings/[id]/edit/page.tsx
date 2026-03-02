@@ -8,6 +8,7 @@ import {
   useUpdateBookingMutation,
 } from "@/src/services/bookingManager/useBookingQueries";
 import { Loader2 } from "lucide-react";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 export default function EditBookingPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +20,7 @@ export default function EditBookingPage() {
   const handleSubmit = (values: BookingFormData) => {
     updateBooking(values, {
       onSuccess: () => {
-        router.push("/bookings");
+        router.push(ROUTES_PATH.BOOKINGS.BASE);
       },
     });
   };

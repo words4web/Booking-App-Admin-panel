@@ -19,7 +19,7 @@ export const BookingService = {
     if (filters.search) params.append("search", filters.search);
     if (filters.assignedDriverId)
       params.append("assignedDriverId", filters.assignedDriverId);
-
+    if (filters.getAll) params.append("getAll", filters.getAll.toString());
     const response = await api.get<BookingsResponse>(
       `${API_ENDPOINTS.BOOKINGS.GET_ALL}?${params.toString()}`,
     );

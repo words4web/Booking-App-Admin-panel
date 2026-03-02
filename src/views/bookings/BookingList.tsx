@@ -76,6 +76,7 @@ export function BookingList() {
   } | null>(null);
 
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [page, setPage] = useState(1);
 
   const { user } = useAuth();
@@ -85,6 +86,7 @@ export function BookingList() {
     page,
     limit: PAGINATION_LIMIT,
     companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
+    status: (selectedStatus === "all" ? undefined : selectedStatus) as any,
   });
 
   // Fetch companies for filter (Super Admin only)
@@ -145,6 +147,36 @@ export function BookingList() {
                 </Select>
               </div>
             )}
+            <div className="w-[200px]">
+              <Select
+                value={selectedStatus}
+                onValueChange={(val) => {
+                  setSelectedStatus(val);
+                  setPage(1);
+                }}>
+                <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-primary" />
+                    <SelectValue placeholder="Filter by Status" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100] min-w-[220px]">
+                  <SelectItem
+                    value="all"
+                    className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                    All Statuses
+                  </SelectItem>
+                  {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">

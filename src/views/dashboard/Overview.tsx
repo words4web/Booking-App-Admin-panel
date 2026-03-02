@@ -10,8 +10,13 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
+
 export function Overview() {
-  const quickActions = [
+  const { user } = useAuth();
+
+  const allQuickActions = [
     {
       title: "Manage Companies",
       description: "Configure and manage company profiles",
@@ -19,6 +24,7 @@ export function Overview() {
       href: "/companies",
       color: "bg-slate-900",
       hoverColor: "hover:bg-slate-950",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       title: "Manage Clients",
@@ -27,6 +33,7 @@ export function Overview() {
       href: "/clients/new",
       color: "bg-blue-600",
       hoverColor: "hover:bg-blue-700",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     // {
     //   title: "Manage Products",
@@ -52,6 +59,7 @@ export function Overview() {
       href: "/drivers",
       color: "bg-black",
       hoverColor: "hover:bg-gray-900",
+      roles: [UserRoles.SUPER_ADMIN],
     },
     // {
     //   title: "Manage Invoices",
@@ -60,8 +68,15 @@ export function Overview() {
     //   href: "/invoices",
     //   color: "bg-blue-800",
     //   hoverColor: "hover:bg-blue-900",
+    //   roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     // },
   ];
+
+  const quickActions = allQuickActions.filter(
+    (action) =>
+      !action.roles ||
+      (user?.role && action.roles.includes(user.role as UserRoles)),
+  );
 
   return (
     <div className="space-y-12 pb-12">

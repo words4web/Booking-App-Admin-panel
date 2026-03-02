@@ -116,7 +116,7 @@ export function BookingForm({
   });
   const filteredClients = filteredClientsData?.clients || [];
 
-  const { data: productsData } = useAllProductsQuery({});
+  const { data: productsData } = useAllProductsQuery({ getAll: true });
   const { data: driversData } = useAllDriversQuery(1, 200);
   const { data: vehiclesData } = useVehiclesQuery(1, 200);
 
@@ -221,28 +221,30 @@ export function BookingForm({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList
-          className={`grid w-full ${initialData?.status === BookingStatus.JOB_SUBMITTED || initialData?.status === BookingStatus.JOB_REJECTED || BookingStatus.COMPLETED ? "grid-cols-5" : "grid-cols-4"} h-14 p-1 bg-slate-100 rounded-2xl mb-8`}>
-          <TabsTrigger value="details" className={tabClassName}>
-            <Calendar className="h-4 w-4 mr-2" /> Details
-          </TabsTrigger>
-          <TabsTrigger value="locations" className={tabClassName}>
-            <MapPin className="h-4 w-4 mr-2" /> Locations
-          </TabsTrigger>
-          <TabsTrigger value="products" className={tabClassName}>
-            <Package className="h-4 w-4 mr-2" /> Products
-          </TabsTrigger>
-          <TabsTrigger value="driver" className={tabClassName}>
-            <Truck className="h-4 w-4 mr-2" /> Assignment
-          </TabsTrigger>
-          {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
-            initialData?.status === BookingStatus.JOB_REJECTED ||
-            initialData?.status === BookingStatus.COMPLETED) && (
-            <TabsTrigger value="review" className={tabClassName}>
-              <ClipboardCheck className="h-4 w-4 mr-2" /> Review
+        <div className="overflow-x-auto whitespace-nowrap scrollbar-hide mb-8">
+          <TabsList
+            className={`inline-flex min-w-max w-full sm:w-auto h-14 p-1 bg-slate-100 rounded-2xl`}>
+            <TabsTrigger value="details" className={tabClassName}>
+              <Calendar className="h-4 w-4 mr-2" /> Details
             </TabsTrigger>
-          )}
-        </TabsList>
+            <TabsTrigger value="locations" className={tabClassName}>
+              <MapPin className="h-4 w-4 mr-2" /> Locations
+            </TabsTrigger>
+            <TabsTrigger value="products" className={tabClassName}>
+              <Package className="h-4 w-4 mr-2" /> Products
+            </TabsTrigger>
+            <TabsTrigger value="driver" className={tabClassName}>
+              <Truck className="h-4 w-4 mr-2" /> Assignment
+            </TabsTrigger>
+            {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
+              initialData?.status === BookingStatus.JOB_REJECTED ||
+              initialData?.status === BookingStatus.COMPLETED) && (
+              <TabsTrigger value="review" className={tabClassName}>
+                <ClipboardCheck className="h-4 w-4 mr-2" /> Review
+              </TabsTrigger>
+            )}
+          </TabsList>
+        </div>
 
         <Card className="border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden">
           <CardContent className="p-8">

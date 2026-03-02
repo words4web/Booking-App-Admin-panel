@@ -83,6 +83,7 @@ export interface BookingFilters {
   assignedDriverId?: string;
   status?: BookingStatus;
   search?: string;
+  getAll?: boolean;
 }
 
 export interface BookingResponse {
