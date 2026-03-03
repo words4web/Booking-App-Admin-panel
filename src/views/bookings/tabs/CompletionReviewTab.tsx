@@ -140,8 +140,9 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
-                    value={durationMinutes}
-                    onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                    step="any"
+                    value={durationMinutes === 0 ? "" : durationMinutes}
+                    onChange={(e) => setDurationMinutes(e.target.value as any)}
                     className="w-24 h-12 text-2xl font-semibold text-center rounded-xl border-slate-200 focus:ring-primary/20 focus:border-primary bg-white transition-all"
                   />
                   <span className="text-slate-500 font-bold uppercase text-xs">

@@ -20,7 +20,7 @@ export function Header({
   const { data: unreadCount } = useUnreadCountQuery();
 
   return (
-    <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 flex-shrink-0 h-20 sticky top-0">
+    <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 flex-shrink-0 h-[84px] sticky top-0">
       <div className="flex items-center justify-between px-4 sm:px-8 h-full gap-2">
         <div className="flex items-center gap-3 sm:gap-6">
           {/* Mobile Menu Button */}
@@ -47,13 +47,15 @@ export function Header({
 
           <Link
             href={ROUTES_PATH.DASHBOARD}
-            className="flex items-center gap-4 group">
-            <div className="relative h-12 w-28 sm:w-32 bg-white rounded-xl flex items-center justify-center shadow-sm overflow-hidden p-1 transition-transform group-hover:scale-105">
+            className="flex items-center group">
+            {/* <div className="relative h-12 w-28 sm:w-32 bg-white rounded-xl flex items-center justify-center shadow-sm overflow-hidden p-1 transition-transform group-hover:scale-105"> */}
+            <div className="relative h-24 w-24">
               <Image
-                src="/logoRKB.png"
-                alt="RKB Logo"
+                src="/divineLogo.png"
+                alt="Divine Logo"
                 fill
-                className="object-contain p-1"
+                sizes="96px"
+                className="object-contain"
                 priority
               />
             </div>
@@ -73,7 +75,7 @@ export function Header({
                 </h1>
               )}
               <span className="hidden md:block text-[10px] uppercase tracking-widest font-bold text-primary/60 mt-1">
-                RKB Booking System
+                Divine Booking System
               </span>
             </div>
           </Link>

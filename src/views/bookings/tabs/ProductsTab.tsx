@@ -156,17 +156,13 @@ export function ProductsTab({
                 <Input
                   min={1}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.quantity`)}
-                  value={
-                    formik.values.products[index].quantity === 0 &&
-                    !formik.getFieldMeta(`products.${index}.quantity`).touched
-                      ? ""
-                      : formik.values.products[index].quantity
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.quantity`, val);
+                    formik.setFieldValue(
+                      `products.${index}.quantity`,
+                      e.target.value,
+                    );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm text-center font-bold"
                 />
@@ -179,17 +175,13 @@ export function ProductsTab({
                 <Input
                   min={0}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.rate`)}
-                  value={
-                    formik.values.products[index].rate === 0 &&
-                    !formik.getFieldMeta(`products.${index}.rate`).touched
-                      ? ""
-                      : formik.values.products[index].rate
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.rate`, val);
+                    formik.setFieldValue(
+                      `products.${index}.rate`,
+                      e.target.value,
+                    );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
                 />
@@ -202,17 +194,13 @@ export function ProductsTab({
                 <Input
                   min={0}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.baseCharge`)}
-                  value={
-                    formik.values.products[index].baseCharge === 0 &&
-                    !formik.getFieldMeta(`products.${index}.baseCharge`).touched
-                      ? ""
-                      : formik.values.products[index].baseCharge
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.baseCharge`, val);
+                    formik.setFieldValue(
+                      `products.${index}.baseCharge`,
+                      e.target.value,
+                    );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
                 />
@@ -225,17 +213,13 @@ export function ProductsTab({
                 <Input
                   min={0}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.hourlyRate`)}
-                  value={
-                    formik.values.products[index].hourlyRate === 0 &&
-                    !formik.getFieldMeta(`products.${index}.hourlyRate`).touched
-                      ? ""
-                      : formik.values.products[index].hourlyRate
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.hourlyRate`, val);
+                    formik.setFieldValue(
+                      `products.${index}.hourlyRate`,
+                      e.target.value,
+                    );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
                 />

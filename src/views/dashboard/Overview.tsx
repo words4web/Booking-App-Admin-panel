@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  // Plus,
-  UserPlus,
-  // FilePlus,
-  Settings,
-  // Package,
+  Building2,
+  Users,
+  Package,
   Truck,
+  FileText,
+  Calendar,
+  CalendarDays,
   ArrowRight,
 } from "lucide-react";
 
@@ -18,58 +19,69 @@ export function Overview() {
 
   const allQuickActions = [
     {
-      title: "Manage Companies",
-      description: "Configure and manage company profiles",
-      icon: Settings,
+      title: "Calendar",
+      description: "View and manage all your scheduled tasks",
+      icon: CalendarDays,
+      href: "/calendar",
+      color: "bg-blue-600",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Company",
+      description: "Manage your registered companies and profiles",
+      icon: Building2,
       href: "/companies",
       color: "bg-slate-900",
-      hoverColor: "hover:bg-slate-950",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
-      title: "Manage Clients",
-      description: "Register and organize business clients",
-      icon: UserPlus,
-      href: "/clients/new",
-      color: "bg-blue-600",
-      hoverColor: "hover:bg-blue-700",
+      title: "Client",
+      description: "Organize your business clients and contacts",
+      icon: Users,
+      href: "/clients",
+      color: "bg-blue-500",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
-    // {
-    //   title: "Manage Products",
-    //   description: "Update your services and rates",
-    //   icon: Package,
-    //   href: "/products",
-    //   color: "bg-blue-400",
-    //   hoverColor: "hover:bg-blue-500",
-    // },
-
-    // {
-    //   title: "Manage Bookings",
-    //   description: "Create and track shipment bookings",
-    //   icon: Plus,
-    //   href: "/bookings/new",
-    //   color: "bg-primary",
-    //   hoverColor: "hover:bg-primary/90",
-    // },
     {
-      title: "Manage Drivers",
-      description: "Onboard and monitor delivery drivers",
+      title: "Product",
+      description: "Configure your products and pricing rates",
+      icon: Package,
+      href: "/products",
+      color: "bg-indigo-600",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Bookings",
+      description: "Handle live bookings and active shipments",
+      icon: Calendar,
+      href: "/bookings",
+      color: "bg-blue-700",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Driver",
+      description: "Monitor and assign your professional drivers",
       icon: Truck,
       href: "/drivers",
       color: "bg-black",
-      hoverColor: "hover:bg-gray-900",
       roles: [UserRoles.SUPER_ADMIN],
     },
-    // {
-    //   title: "Manage Invoices",
-    //   description: "Generate and handle billing invoices",
-    //   icon: FilePlus,
-    //   href: "/invoices",
-    //   color: "bg-blue-800",
-    //   hoverColor: "hover:bg-blue-900",
-    //   roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
-    // },
+    {
+      title: "Vehicle",
+      description: "Manage your fleet vehicles and availability",
+      icon: Truck,
+      href: "/vehicles",
+      color: "bg-gray-800",
+      roles: [UserRoles.SUPER_ADMIN],
+    },
+    {
+      title: "Invoices & Payment",
+      description: "Process invoices and monitor payment status",
+      icon: FileText,
+      href: "/invoices",
+      color: "bg-blue-800",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
   ];
 
   const quickActions = allQuickActions.filter(
@@ -83,7 +95,7 @@ export function Overview() {
       <div className="flex flex-col gap-2 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <h1 className="text-5xl font-black tracking-tighter lg:text-6xl text-foreground">
-          RKB <span className="text-primary">Dashboard</span>
+          Divine <span className="text-primary">Dashboard</span>
         </h1>
         {/* <p className="text-xl text-muted-foreground font-medium max-w-2xl">
           Your logistics empire at a glance. Streamlined, efficient, and ready
@@ -100,7 +112,7 @@ export function Overview() {
           <div className="h-px flex-1 bg-primary/10" />
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-2">
           {quickActions.map((action, idx) => {
             const Icon = action.icon;
             // Use a slightly lighter version of the provided color for the icon background if it's primary

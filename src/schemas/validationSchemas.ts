@@ -73,7 +73,7 @@ export const ClientSchema = z
 // ─── Product ──────────────────────────────────────────────────────────────────
 export const ExtraChargeSchema = z.object({
   label: z.string().min(1, "Label is required"),
-  amount: z.number().min(0, "Amount cannot be negative"),
+  amount: z.coerce.number().min(0, "Amount cannot be negative"),
 });
 
 export const ProductSchema = z.object({
@@ -81,9 +81,9 @@ export const ProductSchema = z.object({
   name: z.string().min(1, "Product name is required").max(255),
   description: z.string().min(1, "Description is required"),
   unitType: z.nativeEnum(UnitType, { required_error: "Unit type is required" }),
-  basePrice: z.number().min(0, "Base price cannot be negative"),
-  baseCharge: z.number().min(0).default(0),
-  hourlyRate: z.number().min(0).default(0),
+  basePrice: z.coerce.number().min(0, "Base price cannot be negative"),
+  baseCharge: z.coerce.number().min(0).default(0),
+  hourlyRate: z.coerce.number().min(0).default(0),
   extraCharges: z.array(ExtraChargeSchema).default([]),
   vatApplicable: z.boolean().default(true),
 });
@@ -92,11 +92,11 @@ export const ProductSchema = z.object({
 export const BookingProductSchema = z.object({
   productId: z.string().min(1, "Product is required"),
   name: z.string().min(1),
-  quantity: z.number().min(1, "Quantity must be at least 1"),
-  rate: z.number().min(0, "Rate cannot be negative"), // This is basePrice
-  baseCharge: z.number().min(0).optional(),
-  hourlyRate: z.number().min(0).optional(),
-  waitingRate: z.number().min(0).optional(),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+  rate: z.coerce.number().min(0, "Rate cannot be negative"), // This is basePrice
+  baseCharge: z.coerce.number().min(0).optional(),
+  hourlyRate: z.coerce.number().min(0).optional(),
+  waitingRate: z.coerce.number().min(0).optional(),
   waitingTimeUnit: z.string().optional(),
   extraCharges: z.array(ExtraChargeSchema).optional(),
 });
@@ -123,9 +123,9 @@ export const InvoiceLineSchema = z.object({
   productId: z.string().optional(),
   description: z.string().min(1, "Description is required"),
   account: z.string().default("Income"),
-  quantity: z.number().min(0).default(1),
-  unitPrice: z.number().min(0, "Unit price cannot be negative"),
-  vatPercent: z.number().min(0).max(100).default(20),
+  quantity: z.coerce.number().min(0).default(1),
+  unitPrice: z.coerce.number().min(0, "Unit price cannot be negative"),
+  vatPercent: z.coerce.number().min(0).max(100).default(20),
 });
 
 export const InvoiceSchema = z.object({

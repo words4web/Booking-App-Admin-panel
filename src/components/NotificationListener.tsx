@@ -20,30 +20,45 @@ export default function NotificationListener() {
 
     const setupListener = async () => {
       unsubscribe = await listenToForegroundMessages((payload) => {
+        console.log("Full FCM Payload:", JSON.stringify(payload, null, 2));
+
         // ALWAYS invalidate notifications list and unread count
+        console.log("Invalidating notification queries...");
         queryClient.invalidateQueries({ queryKey: notificationKeys.all });
 
-        // Context-aware invalidation based on notification type
-        const type = payload.data?.type;
-        console.log("Notification type received:", type);
+        // Context-aware invalidation
+        // FCM might put data in different places depending on how it's sent
+        const data = payload.data || payload.additionalData || {};
+        const type = data.type;
+        console.log("Extracted Type:", type);
 
-        if (
-          type &&
-          [
-            "booking_assigned",
-            "booking_accepted",
-            "booking_started",
-            "booking_submitted",
-            "booking_approved",
-            "booking_rejected",
-          ].includes(type)
-        ) {
-          console.log("Invalidating bookings query...");
+        // List of booking related events
+        const bookingEvents = [
+          "booking_assigned",
+          "booking_accepted",
+          "booking_started",
+          "booking_submitted",
+          "booking_approved",
+          "booking_rejected",
+          "booking_resubmitted",
+        ];
+
+        if (type && bookingEvents.includes(type)) {
+          console.log(`Event [${type}] received. Invalidating bookings...`);
           queryClient.invalidateQueries({ queryKey: ["bookings"] });
+          // Also invalidate specific booking if needed? Usually list is enough
         }
 
-        if (type === "driver_signup" || type === "admin_new_driver") {
-          console.log("Invalidating drivers query...");
+        // List of driver related events
+        const driverEvents = [
+          "driver_signup",
+          "admin_new_driver",
+          "driver_verified",
+          "driver_updated",
+        ];
+
+        if (type && driverEvents.includes(type)) {
+          console.log(`Event [${type}] received. Invalidating drivers...`);
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
         }
       });

@@ -385,14 +385,10 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                         <Input
                           type="number"
                           min={0}
-                          step={1}
+                          step="any"
                           value={line.quantity}
                           onChange={(e) =>
-                            setLineField(
-                              i,
-                              "quantity",
-                              parseFloat(e.target.value) || 0,
-                            )
+                            setLineField(i, "quantity", e.target.value)
                           }
                           className="h-9 rounded-lg border-border/80 text-xs text-right w-20"
                         />
@@ -401,14 +397,10 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                         <Input
                           type="number"
                           min={0}
-                          step={0.01}
+                          step="any"
                           value={line.unitPrice}
                           onChange={(e) =>
-                            setLineField(
-                              i,
-                              "unitPrice",
-                              parseFloat(e.target.value) || 0,
-                            )
+                            setLineField(i, "unitPrice", e.target.value)
                           }
                           className="h-9 rounded-lg border-border/80 text-xs text-right w-24"
                         />
@@ -418,14 +410,10 @@ export function InvoiceForm({ initialData }: InvoiceFormProps) {
                           type="number"
                           min={0}
                           max={100}
-                          step={1}
+                          step="any"
                           value={line.vatPercent}
                           onChange={(e) =>
-                            setLineField(
-                              i,
-                              "vatPercent",
-                              parseFloat(e.target.value) || 0,
-                            )
+                            setLineField(i, "vatPercent", e.target.value)
                           }
                           className="h-9 rounded-lg border-border/80 text-xs text-right w-20"
                         />
