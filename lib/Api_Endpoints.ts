@@ -5,6 +5,7 @@ const API_ENDPOINTS = {
     LOGIN: `${Admin_Base}/auth/login`,
     PROFILE: `${Admin_Base}/auth/profile`,
     LOGOUT: `${Admin_Base}/auth/logout`,
+    REFRESH_TOKEN: `${Admin_Base}/auth/refresh-token`,
   },
   DRIVERS: {
     GET_ALL_DRIVERS: `${Admin_Base}/drivers`,

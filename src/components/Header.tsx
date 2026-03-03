@@ -3,7 +3,6 @@
 import { Bell, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useAuth } from "@/src/services/authManager";
 import { useUnreadCountQuery } from "../services/useNotificationQueries";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import Image from "next/image";
@@ -18,7 +17,6 @@ export function Header({
   companyName = "Super Admin",
   onMenuClick,
 }: HeaderProps) {
-  useAuth();
   const { data: unreadCount } = useUnreadCountQuery();
 
   return (

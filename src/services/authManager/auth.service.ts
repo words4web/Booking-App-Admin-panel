@@ -14,8 +14,10 @@ export const AuthService = {
     return response.data;
   },
 
-  logout: async (): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT);
+  logout: async (data?: {
+    fcmToken: string | null;
+  }): Promise<{ success: boolean; message: string }> => {
+    const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT, data);
     return response.data;
   },
 };
