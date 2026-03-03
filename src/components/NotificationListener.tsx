@@ -19,8 +19,33 @@ export default function NotificationListener() {
     let unsubscribe: (() => void) | undefined;
 
     const setupListener = async () => {
-      unsubscribe = await listenToForegroundMessages(() => {
+      unsubscribe = await listenToForegroundMessages((payload) => {
+        // ALWAYS invalidate notifications list and unread count
         queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+
+        // Context-aware invalidation based on notification type
+        const type = payload.data?.type;
+        console.log("Notification type received:", type);
+
+        if (
+          type &&
+          [
+            "booking_assigned",
+            "booking_accepted",
+            "booking_started",
+            "booking_submitted",
+            "booking_approved",
+            "booking_rejected",
+          ].includes(type)
+        ) {
+          console.log("Invalidating bookings query...");
+          queryClient.invalidateQueries({ queryKey: ["bookings"] });
+        }
+
+        if (type === "driver_signup" || type === "admin_new_driver") {
+          console.log("Invalidating drivers query...");
+          queryClient.invalidateQueries({ queryKey: ["drivers"] });
+        }
       });
     };
 
