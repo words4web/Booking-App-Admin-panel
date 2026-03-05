@@ -2,6 +2,8 @@ import { getToken, onMessage } from "firebase/messaging";
 import { getFirebaseMessaging } from "./firebase";
 import { toast } from "react-toastify";
 
+let lastMessageId: string | null = null;
+
 export const requestNotificationPermission = async () => {
   if (typeof window === "undefined" || !("Notification" in window)) return null;
 
@@ -26,16 +28,27 @@ export const requestNotificationPermission = async () => {
 };
 
 export const listenToForegroundMessages = async (
-  callback?: (payload: {
-    notification?: { title?: string; body?: string };
-    [key: string]: any;
-  }) => void,
+  callback?: (payload: any) => void,
 ) => {
   const messaging = await getFirebaseMessaging();
   if (!messaging) return;
 
+  console.log("Setting up foreground message listener...");
+
   return onMessage(messaging, (payload) => {
-    console.log("Foreground message:", payload);
+    console.log("FCM Payload Received in lib/notifications.ts:", payload);
+
+    // Deduplicate notifications based on messageId
+    const messageId = (payload as any).messageId;
+    if (messageId && messageId === lastMessageId) {
+      console.log(
+        "Duplicate notification detected via messageId, skipping UI.",
+      );
+      return;
+    }
+    if (messageId) {
+      lastMessageId = messageId;
+    }
 
     const title = payload.notification?.title || "New Notification";
     const body = payload.notification?.body || "";
@@ -43,15 +56,18 @@ export const listenToForegroundMessages = async (
     // 1. Show Toast
     toast.info(`${title}${body ? `: ${body}` : ""}`);
 
-    // 2. Show System Notification (if permission granted and app is in foreground)
+    // 2. Show System Notification
     if (Notification.permission === "granted") {
       new Notification(title, {
         body: body,
-        icon: "/logo.png", // Ensure this exists or use a default
+        icon: "/divineLogo.png",
       });
     }
 
-    // 3. Execute callback if provided
-    if (callback) callback(payload);
+    // 3. Execute callback
+    if (callback) {
+      console.log("Executing NotificationListener callback...");
+      callback(payload);
+    }
   });
 };

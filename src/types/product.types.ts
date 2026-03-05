@@ -39,6 +39,7 @@ export interface ProductFilters {
   limit?: number;
   companyId?: string;
   search?: string;
+  getAll?: boolean;
 }
 
 export interface ProductResponse {

@@ -4,12 +4,14 @@ import { FormikProps } from "formik";
 import { BookingFormData } from "@/src/types/booking.types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface LocationsTabProps {
   formik: FormikProps<BookingFormData>;
+  getFieldError: (name: string) => string | null;
 }
 
-export function LocationsTab({ formik }: LocationsTabProps) {
+export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
   return (
     <div className="mt-0 space-y-12 animate-in fade-in duration-500">
       {/* Pickup Address */}
@@ -27,9 +29,18 @@ export function LocationsTab({ formik }: LocationsTabProps) {
             </Label>
             <Input
               {...formik.getFieldProps("pickupLocation.addressLine1")}
-              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
+              className={cn(
+                "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
+                getFieldError("pickupLocation.addressLine1") &&
+                  "border-destructive",
+              )}
               placeholder="e.g. 123 High Street"
             />
+            {getFieldError("pickupLocation.addressLine1") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("pickupLocation.addressLine1")}
+              </p>
+            )}
           </div>
           <div className="md:col-span-2 space-y-1.5">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -47,9 +58,17 @@ export function LocationsTab({ formik }: LocationsTabProps) {
             </Label>
             <Input
               {...formik.getFieldProps("pickupLocation.city")}
-              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
+              className={cn(
+                "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
+                getFieldError("pickupLocation.city") && "border-destructive",
+              )}
               placeholder="e.g. London"
             />
+            {getFieldError("pickupLocation.city") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("pickupLocation.city")}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -67,9 +86,18 @@ export function LocationsTab({ formik }: LocationsTabProps) {
             </Label>
             <Input
               {...formik.getFieldProps("pickupLocation.postcode")}
-              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
+              className={cn(
+                "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
+                getFieldError("pickupLocation.postcode") &&
+                  "border-destructive",
+              )}
               placeholder="e.g. SW1A 1AA"
             />
+            {getFieldError("pickupLocation.postcode") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("pickupLocation.postcode")}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -99,9 +127,18 @@ export function LocationsTab({ formik }: LocationsTabProps) {
             </Label>
             <Input
               {...formik.getFieldProps("dropLocation.addressLine1")}
-              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
+              className={cn(
+                "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
+                getFieldError("dropLocation.addressLine1") &&
+                  "border-destructive",
+              )}
               placeholder="e.g. 123 High Street"
             />
+            {getFieldError("dropLocation.addressLine1") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("dropLocation.addressLine1")}
+              </p>
+            )}
           </div>
           <div className="md:col-span-2 space-y-1.5">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -119,9 +156,17 @@ export function LocationsTab({ formik }: LocationsTabProps) {
             </Label>
             <Input
               {...formik.getFieldProps("dropLocation.city")}
-              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
+              className={cn(
+                "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
+                getFieldError("dropLocation.city") && "border-destructive",
+              )}
               placeholder="e.g. London"
             />
+            {getFieldError("dropLocation.city") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("dropLocation.city")}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -139,9 +184,17 @@ export function LocationsTab({ formik }: LocationsTabProps) {
             </Label>
             <Input
               {...formik.getFieldProps("dropLocation.postcode")}
-              className="h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm"
+              className={cn(
+                "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
+                getFieldError("dropLocation.postcode") && "border-destructive",
+              )}
               placeholder="e.g. SW1A 1AA"
             />
+            {getFieldError("dropLocation.postcode") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("dropLocation.postcode")}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">

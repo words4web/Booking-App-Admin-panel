@@ -44,7 +44,34 @@ export function ClientForm({
 
   const tabOrder = ["contact", "legal", "address"];
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Trigger validation and show errors for the current tab fields
+    if (activeTab === "contact") {
+      formik.setTouched({
+        ...formik.touched,
+        contactInfo: {
+          ...formik.touched.contactInfo,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+        },
+      });
+    } else if (activeTab === "legal") {
+      formik.setTouched({
+        ...formik.touched,
+        companyId: true,
+        legalDetails: {
+          ...(formik.touched.legalDetails as any),
+          legalName: true,
+          registrationNumber: true,
+          vatNumber: true,
+        },
+      });
+    }
+
+    await formik.validateForm();
+
     const currentIndex = tabOrder.indexOf(activeTab);
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
@@ -130,13 +157,13 @@ export function ClientForm({
       <form onSubmit={formik.handleSubmit} className="space-y-6">
         <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem]">
           <Tabs value={activeTab} className="w-full">
-            <div className="px-8 pt-8">
-              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit">
+            <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit inline-flex min-w-min">
                 {ClientTabsData.map((data) => (
                   <TabsTrigger
                     key={data.id}
                     value={data.id}
-                    className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg pointer-events-none">
+                    className="rounded-xl px-4 sm:px-6 py-2.5 font-bold text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg pointer-events-none">
                     {data.label}
                   </TabsTrigger>
                 ))}

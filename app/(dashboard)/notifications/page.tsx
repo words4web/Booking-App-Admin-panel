@@ -35,11 +35,13 @@ export default function NotificationsPage() {
     | undefined;
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="container mx-auto py-4 sm:py-8 px-4 max-w-4xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Notifications
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Stay updated with the latest activities.
           </p>
         </div>
@@ -58,10 +60,15 @@ export default function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-xl bg-muted/50">
-          <BellOff className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-          <p className="text-muted-foreground font-medium">
+        <div className="flex flex-col items-center justify-center p-16 border border-dashed rounded-2xl bg-slate-50 shadow-sm border-slate-200">
+          <div className="h-20 w-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 shadow-inner pointer-events-none">
+            <BellOff className="h-10 w-10 text-slate-300" />
+          </div>
+          <p className="text-xl font-bold text-slate-700 tracking-tight">
             No notifications yet
+          </p>
+          <p className="text-slate-500 mt-2 font-medium">
+            When you get notifications, they'll show up here.
           </p>
         </div>
       ) : (
@@ -72,31 +79,31 @@ export default function NotificationsPage() {
               onClick={() =>
                 !notification.isRead && markRead.mutate(notification._id)
               }
-              className={`p-6 rounded-xl border transition-all cursor-pointer group ${
+              className={`p-4 sm:p-6 rounded-2xl border transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md ${
                 notification.isRead
-                  ? "bg-background border-border"
-                  : "bg-primary/5 border-primary/20 hover:bg-primary/10"
+                  ? "bg-white border-slate-100"
+                  : "bg-blue-50/50 border-blue-200 hover:bg-blue-50"
               }`}>
-              <div className="flex items-start gap-4">
+              <div className="flex gap-4 sm:gap-5">
                 <div
-                  className={`mt-1 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  className={`mt-1 h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner ${
                     notification.isRead
-                      ? "bg-muted text-muted-foreground"
-                      : "bg-primary text-primary-foreground"
+                      ? "bg-slate-100 text-slate-400"
+                      : "bg-primary text-primary-foreground shadow-primary/20"
                   }`}>
-                  <Bell className="h-5 w-5" />
+                  <Bell className="h-6 w-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1.5 sm:mb-2 gap-1.5 sm:gap-2">
                     <h3
-                      className={`font-semibold transition-colors ${
+                      className={`text-base sm:text-lg font-bold tracking-tight transition-colors leading-tight ${
                         notification.isRead
-                          ? "text-foreground/70"
-                          : "text-foreground"
+                          ? "text-slate-700"
+                          : "text-slate-900"
                       }`}>
                       {notification.title}
                     </h3>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    <span className="text-[10px] sm:text-xs font-bold whitespace-nowrap bg-slate-100 px-3 py-1 rounded-full w-fit text-red-600">
                       {format(
                         new Date(notification.createdAt),
                         "MMM d, h:mm a",
@@ -106,14 +113,14 @@ export default function NotificationsPage() {
                   <p
                     className={`text-sm leading-relaxed ${
                       notification.isRead
-                        ? "text-muted-foreground/80"
-                        : "text-muted-foreground"
+                        ? "text-slate-500"
+                        : "text-slate-700 font-medium"
                     }`}>
                     {notification.body}
                   </p>
                 </div>
                 {!notification.isRead && (
-                  <div className="h-2 w-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <div className="h-3 w-3 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_10px_rgba(var(--primary),0.5)] border-2 border-white ring-2 ring-primary/20" />
                 )}
               </div>
             </div>

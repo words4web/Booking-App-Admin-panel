@@ -81,13 +81,13 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
 
       <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
         <Tabs defaultValue="profile" className="w-full">
-          <div className="px-8 pt-8">
-            <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit">
+          <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit inline-flex min-w-min">
               {DriverTabsData.map((data) => (
                 <TabsTrigger
                   key={data.id}
                   value={data.id}
-                  className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all data-[state=active]:bg-primary data-[state=active]:text-white">
+                  className="rounded-xl px-4 sm:px-6 py-2.5 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all data-[state=active]:bg-primary data-[state=active]:text-white">
                   {data.label}
                 </TabsTrigger>
               ))}

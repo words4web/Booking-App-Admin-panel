@@ -225,20 +225,12 @@ export function ProductForm({
                       <Input
                         id="basePrice"
                         type="number"
-                        step="1"
+                        step="any"
                         min={0}
                         placeholder="0.00"
                         {...formik.getFieldProps("basePrice")}
-                        value={
-                          formik.values.basePrice === 0 &&
-                          !formik.getFieldMeta("basePrice").touched
-                            ? ""
-                            : formik.values.basePrice
-                        }
                         onChange={(e) => {
-                          const val =
-                            e.target.value === "" ? 0 : Number(e.target.value);
-                          formik.setFieldValue("basePrice", val);
+                          formik.setFieldValue("basePrice", e.target.value);
                         }}
                         className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("basePrice") ? "border-destructive" : ""}`}
                       />
@@ -280,20 +272,12 @@ export function ProductForm({
                       <Input
                         id="baseCharge"
                         type="number"
-                        step="0.01"
+                        step="any"
                         min="0"
                         placeholder="0.00"
                         {...formik.getFieldProps("baseCharge")}
-                        value={
-                          formik.values.baseCharge === 0 &&
-                          !formik.getFieldMeta("baseCharge").touched
-                            ? ""
-                            : formik.values.baseCharge
-                        }
                         onChange={(e) => {
-                          const val =
-                            e.target.value === "" ? 0 : Number(e.target.value);
-                          formik.setFieldValue("baseCharge", val);
+                          formik.setFieldValue("baseCharge", e.target.value);
                         }}
                         className="h-11 rounded-lg border-border"
                       />
@@ -307,20 +291,12 @@ export function ProductForm({
                       <Input
                         id="hourlyRate"
                         type="number"
-                        step="0.01"
+                        step="any"
                         min="0"
                         placeholder="0.00"
                         {...formik.getFieldProps("hourlyRate")}
-                        value={
-                          formik.values.hourlyRate === 0 &&
-                          !formik.getFieldMeta("hourlyRate").touched
-                            ? ""
-                            : formik.values.hourlyRate
-                        }
                         onChange={(e) => {
-                          const val =
-                            e.target.value === "" ? 0 : Number(e.target.value);
-                          formik.setFieldValue("hourlyRate", val);
+                          formik.setFieldValue("hourlyRate", e.target.value);
                         }}
                         className="h-11 rounded-lg border-border"
                       />
@@ -372,28 +348,16 @@ export function ProductForm({
                           </Label>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="any"
                             min="0"
                             placeholder="0.00"
                             {...formik.getFieldProps(
                               `extraCharges.${index}.amount`,
                             )}
-                            value={
-                              formik.values.extraCharges[index].amount === 0 &&
-                              !formik.getFieldMeta(
-                                `extraCharges.${index}.amount`,
-                              ).touched
-                                ? ""
-                                : formik.values.extraCharges[index].amount
-                            }
                             onChange={(e) => {
-                              const val =
-                                e.target.value === ""
-                                  ? 0
-                                  : Number(e.target.value);
                               formik.setFieldValue(
                                 `extraCharges.${index}.amount`,
-                                val,
+                                e.target.value,
                               );
                             }}
                             className="h-10 rounded-lg border-border"

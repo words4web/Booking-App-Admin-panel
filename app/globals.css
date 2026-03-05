@@ -66,8 +66,15 @@
     margin: 0;
   }
 
-  /* Hide spin-button for Firefox */
   input[type="number"] {
     -moz-appearance: textfield;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

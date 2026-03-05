@@ -1,6 +1,8 @@
 "use client";
 
 import { useAuth } from "@/src/services/authManager";
+import { useLogoutMutation } from "@/src/services/authManager/useAuthMutations";
+import { FCM_TOKEN } from "@/src/constants/user.constants";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +16,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, User, Mail, Shield } from "lucide-react";
 
 export default function SettingsPage() {
-  const { user, removeUserContext } = useAuth();
-  // const { data: settings, isLoading } = useSettingsQuery();
-  // const updatePreference = useUpdateNotificationPreferenceMutation();
+  const { user } = useAuth();
+  const { mutate: logout, isPending } = useLogoutMutation();
 
-  // if (isLoading) {
-  //   return <CommonLoader message="Loading settings..." />;
-  // }
+  const onLogout = () => {
+    const fcmToken = localStorage.getItem(FCM_TOKEN);
+    logout({ fcmToken });
+  };
 
   return (
     <div className="container mx-auto py-10 px-4 max-w-4xl space-y-8">
@@ -121,11 +123,12 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="p-8 pt-0!" style={{ paddingTop: 0 }}>
             <Button
-              onClick={removeUserContext}
+              onClick={onLogout}
+              disabled={isPending}
               variant="destructive"
               className="h-12 px-8 rounded-xl font-bold text-sm uppercase tracking-wider transition-all gap-2 bg-destructive/10 hover:bg-destructive/20 text-destructive border-none">
               <LogOut className="h-4 w-4" />
-              Sign Out
+              {isPending ? "Signing Out..." : "Sign Out"}
             </Button>
           </CardContent>
         </Card>

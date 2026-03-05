@@ -27,6 +27,7 @@ interface ProductsTabProps {
   products: Product[];
   addProduct: (productId: string) => void;
   removeProduct: (index: number) => void;
+  getFieldError: (name: string) => string | null;
 }
 
 export function ProductsTab({
@@ -34,6 +35,7 @@ export function ProductsTab({
   products,
   addProduct,
   removeProduct,
+  getFieldError,
 }: ProductsTabProps) {
   const [open, setOpen] = useState(false);
 
@@ -156,20 +158,25 @@ export function ProductsTab({
                 <Input
                   min={1}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.quantity`)}
-                  value={
-                    formik.values.products[index].quantity === 0 &&
-                    !formik.getFieldMeta(`products.${index}.quantity`).touched
-                      ? ""
-                      : formik.values.products[index].quantity
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.quantity`, val);
+                    formik.setFieldValue(
+                      `products.${index}.quantity`,
+                      e.target.value,
+                    );
                   }}
-                  className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm text-center font-bold"
+                  className={cn(
+                    "h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm text-center font-bold",
+                    getFieldError(`products.${index}.quantity`) &&
+                      "border-destructive",
+                  )}
                 />
+                {getFieldError(`products.${index}.quantity`) && (
+                  <p className="text-[10px] text-destructive font-bold text-center mt-1">
+                    {getFieldError(`products.${index}.quantity`)}
+                  </p>
+                )}
               </div>
 
               <div className="md:col-span-1 space-y-1.5">
@@ -179,20 +186,25 @@ export function ProductsTab({
                 <Input
                   min={0}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.rate`)}
-                  value={
-                    formik.values.products[index].rate === 0 &&
-                    !formik.getFieldMeta(`products.${index}.rate`).touched
-                      ? ""
-                      : formik.values.products[index].rate
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.rate`, val);
+                    formik.setFieldValue(
+                      `products.${index}.rate`,
+                      e.target.value,
+                    );
                   }}
-                  className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
+                  className={cn(
+                    "h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium",
+                    getFieldError(`products.${index}.rate`) &&
+                      "border-destructive",
+                  )}
                 />
+                {getFieldError(`products.${index}.rate`) && (
+                  <p className="text-[10px] text-destructive font-bold mt-1">
+                    {getFieldError(`products.${index}.rate`)}
+                  </p>
+                )}
               </div>
 
               <div className="md:col-span-1 space-y-1.5">
@@ -202,17 +214,13 @@ export function ProductsTab({
                 <Input
                   min={0}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.baseCharge`)}
-                  value={
-                    formik.values.products[index].baseCharge === 0 &&
-                    !formik.getFieldMeta(`products.${index}.baseCharge`).touched
-                      ? ""
-                      : formik.values.products[index].baseCharge
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.baseCharge`, val);
+                    formik.setFieldValue(
+                      `products.${index}.baseCharge`,
+                      e.target.value,
+                    );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
                 />
@@ -225,17 +233,13 @@ export function ProductsTab({
                 <Input
                   min={0}
                   type="number"
+                  step="any"
                   {...formik.getFieldProps(`products.${index}.hourlyRate`)}
-                  value={
-                    formik.values.products[index].hourlyRate === 0 &&
-                    !formik.getFieldMeta(`products.${index}.hourlyRate`).touched
-                      ? ""
-                      : formik.values.products[index].hourlyRate
-                  }
                   onChange={(e) => {
-                    const val =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    formik.setFieldValue(`products.${index}.hourlyRate`, val);
+                    formik.setFieldValue(
+                      `products.${index}.hourlyRate`,
+                      e.target.value,
+                    );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
                 />
@@ -278,9 +282,30 @@ export function ProductsTab({
           </div>
         ))}
         {formik.values.products.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-20 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/30">
-            <Package className="h-12 w-12 text-slate-300 mb-4" />
-            <p className="text-slate-500 font-bold">No products added yet</p>
+          <div
+            className={cn(
+              "flex flex-col items-center justify-center p-20 rounded-3xl border-2 border-dashed bg-slate-50/30",
+              getFieldError("products")
+                ? "border-destructive bg-destructive/5"
+                : "border-slate-200",
+            )}>
+            <Package
+              className={cn(
+                "h-12 w-12 mb-4",
+                getFieldError("products")
+                  ? "text-destructive"
+                  : "text-slate-300",
+              )}
+            />
+            <p
+              className={cn(
+                "font-bold",
+                getFieldError("products")
+                  ? "text-destructive"
+                  : "text-slate-500",
+              )}>
+              {getFieldError("products") || "No products added yet"}
+            </p>
             <p className="text-slate-400 text-sm">
               Search and select a product above to start pricing this job.
             </p>

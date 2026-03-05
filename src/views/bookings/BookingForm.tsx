@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { BookingSchema } from "@/src/schemas/validationSchemas";
@@ -116,7 +117,7 @@ export function BookingForm({
   });
   const filteredClients = filteredClientsData?.clients || [];
 
-  const { data: productsData } = useAllProductsQuery({});
+  const { data: productsData } = useAllProductsQuery({ getAll: true });
   const { data: driversData } = useAllDriversQuery(1, 200);
   const { data: vehiclesData } = useVehiclesQuery(1, 200);
 
@@ -130,14 +131,65 @@ export function BookingForm({
   };
 
   const getFieldError = (name: string): string | null => {
-    const error = formik.errors as Record<string, any>;
-    const touched = formik.touched as Record<string, any>;
+    const error = formik.errors as any;
+    const touched = formik.touched as any;
 
     if (name.includes(".")) {
       const parts = name.split(".");
-      return touched[parts[0]]?.[parts[1]] ? error[parts[0]]?.[parts[1]] : null;
+      let errVal = error;
+      let touchVal = touched;
+
+      for (const part of parts) {
+        errVal = errVal?.[part];
+        touchVal = touchVal?.[part];
+      }
+      return touchVal ? (errVal as string) : null;
     }
-    return touched[name] ? error[name] : null;
+    return touched[name] ? (error[name] as string) : null;
+  };
+
+  const handleConfirmClick = async () => {
+    // Touch all important fields to reveal errors
+    formik.setTouched({
+      companyId: true,
+      clientId: true,
+      serviceType: true,
+      scheduledDateTime: true,
+      pickupLocation: {
+        addressLine1: true,
+        city: true,
+        postcode: true,
+      },
+      dropLocation: {
+        addressLine1: true,
+        city: true,
+        postcode: true,
+      },
+      products: formik.values.products.map(() => ({
+        productId: true,
+        quantity: true,
+        rate: true,
+      })),
+    });
+
+    const errors = await formik.validateForm();
+    if (Object.keys(errors).length > 0) {
+      // If there are errors, we might want to switch to the first tab with errors
+      if (
+        errors.companyId ||
+        errors.clientId ||
+        errors.scheduledDateTime ||
+        errors.serviceType
+      ) {
+        setActiveTab("details");
+      } else if (errors.pickupLocation || errors.dropLocation) {
+        setActiveTab("locations");
+      } else if (errors.products) {
+        setActiveTab("products");
+      }
+    }
+
+    formik.handleSubmit();
   };
 
   const addProduct = (productId: string) => {
@@ -187,7 +239,18 @@ export function BookingForm({
           </p>
         </div>
         <div className="flex gap-3">
-          {initialData?.status === BookingStatus.SCHEDULED ||
+          {initialData?.status === BookingStatus.COMPLETED && (
+            <Button
+              asChild
+              className="rounded-xl px-6 h-11 font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 gap-2">
+              <Link href={`/invoices/new?bookingId=${initialData._id}`}>
+                <ClipboardCheck className="h-5 w-5" />
+                Create Invoice
+              </Link>
+            </Button>
+          )}
+          {!initialData ||
+          initialData?.status === BookingStatus.SCHEDULED ||
           initialData?.status === BookingStatus.ACCEPTED ? (
             <>
               <Button
@@ -198,7 +261,8 @@ export function BookingForm({
                 Cancel
               </Button>
               <Button
-                type="submit"
+                type="button"
+                onClick={handleConfirmClick}
                 disabled={isLoading}
                 className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
                 {isLoading
@@ -221,28 +285,30 @@ export function BookingForm({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList
-          className={`grid w-full ${initialData?.status === BookingStatus.JOB_SUBMITTED || initialData?.status === BookingStatus.JOB_REJECTED || BookingStatus.COMPLETED ? "grid-cols-5" : "grid-cols-4"} h-14 p-1 bg-slate-100 rounded-2xl mb-8`}>
-          <TabsTrigger value="details" className={tabClassName}>
-            <Calendar className="h-4 w-4 mr-2" /> Details
-          </TabsTrigger>
-          <TabsTrigger value="locations" className={tabClassName}>
-            <MapPin className="h-4 w-4 mr-2" /> Locations
-          </TabsTrigger>
-          <TabsTrigger value="products" className={tabClassName}>
-            <Package className="h-4 w-4 mr-2" /> Products
-          </TabsTrigger>
-          <TabsTrigger value="driver" className={tabClassName}>
-            <Truck className="h-4 w-4 mr-2" /> Assignment
-          </TabsTrigger>
-          {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
-            initialData?.status === BookingStatus.JOB_REJECTED ||
-            initialData?.status === BookingStatus.COMPLETED) && (
-            <TabsTrigger value="review" className={tabClassName}>
-              <ClipboardCheck className="h-4 w-4 mr-2" /> Review
+        <div className="overflow-x-auto whitespace-nowrap scrollbar-hide mb-8">
+          <TabsList
+            className={`inline-flex min-w-max w-full sm:w-auto h-14 p-1 bg-slate-100 rounded-2xl`}>
+            <TabsTrigger value="details" className={tabClassName}>
+              <Calendar className="h-4 w-4 mr-2" /> Details
             </TabsTrigger>
-          )}
-        </TabsList>
+            <TabsTrigger value="locations" className={tabClassName}>
+              <MapPin className="h-4 w-4 mr-2" /> Locations
+            </TabsTrigger>
+            <TabsTrigger value="products" className={tabClassName}>
+              <Package className="h-4 w-4 mr-2" /> Products
+            </TabsTrigger>
+            <TabsTrigger value="driver" className={tabClassName}>
+              <Truck className="h-4 w-4 mr-2" /> Assignment
+            </TabsTrigger>
+            {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
+              initialData?.status === BookingStatus.JOB_REJECTED ||
+              initialData?.status === BookingStatus.COMPLETED) && (
+              <TabsTrigger value="review" className={tabClassName}>
+                <ClipboardCheck className="h-4 w-4 mr-2" /> Review
+              </TabsTrigger>
+            )}
+          </TabsList>
+        </div>
 
         <Card className="border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden">
           <CardContent className="p-8">
@@ -256,13 +322,16 @@ export function BookingForm({
                 onCompanyChange={handleCompanyChange}
               />
             )}
-            {activeTab === "locations" && <LocationsTab formik={formik} />}
+            {activeTab === "locations" && (
+              <LocationsTab formik={formik} getFieldError={getFieldError} />
+            )}
             {activeTab === "products" && (
               <ProductsTab
                 formik={formik}
                 products={products}
                 addProduct={addProduct}
                 removeProduct={removeProduct}
+                getFieldError={getFieldError}
               />
             )}
             {activeTab === "driver" && (
@@ -270,6 +339,7 @@ export function BookingForm({
                 formik={formik}
                 drivers={drivers}
                 vehicles={vehicles}
+                getFieldError={getFieldError}
               />
             )}
             {activeTab === "review" && initialData && (

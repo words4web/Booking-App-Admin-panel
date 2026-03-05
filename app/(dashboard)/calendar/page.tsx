@@ -2,7 +2,7 @@ import { BookingCalendar } from "@/src/views/calendar/BookingCalendar";
 
 export default function CalendarPage() {
   return (
-    <div className="h-full p-6 flex flex-col">
+    <div className="h-full p-0flex flex-col">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-slate-900">Booking Calendar</h1>
         <p className="text-sm text-slate-500 font-medium mt-1">

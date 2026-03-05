@@ -1,4 +1,8 @@
-import { InvoiceStatus, PaymentStatus, TransactionType } from '../enums/invoice.enum';
+import {
+  InvoiceStatus,
+  PaymentStatus,
+  TransactionType,
+} from "../enums/invoice.enum";
 
 export interface IInvoiceLine {
   productId?: string;
@@ -23,18 +27,56 @@ export interface ITaxBreakdownRow {
 export interface Invoice {
   _id: string;
   invoiceNumber: string;
-  companyId: string | { _id: string; name: string; vatNumber?: string; registrationNumber: string; bankName?: string; bankCode?: string; bankAccountNumber?: string };
-  clientId: string | { _id: string; contactInfo: { firstName: string; lastName: string }; legalDetails: { legalName: string }; address: { addressLine1: string; city: string; postcode: string; country: string } };
+  companyId:
+    | string
+    | {
+        _id: string;
+        name: string;
+        vatNumber?: string;
+        registrationNumber: string;
+        bankName?: string;
+        bankCode?: string;
+        bankAccountNumber?: string;
+        adminEmail?: string;
+        telephone?: string;
+        website?: string;
+        address?: {
+          addressLine1: string;
+          addressLine2?: string;
+          city: string;
+          postcode: string;
+          country: string;
+        };
+      };
+  clientId:
+    | string
+    | {
+        _id: string;
+        contactInfo: { firstName: string; lastName: string };
+        legalDetails: { legalName: string };
+        address: {
+          addressLine1: string;
+          city: string;
+          postcode: string;
+          country: string;
+        };
+      };
   bookingId: string | { _id: string; bookingId: string };
   invoiceDate: string;
   dueDate?: string;
   transactionType: TransactionType;
   lineItems: IInvoiceLine[];
+  billingName?: string;
+  billingAddress?: string;
+  companyAddress?: string;
+  waitingMinutes?: number;
+  waitingTotal?: number;
   subtotal: number;
   totalVat: number;
   totalAmount: number;
   taxBreakdown: ITaxBreakdownRow[];
   notes?: string;
+  terms?: string;
   paymentLink?: string;
   paymentStatus: PaymentStatus;
   paidAt?: string;
@@ -58,10 +100,19 @@ export interface InvoiceFormData {
   companyId?: string;
   clientId: string;
   bookingId: string;
+  invoiceDate: string;
   dueDate?: string;
   transactionType: TransactionType;
   lineItems: InvoiceLineFormData[];
+  billingName?: string;
+  billingAddress?: string;
+  companyAddress?: string;
+  waitingMinutes?: number;
+  waitingTotal?: number;
+  status?: InvoiceStatus;
+  paymentStatus?: PaymentStatus;
   notes?: string;
+  terms?: string;
   paymentLink?: string;
 }
 

@@ -10,6 +10,15 @@ export interface Company {
   bankCode?: string;
   bankName?: string;
   adminEmail: string;
+  telephone?: string;
+  website?: string;
+  address?: {
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    postcode: string;
+    country: string;
+  };
   adminUserId: string;
   createdAt: string;
   updatedAt: string;

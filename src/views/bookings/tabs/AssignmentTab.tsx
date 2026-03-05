@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -24,12 +25,14 @@ interface AssignmentTabProps {
   formik: FormikProps<BookingFormData>;
   drivers: Driver[];
   vehicles: Vehicle[];
+  getFieldError: (name: string) => string | null;
 }
 
 export function AssignmentTab({
   formik,
   drivers,
   vehicles,
+  getFieldError,
 }: AssignmentTabProps) {
   const selectedDriverId = formik.values.assignedDriverId;
 
@@ -39,6 +42,7 @@ export function AssignmentTab({
       BookingService.getAll({
         assignedDriverId: selectedDriverId,
         limit: 100,
+        getAll: true,
       }),
     enabled: !!selectedDriverId,
   });
@@ -79,11 +83,14 @@ export function AssignmentTab({
                 )
               }
               value={formik.values.assignedDriverId || "none"}>
-              <SelectTrigger className="w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all shadow-sm">
-                <SelectValue placeholder="Unassigned" />
+              <SelectTrigger
+                className={cn(
+                  "w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all shadow-sm",
+                  getFieldError("assignedDriverId") && "border-destructive",
+                )}>
+                <SelectValue placeholder="Select a driver" />
               </SelectTrigger>
               <SelectContent className="bg-white w-[--radix-select-trigger-width]">
-                <SelectItem value="none">Unassigned</SelectItem>
                 {drivers &&
                   drivers?.length > 0 &&
                   drivers?.map((driver) => {
@@ -96,6 +103,11 @@ export function AssignmentTab({
               </SelectContent>
             </Select>
           </div>
+          {getFieldError("assignedDriverId") && (
+            <p className="text-xs text-destructive font-medium">
+              {getFieldError("assignedDriverId")}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -108,11 +120,14 @@ export function AssignmentTab({
                 formik.setFieldValue("vehicleId", val === "none" ? "" : val)
               }
               value={formik.values.vehicleId || "none"}>
-              <SelectTrigger className="w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all shadow-sm">
-                <SelectValue placeholder="No Vehicle" />
+              <SelectTrigger
+                className={cn(
+                  "w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all shadow-sm",
+                  getFieldError("vehicleId") && "border-destructive",
+                )}>
+                <SelectValue placeholder="Select a vehicle" />
               </SelectTrigger>
               <SelectContent className="bg-white w-[--radix-select-trigger-width]">
-                <SelectItem value="none">No Vehicle</SelectItem>
                 {vehicles &&
                   vehicles?.length > 0 &&
                   vehicles?.map((vehicle) => (
@@ -123,6 +138,11 @@ export function AssignmentTab({
               </SelectContent>
             </Select>
           </div>
+          {getFieldError("vehicleId") && (
+            <p className="text-xs text-destructive font-medium">
+              {getFieldError("vehicleId")}
+            </p>
+          )}
         </div>
       </div>
 

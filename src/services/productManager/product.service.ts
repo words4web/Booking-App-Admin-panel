@@ -14,6 +14,7 @@ export const ProductService = {
     if (filters.limit) params.append("limit", filters.limit.toString());
     if (filters.companyId) params.append("companyId", filters.companyId);
     if (filters.search) params.append("search", filters.search);
+    if (filters.getAll) params.append("getAll", filters.getAll.toString());
 
     const response = await api.get<ProductsResponse>(
       `${API_ENDPOINTS.PRODUCTS.GET_ALL}?${params.toString()}`,
