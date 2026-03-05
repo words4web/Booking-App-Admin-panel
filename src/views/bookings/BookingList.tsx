@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -259,6 +259,19 @@ export function BookingList() {
                           </td>
                           <td className="px-8 py-5 align-middle text-right">
                             <div className="flex justify-end gap-2">
+                              {status === BookingStatus.COMPLETED && (
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-md border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+                                  asChild
+                                  title="Create Invoice">
+                                  <Link
+                                    href={`/invoices/new?bookingId=${booking?._id}`}>
+                                    <FileText className="h-3.5 w-3.5" />
+                                  </Link>
+                                </Button>
+                              )}
                               <Button
                                 variant="outline"
                                 size="icon"

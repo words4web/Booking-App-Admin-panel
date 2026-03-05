@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { BookingSchema } from "@/src/schemas/validationSchemas";
@@ -130,14 +131,65 @@ export function BookingForm({
   };
 
   const getFieldError = (name: string): string | null => {
-    const error = formik.errors as Record<string, any>;
-    const touched = formik.touched as Record<string, any>;
+    const error = formik.errors as any;
+    const touched = formik.touched as any;
 
     if (name.includes(".")) {
       const parts = name.split(".");
-      return touched[parts[0]]?.[parts[1]] ? error[parts[0]]?.[parts[1]] : null;
+      let errVal = error;
+      let touchVal = touched;
+
+      for (const part of parts) {
+        errVal = errVal?.[part];
+        touchVal = touchVal?.[part];
+      }
+      return touchVal ? (errVal as string) : null;
     }
-    return touched[name] ? error[name] : null;
+    return touched[name] ? (error[name] as string) : null;
+  };
+
+  const handleConfirmClick = async () => {
+    // Touch all important fields to reveal errors
+    formik.setTouched({
+      companyId: true,
+      clientId: true,
+      serviceType: true,
+      scheduledDateTime: true,
+      pickupLocation: {
+        addressLine1: true,
+        city: true,
+        postcode: true,
+      },
+      dropLocation: {
+        addressLine1: true,
+        city: true,
+        postcode: true,
+      },
+      products: formik.values.products.map(() => ({
+        productId: true,
+        quantity: true,
+        rate: true,
+      })),
+    });
+
+    const errors = await formik.validateForm();
+    if (Object.keys(errors).length > 0) {
+      // If there are errors, we might want to switch to the first tab with errors
+      if (
+        errors.companyId ||
+        errors.clientId ||
+        errors.scheduledDateTime ||
+        errors.serviceType
+      ) {
+        setActiveTab("details");
+      } else if (errors.pickupLocation || errors.dropLocation) {
+        setActiveTab("locations");
+      } else if (errors.products) {
+        setActiveTab("products");
+      }
+    }
+
+    formik.handleSubmit();
   };
 
   const addProduct = (productId: string) => {
@@ -187,7 +239,18 @@ export function BookingForm({
           </p>
         </div>
         <div className="flex gap-3">
-          {initialData?.status === BookingStatus.SCHEDULED ||
+          {initialData?.status === BookingStatus.COMPLETED && (
+            <Button
+              asChild
+              className="rounded-xl px-6 h-11 font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 gap-2">
+              <Link href={`/invoices/new?bookingId=${initialData._id}`}>
+                <ClipboardCheck className="h-5 w-5" />
+                Create Invoice
+              </Link>
+            </Button>
+          )}
+          {!initialData ||
+          initialData?.status === BookingStatus.SCHEDULED ||
           initialData?.status === BookingStatus.ACCEPTED ? (
             <>
               <Button
@@ -198,7 +261,8 @@ export function BookingForm({
                 Cancel
               </Button>
               <Button
-                type="submit"
+                type="button"
+                onClick={handleConfirmClick}
                 disabled={isLoading}
                 className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
                 {isLoading
@@ -258,13 +322,16 @@ export function BookingForm({
                 onCompanyChange={handleCompanyChange}
               />
             )}
-            {activeTab === "locations" && <LocationsTab formik={formik} />}
+            {activeTab === "locations" && (
+              <LocationsTab formik={formik} getFieldError={getFieldError} />
+            )}
             {activeTab === "products" && (
               <ProductsTab
                 formik={formik}
                 products={products}
                 addProduct={addProduct}
                 removeProduct={removeProduct}
+                getFieldError={getFieldError}
               />
             )}
             {activeTab === "driver" && (
@@ -272,6 +339,7 @@ export function BookingForm({
                 formik={formik}
                 drivers={drivers}
                 vehicles={vehicles}
+                getFieldError={getFieldError}
               />
             )}
             {activeTab === "review" && initialData && (

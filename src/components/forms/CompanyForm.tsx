@@ -37,7 +37,27 @@ export function CompanyForm({
 
   const tabOrder = ["identity", "financial", "admin"];
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Trigger validation and show errors for the current tab fields
+    if (activeTab === "identity") {
+      formik.setTouched({
+        ...formik.touched,
+        name: true,
+        registrationNumber: true,
+        invoicePrefix: true,
+      });
+    } else if (activeTab === "financial") {
+      formik.setTouched({
+        ...formik.touched,
+        vatNumber: true,
+        bankAccountNumber: true,
+        bankCode: true,
+        bankName: true,
+      });
+    }
+
+    await formik.validateForm();
+
     const currentIndex = tabOrder.indexOf(activeTab);
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);

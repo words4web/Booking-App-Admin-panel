@@ -44,7 +44,34 @@ export function ClientForm({
 
   const tabOrder = ["contact", "legal", "address"];
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Trigger validation and show errors for the current tab fields
+    if (activeTab === "contact") {
+      formik.setTouched({
+        ...formik.touched,
+        contactInfo: {
+          ...formik.touched.contactInfo,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+        },
+      });
+    } else if (activeTab === "legal") {
+      formik.setTouched({
+        ...formik.touched,
+        companyId: true,
+        legalDetails: {
+          ...(formik.touched.legalDetails as any),
+          legalName: true,
+          registrationNumber: true,
+          vatNumber: true,
+        },
+      });
+    }
+
+    await formik.validateForm();
+
     const currentIndex = tabOrder.indexOf(activeTab);
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);

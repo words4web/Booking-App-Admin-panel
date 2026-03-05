@@ -2,6 +2,8 @@ import { getToken, onMessage } from "firebase/messaging";
 import { getFirebaseMessaging } from "./firebase";
 import { toast } from "react-toastify";
 
+let lastMessageId: string | null = null;
+
 export const requestNotificationPermission = async () => {
   if (typeof window === "undefined" || !("Notification" in window)) return null;
 
@@ -35,6 +37,18 @@ export const listenToForegroundMessages = async (
 
   return onMessage(messaging, (payload) => {
     console.log("FCM Payload Received in lib/notifications.ts:", payload);
+
+    // Deduplicate notifications based on messageId
+    const messageId = (payload as any).messageId;
+    if (messageId && messageId === lastMessageId) {
+      console.log(
+        "Duplicate notification detected via messageId, skipping UI.",
+      );
+      return;
+    }
+    if (messageId) {
+      lastMessageId = messageId;
+    }
 
     const title = payload.notification?.title || "New Notification";
     const body = payload.notification?.body || "";

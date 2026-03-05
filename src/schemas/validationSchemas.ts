@@ -110,8 +110,8 @@ export const BookingSchema = z.object({
   pickupLocation: AddressSchema,
   dropLocation: AddressSchema,
   scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
-  assignedDriverId: z.string().optional(),
-  vehicleId: z.string().optional(),
+  assignedDriverId: z.string().min(1, "Driver assignment is required"),
+  vehicleId: z.string().min(1, "Vehicle assignment is required"),
   products: z
     .array(BookingProductSchema)
     .min(1, "At least one product is required"),
@@ -137,6 +137,11 @@ export const InvoiceSchema = z.object({
   lineItems: z
     .array(InvoiceLineSchema)
     .min(1, "At least one line item is required"),
+  billingName: z.string().optional(),
+  billingAddress: z.string().optional(),
+  companyAddress: z.string().optional(),
+  waitingMinutes: z.coerce.number().optional(),
+  waitingTotal: z.coerce.number().optional(),
   notes: z.string().optional(),
   paymentLink: z.string().optional(),
 });

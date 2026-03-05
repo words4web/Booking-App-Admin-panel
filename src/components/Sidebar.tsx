@@ -11,6 +11,7 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  UserCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -75,7 +76,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
     },
     {
       label: "Driver",
-      icon: <Truck className="h-5 w-5" />,
+      icon: <UserCheck className="h-5 w-5" />,
       href: ROUTES_PATH.DRIVERS,
       roles: [UserRoles.SUPER_ADMIN],
     },
@@ -132,7 +133,13 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
           )}
         </button>
 
-        <div className="flex-1 overflow-y-auto py-8 custom-scrollbar">
+        <div
+          className={cn(
+            "flex-1 py-8 custom-scrollbar",
+            isCollapsed && !isMobileMenuOpen
+              ? "overflow-visible scrollbar-hide"
+              : "overflow-y-auto",
+          )}>
           <div
             className={cn(
               "px-4 mb-8 transition-all",
@@ -170,8 +177,9 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
                       {item.icon}
                       {/* Tooltip for collapsed state (Desktop Only) */}
                       {!isMobileMenuOpen && isCollapsed && (
-                        <div className="hidden md:block absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2 py-1 bg-slate-800 text-white text-xs font-bold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50 whitespace-nowrap">
+                        <div className="hidden md:block absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-2 bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider rounded-xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 z-[100] whitespace-nowrap shadow-2xl shadow-primary/40 border border-white/10 backdrop-blur-md">
                           {item.label}
+                          <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-slate-900" />
                         </div>
                       )}
                     </div>

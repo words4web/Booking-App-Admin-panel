@@ -34,10 +34,32 @@ export interface IJobPhoto {
 export interface Booking {
   _id: string;
   bookingId: string;
-  companyId: string | { _id: string; name: string };
+  companyId:
+    | string
+    | {
+        _id: string;
+        name: string;
+        address?: IAddress;
+        vatNumber?: string;
+        registrationNumber?: string;
+        telephone?: string;
+        adminEmail?: string;
+        invoicePrefix?: string;
+        bankName?: string;
+        bankCode?: string;
+        bankAccountNumber?: string;
+      };
   clientId: {
     _id: string;
+    contactInfo?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+    };
     legalDetails: { legalName: string };
+    address?: IAddress;
+    vatExempt?: boolean;
   };
   serviceType: ServiceType;
   pickupLocation: IAddress;

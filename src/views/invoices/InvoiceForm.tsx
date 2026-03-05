@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { ArrowLeft, Plus, Trash2, FileText } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Eye, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -18,27 +22,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateTimePicker } from "@/src/components/DateTimePicker";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { InvoiceSchema } from "@/src/schemas/validationSchemas";
 import {
   InvoiceFormData,
   InvoiceLineFormData,
+  Invoice,
 } from "@/src/types/invoice.types";
-import { TransactionType } from "@/src/enums/invoice.enum";
-import { BookingStatus } from "@/src/enums/booking.enum";
-import { useBookingsQuery } from "@/src/services/bookingManager/useBookingQueries";
-import { useCreateInvoiceMutation } from "@/src/services/invoiceManager/useInvoiceQueries";
+import {
+  TransactionType,
+  InvoiceStatus,
+  PaymentStatus,
+} from "@/src/enums/invoice.enum";
+import {
+  useBookingsQuery,
+  useBookingDetailsQuery,
+} from "@/src/services/bookingManager/useBookingQueries";
+import {
+  useCreateInvoiceMutation,
+  useUpdateInvoiceMutation,
+} from "@/src/services/invoiceManager/useInvoiceQueries";
 import { Booking } from "@/src/types/booking.types";
+import { InvoicePDFModal } from "./InvoicePDFModal";
+import { cn } from "@/lib/utils";
+import { useDebounce } from "@/src/hooks/useDebounce";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 function getBookingLabel(b: Booking): string {
+  if (!b || !b._id) return "Unknown Booking";
   const c = b.clientId;
   const clientName =
     typeof c === "string"
       ? c
-      : (c.legalDetails?.legalName ??
-        `${c.legalDetails?.legalName ?? ""}`.trim());
-  const dt = new Date(b.scheduledDateTime).toLocaleDateString("en-GB");
-  return `${b.bookingId} — ${clientName} (${dt})`;
+      : (c?.legalDetails?.legalName ??
+        (c?.contactInfo
+          ? `${c.contactInfo.firstName} ${c.contactInfo.lastName}`
+          : "Client"));
+  const dt = b.scheduledDateTime
+    ? new Date(b.scheduledDateTime).toLocaleDateString("en-GB")
+    : "No Date";
+  return `${b.bookingId || "BK-????"} — ${clientName} (${dt})`;
 }
 
 const EMPTY_LINE: InvoiceLineFormData = {
@@ -56,427 +93,890 @@ interface LineComputedTotals {
   totalAmount: number;
 }
 
-function computeTotals(lines: InvoiceLineFormData[]): LineComputedTotals {
+function computeTotals(
+  lines: InvoiceLineFormData[],
+  waitingTotal: number = 0,
+): LineComputedTotals {
   let subtotal = 0;
   let totalVat = 0;
   lines.forEach((l) => {
-    const exVat = l.quantity * l.unitPrice;
+    const qty = Number(l.quantity) || 0;
+    const price = Number(l.unitPrice) || 0;
+    const vat = Number(l.vatPercent) || 0;
+    const exVat = qty * price;
     subtotal += exVat;
-    totalVat += exVat * (l.vatPercent / 100);
+    totalVat += exVat * (vat / 100);
   });
+
+  // Add waiting total to subtotal (since it's also taxable/part of net)
+  subtotal += waitingTotal;
+  // User requested: waiting time cost will be added directly to the total no vat on that
+  // totalVat += waitingTotal * 0.2; // Removed VAT from waiting time
+
   return { subtotal, totalVat, totalAmount: subtotal + totalVat };
 }
 
 interface InvoiceFormProps {
   initialData?: Partial<InvoiceFormData>;
+  isEdit?: boolean;
+  invoiceId?: string;
 }
 
-export function InvoiceForm({ initialData }: InvoiceFormProps) {
+export function InvoiceForm({
+  initialData,
+  isEdit,
+  invoiceId,
+}: InvoiceFormProps) {
   const router = useRouter();
-  const createMutation = useCreateInvoiceMutation();
+  const searchParams = useSearchParams();
+  const bookingIdFromUrl = searchParams.get("bookingId");
 
-  const { data: bookingsData, isLoading: isLoadingBookings } = useBookingsQuery(
-    {
-      status: BookingStatus.COMPLETED,
-      limit: 100,
-    },
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const hasAutoselected = useRef(false);
+
+  const bookingFilters = useMemo(
+    () => ({
+      search: debouncedSearch,
+      limit: 50,
+    }),
+    [debouncedSearch],
   );
-  const completedBookings = bookingsData?.bookings ?? [];
 
-  const [totals, setTotals] = useState<LineComputedTotals>({
-    subtotal: 0,
-    totalVat: 0,
-    totalAmount: 0,
-  });
+  const { data: bookingsData, isLoading: isLoadingBookings } =
+    useBookingsQuery(bookingFilters);
+
+  const { data: specificBookingData } = useBookingDetailsQuery(
+    (isEdit ? initialData?.bookingId : bookingIdFromUrl) || "",
+  );
+
+  const completedBookings = useMemo(() => {
+    let list = [...(bookingsData?.bookings ?? [])];
+    const specific = specificBookingData;
+    if (specific && !list.find((b) => b._id === specific._id)) {
+      list.unshift(specific);
+    }
+    return list;
+  }, [bookingsData, specificBookingData]);
+
+  const createMutation = useCreateInvoiceMutation();
+  const updateMutation = useUpdateInvoiceMutation(invoiceId || "");
+
+  const defaultDate = useMemo(() => new Date().toISOString(), []);
+
+  const memoizedInitialValues = useMemo<InvoiceFormData>(
+    () => ({
+      bookingId: initialData?.bookingId || bookingIdFromUrl || "",
+      clientId: initialData?.clientId || "",
+      companyId: initialData?.companyId || "",
+      invoiceDate: initialData?.invoiceDate || defaultDate,
+      dueDate: initialData?.dueDate || "",
+      transactionType: TransactionType.SALES,
+      status: initialData?.status || InvoiceStatus.DRAFT,
+      paymentStatus: initialData?.paymentStatus || PaymentStatus.PENDING,
+      lineItems: initialData?.lineItems || [EMPTY_LINE],
+      billingName: initialData?.billingName || "",
+      billingAddress: initialData?.billingAddress || "",
+      companyAddress: initialData?.companyAddress || "",
+      waitingMinutes: initialData?.waitingMinutes || 0,
+      waitingTotal: initialData?.waitingTotal || 0,
+      notes: initialData?.notes || "",
+      paymentLink: initialData?.paymentLink || "",
+      terms:
+        initialData?.terms ||
+        "Late payment will be subject to a compensation payment, plus interest charged at 8% above the Bank Of England base rate.\nPayment should be made by bank transfer to the following account:\nAccount Name : RKB KENT Concrete Ltd\nSort Code: 60-06-33\nAccount No: 34965254\nName of Bank: Natwest",
+    }),
+    [initialData, bookingIdFromUrl, defaultDate],
+  );
 
   const formik = useFormik<InvoiceFormData>({
-    initialValues: {
-      clientId: initialData?.clientId ?? "",
-      bookingId: initialData?.bookingId ?? "",
-      dueDate: initialData?.dueDate ?? "",
-      transactionType: initialData?.transactionType ?? TransactionType.SALES,
-      lineItems: initialData?.lineItems ?? [{ ...EMPTY_LINE }],
-      notes: initialData?.notes ?? "",
-      paymentLink: initialData?.paymentLink ?? "",
-    },
+    initialValues: memoizedInitialValues,
     validationSchema: toFormikValidationSchema(InvoiceSchema),
     enableReinitialize: true,
     onSubmit: (values) => {
-      createMutation.mutate(values, {
-        onSuccess: () => router.push("/invoices"),
-      });
+      if (isEdit && invoiceId) {
+        updateMutation.mutate(values, {
+          onSuccess: () => {
+            router.push(`/invoices/${invoiceId}`);
+          },
+        });
+      } else {
+        createMutation.mutate(values, {
+          onSuccess: () => {
+            router.push("/invoices");
+          },
+        });
+      }
     },
   });
 
-  const recomputeTotals = useCallback(() => {
-    setTotals(computeTotals(formik.values.lineItems));
-  }, [formik.values.lineItems]);
+  const getFieldError = (name: string): string | null => {
+    const error = formik.errors as any;
+    const touched = formik.touched as any;
 
-  useEffect(() => {
-    recomputeTotals();
-  }, [recomputeTotals]);
+    let errVal: any;
+    let touchVal: any;
 
-  const handleBookingSelect = (bookingId: string) => {
-    const booking = completedBookings.find((b) => b._id === bookingId);
-    if (!booking) return;
-    formik.setFieldValue("bookingId", bookingId);
-    const clientId =
-      typeof booking.clientId === "string"
-        ? booking.clientId
-        : booking.clientId._id;
-    formik.setFieldValue("clientId", clientId);
-    if (booking.products.length > 0) {
-      const lines: InvoiceLineFormData[] = booking.products.map((p) => ({
+    if (name.includes(".")) {
+      const parts = name.split(".");
+      errVal = error;
+      touchVal = touched;
+      for (const part of parts) {
+        errVal = errVal?.[part];
+        touchVal = touchVal?.[part];
+      }
+    } else {
+      errVal = error[name];
+      touchVal = touched[name];
+    }
+
+    // Strictly return only if it's a string and the field is touched
+    if (typeof errVal === "string" && touchVal) {
+      return errVal;
+    }
+    return null;
+  };
+
+  const handleSaveClick = async () => {
+    formik.setTouched({
+      bookingId: true,
+      clientId: true,
+      dueDate: true,
+      invoiceDate: true,
+      lineItems: formik.values.lineItems.map(() => ({
+        description: true,
+        quantity: true,
+        unitPrice: true,
+      })),
+    });
+    formik.handleSubmit();
+  };
+
+  const getExVat = useCallback(
+    (l: InvoiceLineFormData) =>
+      Number(l.quantity || 0) * Number(l.unitPrice || 0),
+    [],
+  );
+  const getVatAmt = useCallback(
+    (l: InvoiceLineFormData) => getExVat(l) * (Number(l.vatPercent || 0) / 100),
+    [getExVat],
+  );
+
+  const totals = useMemo(
+    () => computeTotals(formik.values.lineItems, formik.values.waitingTotal),
+    [formik.values.lineItems, formik.values.waitingTotal],
+  );
+
+  const { setFieldValue } = formik;
+
+  const handleBookingSelect = useCallback(
+    (bId: string) => {
+      const b = completedBookings.find((x) => x._id === bId);
+      if (!b) return;
+
+      setFieldValue("bookingId", bId);
+      setFieldValue(
+        "clientId",
+        typeof b.clientId === "string" ? b.clientId : b.clientId?._id || "",
+      );
+      setFieldValue(
+        "companyId",
+        typeof b.companyId === "string" ? b.companyId : b.companyId?._id || "",
+      );
+
+      const isClientVatExempt =
+        typeof b.clientId !== "string" && (b.clientId as any)?.vatExempt;
+
+      const lines: InvoiceLineFormData[] = (b.products || []).map((p) => ({
         productId:
-          typeof p.productId === "string"
-            ? p.productId
-            : (p.productId as { _id: string })?._id,
+          typeof p.productId === "string" ? p.productId : p.productId?._id,
         description: p.name,
         account: "Income",
         quantity: p.quantity,
         unitPrice: p.rate,
-        vatPercent: 20,
+        vatPercent: isClientVatExempt ? 0 : 20,
       }));
-      formik.setFieldValue("lineItems", lines);
+
+      setFieldValue("lineItems", lines.length > 0 ? lines : [EMPTY_LINE]);
+
+      // Auto-set waiting time as dedicated fields
+      if (
+        b.waitingTime &&
+        typeof b.waitingTime.durationMinutes === "number" &&
+        b.waitingTime.durationMinutes > 0
+      ) {
+        const hourlyRate = (b.products?.[0] as any)?.hourlyRate || 0;
+        const durationHours = b.waitingTime.durationMinutes / 60;
+        const waitCost = Number((durationHours * hourlyRate).toFixed(2));
+
+        setFieldValue("waitingMinutes", b.waitingTime.durationMinutes);
+        setFieldValue("waitingTotal", waitCost);
+      } else {
+        setFieldValue("waitingMinutes", 0);
+        setFieldValue("waitingTotal", 0);
+      }
+
+      // Auto-populate address overrides
+      const client = b.clientId as any;
+      const company = b.companyId as any;
+
+      if (client?.legalDetails?.legalName) {
+        setFieldValue("billingName", client.legalDetails.legalName);
+      }
+
+      const clientAddrString = client?.address
+        ? [
+            client.address.addressLine1,
+            client.address.addressLine2,
+            client.address.city,
+            client.address.county,
+            client.address.postcode,
+            client.address.country,
+          ]
+            .filter(Boolean)
+            .join("\n")
+        : "";
+      setFieldValue("billingAddress", clientAddrString);
+
+      const companyAddrString = company?.address
+        ? [
+            company.address.addressLine1,
+            company.address.addressLine2,
+            company.address.city,
+            company.address.county,
+            company.address.postcode,
+            company.address.country,
+          ]
+            .filter(Boolean)
+            .join("\n")
+        : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
+      setFieldValue("companyAddress", companyAddrString);
+    },
+    [completedBookings, setFieldValue],
+  );
+
+  useEffect(() => {
+    if (
+      bookingIdFromUrl &&
+      completedBookings.length > 0 &&
+      !hasAutoselected.current
+    ) {
+      handleBookingSelect(bookingIdFromUrl);
+      hasAutoselected.current = true;
     }
+  }, [bookingIdFromUrl, completedBookings, handleBookingSelect]);
+
+  const addLine = () => {
+    formik.setFieldValue("lineItems", [...formik.values.lineItems, EMPTY_LINE]);
   };
 
-  const addLineItem = () =>
-    formik.setFieldValue("lineItems", [
-      ...formik.values.lineItems,
-      { ...EMPTY_LINE },
-    ]);
-
-  const removeLineItem = (index: number) => {
-    const updated = formik.values.lineItems.filter((_, i) => i !== index);
+  const removeLine = (index: number) => {
+    const newLines = [...formik.values.lineItems];
+    newLines.splice(index, 1);
     formik.setFieldValue(
       "lineItems",
-      updated.length > 0 ? updated : [{ ...EMPTY_LINE }],
+      newLines.length > 0 ? newLines : [EMPTY_LINE],
     );
   };
 
-  const setLineField = (
-    index: number,
-    field: keyof InvoiceLineFormData,
-    value: string | number,
-  ) => formik.setFieldValue(`lineItems.${index}.${field}`, value);
+  const setLineField = (index: number, field: string, value: any) => {
+    formik.setFieldValue(`lineItems[${index}].${field}`, value);
+  };
 
-  const getExVat = (l: InvoiceLineFormData) => l.quantity * l.unitPrice;
-  const getVatAmt = (l: InvoiceLineFormData) =>
-    getExVat(l) * (l.vatPercent / 100);
-  const getLineTotal = (l: InvoiceLineFormData) => getExVat(l) + getVatAmt(l);
+  const previewInvoiceData = useMemo(() => {
+    const selectedBooking = completedBookings.find(
+      (b) => b._id === formik.values.bookingId,
+    );
+    const client = selectedBooking?.clientId as any;
+    const company = selectedBooking?.companyId as any;
 
-  if (isLoadingBookings) return <CommonLoader />;
+    // Custom Invoice ID Logic matching Backend
+    let customInvoiceId = "DRAFT";
+    if (selectedBooking?.bookingId) {
+      const numericPart = selectedBooking.bookingId.replace(/^\D+/g, "");
+      const prefix = company?.invoicePrefix || "RKB";
+      customInvoiceId = prefix + (numericPart || "0001");
+    }
+
+    return {
+      ...formik.values,
+      invoiceNumber: customInvoiceId,
+      clientId: client || formik.values.clientId,
+      companyId: company || formik.values.companyId,
+      // Pass overrides to preview
+      billingName: formik.values.billingName,
+      billingAddress: formik.values.billingAddress,
+      companyAddress: formik.values.companyAddress,
+      subtotal: totals.subtotal,
+      totalVat: totals.totalVat,
+      totalAmount: totals.totalAmount || 0,
+      lineItems: formik.values.lineItems.map((l) => ({
+        ...l,
+        exVat: getExVat(l),
+        vatAmt: getVatAmt(l),
+        total: getExVat(l) + getVatAmt(l),
+      })),
+      taxBreakdown: [],
+    } as unknown as Invoice;
+  }, [formik.values, totals, completedBookings, getExVat, getVatAmt]);
 
   return (
-    <div className="space-y-8 pb-12">
-      {/* Page Header */}
-      <div className="flex flex-col gap-6 relative">
-        {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              asChild
-              className="rounded-xl h-9 gap-2 font-bold text-muted-foreground">
-              <Link href="/invoices">
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-4xl font-black tracking-tighter text-foreground">
-                Create <span className="text-primary">Invoice</span>
-              </h1>
-              <p className="text-muted-foreground font-medium text-sm mt-1 uppercase tracking-widest">
-                Select a completed booking and review line items
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 py-6 px-4">
+      {/* Top Bar */}
+      <div className="max-w-full mx-auto mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <Button
-            type="submit"
-            form="invoice-form"
-            disabled={createMutation.isPending}
-            className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40">
-            {createMutation.isPending ? "Creating..." : "Create Invoice"}
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+            className="h-9 w-9 rounded-lg hover:bg-gray-200">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-lg font-bold text-gray-900">
+            {isEdit ? "Edit Invoice" : "New Sale"}
+          </h1>
+        </div>
+        <div className="flex items-center gap-2">
+          {isEdit && (
+            <Badge
+              variant="outline"
+              className="text-xs font-bold bg-slate-100 uppercase mr-2">
+              Editing #{invoiceId}
+            </Badge>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPreviewOpen(true)}
+            className="h-9 rounded-lg font-medium border-gray-300 text-gray-700 hover:bg-gray-100">
+            <Eye className="h-4 w-4 mr-1.5" />
+            Preview
           </Button>
         </div>
       </div>
 
-      <form
-        id="invoice-form"
-        onSubmit={formik.handleSubmit}
-        className="space-y-6">
-        {/* Invoice Details Card */}
-        <Card className="border-none shadow-sm bg-white overflow-hidden rounded-2xl ring-1 ring-border/50">
-          <CardHeader className="bg-muted/30 border-b border-border/50 px-8 py-5">
-            <CardTitle className="text-base font-bold tracking-tight flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" />
-              Invoice Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Booking Select */}
-              <div className="md:col-span-2 space-y-1.5">
-                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Booking (Completed){" "}
-                  <span className="text-destructive">*</span>
-                </Label>
-                <Select
-                  onValueChange={handleBookingSelect}
-                  value={formik.values.bookingId}>
-                  <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                    <SelectValue placeholder="Select a completed booking..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
-                    {completedBookings.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-muted-foreground font-medium">
-                        No completed bookings
-                      </div>
-                    ) : (
-                      completedBookings.map((b) => (
-                        <SelectItem
-                          key={b._id}
-                          value={b._id}
-                          className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1">
-                          {getBookingLabel(b)}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-                {formik.touched.bookingId && formik.errors.bookingId && (
-                  <p className="text-xs text-destructive font-medium">
-                    {formik.errors.bookingId as string}
-                  </p>
+      {/* Main Form */}
+      <div className="max-w-full mx-auto bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-6 lg:p-8">
+          {/* Header Fields - 4 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Date
+              </Label>
+              <DateTimePicker
+                value={formik.values.invoiceDate}
+                onChange={(iso: string) =>
+                  formik.setFieldValue("invoiceDate", iso)
+                }
+                className={cn(
+                  "h-10 rounded-lg border-gray-300 bg-white text-sm",
+                  getFieldError("invoiceDate") && "border-destructive",
                 )}
-              </div>
-
-              {/* Transaction Type */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Transaction Type
-                </Label>
-                <Select
-                  onValueChange={(v) =>
-                    formik.setFieldValue("transactionType", v)
-                  }
-                  value={formik.values.transactionType}>
-                  <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
-                    {Object.values(TransactionType).map((t) => (
-                      <SelectItem
-                        key={t}
-                        value={t}
-                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3 px-4 mb-1">
-                        {t}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Due Date */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Due Date (Optional)
-                </Label>
-                <Input
-                  type="date"
-                  {...formik.getFieldProps("dueDate")}
-                  className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                />
-              </div>
-
-              {/* Payment Link */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Payment Link (Optional)
-                </Label>
-                <Input
-                  type="url"
-                  placeholder="https://..."
-                  {...formik.getFieldProps("paymentLink")}
-                  className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                />
-              </div>
-
-              {/* Notes */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Notes / Payment Terms (Optional)
-                </Label>
-                <Textarea
-                  placeholder="e.g. Please pay within 30 days..."
-                  {...formik.getFieldProps("notes")}
-                  className="min-h-[80px] rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                />
-              </div>
+              />
+              {getFieldError("invoiceDate") && (
+                <p className="text-[11px] text-destructive font-medium mt-1">
+                  {getFieldError("invoiceDate")}
+                </p>
+              )}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Line Items Card */}
-        <Card className="border-none shadow-sm bg-white overflow-hidden rounded-2xl ring-1 ring-border/50">
-          <CardHeader className="bg-muted/30 border-b border-border/50 px-8 py-5">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-bold tracking-tight">
-                Line Items
-              </CardTitle>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addLineItem}
-                className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold gap-1.5">
-                <Plus className="h-4 w-4" />
-                Add Line
-              </Button>
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Selected Booking
+              </Label>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className={cn(
+                      "h-10 w-full justify-between rounded-lg border-gray-300 bg-white text-sm font-normal overflow-hidden",
+                      getFieldError("bookingId") && "border-destructive",
+                    )}>
+                    <span className="truncate">
+                      {formik.values.bookingId
+                        ? getBookingLabel(
+                            completedBookings.find(
+                              (b) => b._id === formik.values.bookingId,
+                            ) as Booking,
+                          )
+                        : "Select Booking"}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[400px] p-0" align="start">
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder="Search booking ID or client..."
+                      value={searchTerm}
+                      onValueChange={setSearchTerm}
+                    />
+                    <CommandList>
+                      {isLoadingBookings && (
+                        <div className="p-4 text-center text-sm text-muted-foreground">
+                          Searching...
+                        </div>
+                      )}
+                      <CommandEmpty>No bookings found.</CommandEmpty>
+                      <CommandGroup>
+                        {completedBookings?.map((b) => (
+                          <CommandItem
+                            key={b._id}
+                            value={b._id}
+                            onSelect={(currentValue) => {
+                              handleBookingSelect(currentValue);
+                              setOpen(false);
+                            }}>
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formik.values.bookingId === b._id
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            {getBookingLabel(b)}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {getFieldError("bookingId") && (
+                <p className="text-[11px] text-destructive font-medium mt-1">
+                  {getFieldError("bookingId")}
+                </p>
+              )}
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="relative w-full overflow-auto">
-              <table className="w-full text-sm font-medium">
-                <thead>
-                  <tr className="bg-muted/10 border-b border-border/50">
-                    <th className="h-12 px-6 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 w-[30%]">
-                      Description
-                    </th>
-                    <th className="h-12 px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Qty
-                    </th>
-                    <th className="h-12 px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Unit Price (£)
-                    </th>
-                    <th className="h-12 px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      VAT %
-                    </th>
-                    <th className="h-12 px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Ex VAT
-                    </th>
-                    <th className="h-12 px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      VAT Amt
-                    </th>
-                    <th className="h-12 px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
-                      Total
-                    </th>
-                    <th className="h-12 px-4 w-12" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {formik.values.lineItems.map((line, i) => (
-                    <tr key={i} className="transition-all hover:bg-muted/5">
-                      <td className="px-6 py-4 align-middle">
-                        <Input
-                          placeholder="Description..."
-                          value={line.description}
-                          onChange={(e) =>
-                            setLineField(i, "description", e.target.value)
-                          }
-                          className="h-9 rounded-lg border-border/80 text-xs"
-                        />
-                      </td>
-                      <td className="px-4 py-4 align-middle">
-                        <Input
-                          type="number"
-                          min={0}
-                          step="any"
-                          value={line.quantity}
-                          onChange={(e) =>
-                            setLineField(i, "quantity", e.target.value)
-                          }
-                          className="h-9 rounded-lg border-border/80 text-xs text-right w-20"
-                        />
-                      </td>
-                      <td className="px-4 py-4 align-middle">
-                        <Input
-                          type="number"
-                          min={0}
-                          step="any"
-                          value={line.unitPrice}
-                          onChange={(e) =>
-                            setLineField(i, "unitPrice", e.target.value)
-                          }
-                          className="h-9 rounded-lg border-border/80 text-xs text-right w-24"
-                        />
-                      </td>
-                      <td className="px-4 py-4 align-middle">
-                        <Input
-                          type="number"
-                          min={0}
-                          max={100}
-                          step="any"
-                          value={line.vatPercent}
-                          onChange={(e) =>
-                            setLineField(i, "vatPercent", e.target.value)
-                          }
-                          className="h-9 rounded-lg border-border/80 text-xs text-right w-20"
-                        />
-                      </td>
-                      {/* Computed read-only */}
-                      <td className="px-4 py-4 align-middle text-right text-muted-foreground text-xs">
-                        £{getExVat(line).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-4 align-middle text-right text-muted-foreground text-xs">
-                        £{getVatAmt(line).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-4 align-middle text-right font-bold text-foreground text-xs">
-                        £{getLineTotal(line).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-4 align-middle text-center">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => removeLineItem(i)}
-                          disabled={formik.values.lineItems.length === 1}
-                          className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Transaction Type
+              </Label>
+              <Select
+                value={formik.values.transactionType}
+                onValueChange={(v) =>
+                  formik.setFieldValue("transactionType", v)
+                }>
+                <SelectTrigger className="h-10 rounded-lg border-gray-300 bg-white text-sm w-full">
+                  <SelectValue placeholder="Select Type" />
+                </SelectTrigger>
+                <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-[--radix-select-trigger-width]">
+                  <SelectItem value={TransactionType.SALES}>Sale</SelectItem>
+                  <SelectItem value={TransactionType.CREDIT_NOTE}>
+                    Credit Note
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Invoice Number
+              </Label>
+              <Input
+                value={
+                  formik.values.bookingId
+                    ? `#${previewInvoiceData.invoiceNumber}`
+                    : "PENDING SELECTION"
+                }
+                disabled
+                className="h-10 rounded-lg border-gray-200 bg-gray-50 text-gray-500 font-bold text-sm"
+              />
+            </div>
+          </div>
 
-            {/* Totals */}
-            <div className="flex justify-end px-8 py-6 border-t border-border/50">
-              <div className="w-72 rounded-xl ring-1 ring-border/50 divide-y divide-border/30 overflow-hidden">
-                <div className="flex justify-between items-center px-5 py-3.5 text-sm">
-                  <span className="text-muted-foreground font-medium">
-                    Subtotal (Ex VAT)
+          {/* Due Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Due Date
+              </Label>
+              <DateTimePicker
+                value={formik.values.dueDate || ""}
+                onChange={(iso: string) => formik.setFieldValue("dueDate", iso)}
+                className={cn(
+                  "h-10 rounded-lg border-gray-300 bg-white text-sm",
+                  getFieldError("dueDate") && "border-destructive",
+                )}
+              />
+              {getFieldError("dueDate") && (
+                <p className="text-[11px] text-destructive font-medium mt-1">
+                  {getFieldError("dueDate")}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 mb-6" />
+
+          {/* Line Items */}
+          <div className="space-y-4">
+            {formik.values.lineItems.map((line, idx) => (
+              <div
+                key={idx}
+                className="bg-gray-50 rounded-lg border border-gray-200 p-5">
+                {/* Line header */}
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                    Line {idx + 1}
                   </span>
-                  <span className="font-bold text-foreground">
-                    £{totals.subtotal.toFixed(2)}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeLine(idx)}
+                    className="h-7 w-7 text-gray-400 hover:text-red-500 rounded-md">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+
+                {/* Line fields - all on one row on desktop */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {/* Account */}
+                  <div>
+                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+                      Account
+                    </Label>
+                    <Select
+                      value={line.account}
+                      onValueChange={(v) => setLineField(idx, "account", v)}>
+                      <SelectTrigger className="h-9 rounded-md border-gray-300 bg-white text-sm w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-full min-w-[200px]">
+                        <SelectItem value="Income">Income</SelectItem>
+                        <SelectItem value="Sale of Goods">
+                          Sale of Goods
+                        </SelectItem>
+                        <SelectItem value="Other Income">
+                          Other Income
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Ex-VAT (Unit Price) */}
+                  <div>
+                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+                      Ex-VAT (£)
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={line.unitPrice}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setLineField(idx, "unitPrice", Number(e.target.value))
+                      }
+                      className={cn(
+                        "h-9 rounded-md border-gray-300 text-sm bg-white",
+                        getFieldError(`lineItems.${idx}.unitPrice`) &&
+                          "border-destructive",
+                      )}
+                    />
+                    {getFieldError(`lineItems.${idx}.unitPrice`) && (
+                      <p className="text-[10px] text-destructive font-medium mt-1">
+                        {getFieldError(`lineItems.${idx}.unitPrice`)}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* VAT Rate - editable as percentage */}
+                  <div>
+                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+                      VAT Rate (%)
+                    </Label>
+                    <Input
+                      type="number"
+                      step="1"
+                      min="0"
+                      max="100"
+                      value={line.vatPercent || ""}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setLineField(
+                          idx,
+                          "vatPercent",
+                          e.target.value === "" ? 0 : Number(e.target.value),
+                        )
+                      }
+                      placeholder="20"
+                      className={cn(
+                        "h-9 rounded-md border-gray-300 text-sm bg-white",
+                        getFieldError(`lineItems.${idx}.vatPercent`) &&
+                          "border-destructive",
+                      )}
+                    />
+                    {getFieldError(`lineItems.${idx}.vatPercent`) && (
+                      <p className="text-[10px] text-destructive font-medium mt-1">
+                        {getFieldError(`lineItems.${idx}.vatPercent`)}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* VAT Amount (auto-calculated, read-only) */}
+                  <div>
+                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+                      VAT (£)
+                    </Label>
+                    <div className="h-9 flex items-center px-3 text-sm text-gray-600 bg-gray-100 rounded-md border border-gray-200">
+                      {Number(getVatAmt(line) || 0).toFixed(2)}
+                    </div>
+                  </div>
+
+                  {/* Quantity */}
+                  <div>
+                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+                      Quantity
+                    </Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      step="0.1"
+                      value={line.quantity}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setLineField(idx, "quantity", Number(e.target.value))
+                      }
+                      className={cn(
+                        "h-9 rounded-md border-gray-300 text-sm bg-white",
+                        getFieldError(`lineItems.${idx}.quantity`) &&
+                          "border-destructive",
+                      )}
+                    />
+                    {getFieldError(`lineItems.${idx}.quantity`) && (
+                      <p className="text-[10px] text-destructive font-medium mt-1">
+                        {getFieldError(`lineItems.${idx}.quantity`)}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Detail (Description) */}
+                  <div>
+                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+                      Detail
+                    </Label>
+                    <Input
+                      placeholder="Description"
+                      value={line.description}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setLineField(idx, "description", e.target.value)
+                      }
+                      className={cn(
+                        "h-9 rounded-md border-gray-300 text-sm bg-white",
+                        getFieldError(`lineItems.${idx}.description`) &&
+                          "border-destructive",
+                      )}
+                    />
+                    {getFieldError(`lineItems.${idx}.description`) && (
+                      <p className="text-[10px] text-destructive font-medium mt-1">
+                        {getFieldError(`lineItems.${idx}.description`)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* New Line button */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addLine}
+              className="w-full h-10 rounded-lg border-dashed border-gray-300 text-gray-500 hover:text-gray-700 hover:border-gray-400 text-sm font-medium">
+              <Plus className="h-4 w-4 mr-1.5" />
+              NEW LINE
+            </Button>
+            {getFieldError("lineItems") && (
+              <p className="text-xs text-destructive font-bold text-center mt-2">
+                {getFieldError("lineItems")}
+              </p>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 mt-6 mb-6" />
+
+          {/* Payment Breakdown */}
+          <div className="flex justify-end">
+            <div className="w-full max-w-sm space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Subtotal</span>
+                <span className="font-semibold text-gray-900">
+                  £
+                  {Number(
+                    totals.subtotal - (formik.values.waitingTotal || 0),
+                  ).toFixed(2)}
+                </span>
+              </div>
+
+              {/* Waiting Time Section */}
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-600 uppercase">
+                    Waiting Time
                   </span>
                 </div>
-                <div className="flex justify-between items-center px-5 py-3.5 text-sm">
-                  <span className="text-muted-foreground font-medium">
-                    Total VAT
-                  </span>
-                  <span className="font-bold text-foreground">
-                    £{totals.totalVat.toFixed(2)}
-                  </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-slate-400">
+                      Minutes
+                    </Label>
+                    <Input
+                      type="number"
+                      value={formik.values.waitingMinutes || ""}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFieldValue(
+                          "waitingMinutes",
+                          e.target.value === "" ? 0 : Number(e.target.value),
+                        )
+                      }
+                      placeholder="0"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-slate-400">
+                      Cost (£)
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formik.values.waitingTotal || ""}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFieldValue(
+                          "waitingTotal",
+                          e.target.value === "" ? 0 : Number(e.target.value),
+                        )
+                      }
+                      placeholder="0.00"
+                      className="h-8 text-xs bg-white font-bold"
+                    />
+                  </div>
                 </div>
-                <div className="flex justify-between items-center px-5 py-4 bg-muted/10">
-                  <span className="font-black text-foreground text-base">
-                    Total (Incl. VAT)
-                  </span>
-                  <span className="font-black text-primary text-lg">
-                    £{totals.totalAmount.toFixed(2)}
-                  </span>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">VAT (20%)</span>
+                <span className="font-semibold text-gray-900">
+                  £{Number(totals.totalVat || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="border-t border-gray-300 pt-2 flex justify-between">
+                <span className="text-sm font-bold text-gray-900">
+                  Total Including VAT
+                </span>
+                <span className="text-lg font-bold text-gray-900">
+                  £{Number(totals.totalAmount || 0).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 mt-6 mb-6" />
+
+          {/* Notes & Terms */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Internal Notes
+              </Label>
+              <textarea
+                className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                placeholder="Add internal notes..."
+                {...formik.getFieldProps("notes")}
+              />
+            </div>
+            <div>
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Terms & Conditions
+              </Label>
+              <textarea
+                className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                placeholder="Add payment terms or conditions..."
+                {...formik.getFieldProps("terms")}
+              />
+            </div>
+          </div>
+
+          {/* Billing & Company Detail Overrides */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+            <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
+              Address & Billing Details (Overrides)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
+                    Bill To: Legal Name
+                  </Label>
+                  <Input
+                    placeholder="Client Legal Name"
+                    {...formik.getFieldProps("billingName")}
+                    className="h-10 rounded-lg border-gray-300 bg-white text-sm"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
+                    Bill To: Full Address
+                  </Label>
+                  <textarea
+                    className="w-full min-h-[80px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Enter full billing address..."
+                    {...formik.getFieldProps("billingAddress")}
+                  />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
+                    From: Company Address
+                  </Label>
+                  <textarea
+                    className="w-full min-h-[120px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Enter full company address..."
+                    {...formik.getFieldProps("companyAddress")}
+                  />
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </form>
+          </div>
+
+          <div className="flex items-center justify-end gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              className="h-10 px-6 rounded-lg font-medium text-gray-600 border-gray-300 hover:bg-gray-50 text-sm">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveClick}
+              disabled={createMutation.isPending || updateMutation.isPending}
+              className="h-10 px-8 rounded-lg bg-teal-600 text-white hover:bg-teal-700 font-medium shadow-sm text-sm">
+              {createMutation.isPending || updateMutation.isPending ? (
+                <CommonLoader />
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-1.5" />
+                  {isEdit ? "Update" : "Save"}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <InvoicePDFModal
+        invoice={previewInvoiceData}
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+      />
     </div>
   );
 }
