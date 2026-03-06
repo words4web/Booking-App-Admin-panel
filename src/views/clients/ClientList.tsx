@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, Filter } from "lucide-react";
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -123,7 +124,7 @@ export function ClientList() {
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href="/clients/new">
+              <Link href={ROUTES_PATH.CLIENTS.NEW}>
                 <Plus className="h-5 w-5" />
                 Add New Client
               </Link>
@@ -145,7 +146,9 @@ export function ClientList() {
                 No clients found.
               </p>
               <Button asChild variant="link" className="mt-2">
-                <Link href="/clients/new">Register your first client</Link>
+                <Link href={ROUTES_PATH.CLIENTS.NEW}>
+                  Register your first client
+                </Link>
               </Button>
             </div>
           ) : (
@@ -233,7 +236,7 @@ export function ClientList() {
                               className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                               asChild
                               title="Edit Client">
-                              <Link href={`/clients/${client._id}/edit`}>
+                              <Link href={ROUTES_PATH.CLIENTS.EDIT(client._id)}>
                                 <Pencil className="h-3.5 w-3.5" />
                               </Link>
                             </Button>

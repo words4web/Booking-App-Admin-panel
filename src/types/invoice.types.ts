@@ -71,6 +71,8 @@ export interface Invoice {
   companyAddress?: string;
   waitingMinutes?: number;
   waitingTotal?: number;
+  isNightShift?: boolean;
+  nightShiftAmount?: number;
   subtotal: number;
   totalVat: number;
   totalAmount: number;
@@ -109,6 +111,8 @@ export interface InvoiceFormData {
   companyAddress?: string;
   waitingMinutes?: number;
   waitingTotal?: number;
+  isNightShift?: boolean;
+  nightShiftAmount?: number;
   status?: InvoiceStatus;
   paymentStatus?: PaymentStatus;
   notes?: string;
@@ -124,6 +128,7 @@ export interface InvoiceFilters {
   status?: InvoiceStatus;
   paymentStatus?: PaymentStatus;
   search?: string;
+  bookingId?: string;
 }
 
 export interface InvoiceResponse {

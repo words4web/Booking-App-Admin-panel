@@ -7,6 +7,7 @@ import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useState } from "react";
+import ROUTES_PATH from "@/lib/Route_Paths";
 
 export function DriverList() {
   const [page, setPage] = useState(1);
@@ -95,7 +96,7 @@ export function DriverList() {
                       </td>
                       <td className="p-4 align-middle text-right">
                         <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/drivers/${driver._id}`}>
+                          <Link href={ROUTES_PATH.DRIVERS.VIEW(driver._id)}>
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </Link>

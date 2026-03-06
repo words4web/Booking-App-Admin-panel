@@ -48,7 +48,7 @@ export function VehicleList() {
         <Button
           asChild
           className="rounded-2xl px-6 py-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 gap-2">
-          <Link href={`${ROUTES_PATH.VEHICLES}/new`}>
+          <Link href={ROUTES_PATH.VEHICLES.NEW}>
             <Plus className="h-5 w-5" />
             Add Vehicle
           </Link>
@@ -134,8 +134,7 @@ export function VehicleList() {
                             size="icon"
                             className="h-9 w-9 rounded-xl hover:bg-amber-100 hover:text-amber-600 transition-all"
                             asChild>
-                            <Link
-                              href={`${ROUTES_PATH.VEHICLES}/${vehicle._id}/edit`}>
+                            <Link href={ROUTES_PATH.VEHICLES.EDIT(vehicle._id)}>
                               <Pencil className="h-4 w-4" />
                             </Link>
                           </Button>

@@ -46,14 +46,14 @@ export default function VehicleDetailsPage({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild className="rounded-xl">
-            <Link href={ROUTES_PATH.VEHICLES}>
+            <Link href={ROUTES_PATH.VEHICLES.BASE}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <h1 className="text-3xl font-bold tracking-tight">Vehicle Details</h1>
         </div>
         <Button asChild className="rounded-2xl gap-2">
-          <Link href={`${ROUTES_PATH.VEHICLES}/${id}/edit`}>
+          <Link href={ROUTES_PATH.VEHICLES.EDIT(id)}>
             <Pencil className="h-4 w-4" />
             Edit Vehicle
           </Link>

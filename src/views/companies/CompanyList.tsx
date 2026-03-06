@@ -12,6 +12,7 @@ import {
   Hash,
 } from "lucide-react";
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
@@ -85,7 +86,7 @@ export function CompanyList() {
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href="/companies/new">
+              <Link href={ROUTES_PATH.COMPANIES.NEW}>
                 <Plus className="h-5 w-5" />
                 Register New Company
               </Link>
@@ -108,7 +109,9 @@ export function CompanyList() {
               </p>
               {isSuperAdmin && (
                 <Button asChild variant="link" className="mt-2">
-                  <Link href="/companies/new">Register your first company</Link>
+                  <Link href={ROUTES_PATH.COMPANIES.NEW}>
+                    Register your first company
+                  </Link>
                 </Button>
               )}
             </div>
@@ -183,7 +186,10 @@ export function CompanyList() {
                                   className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                   asChild
                                   title="Edit Company">
-                                  <Link href={`/companies/${company._id}/edit`}>
+                                  <Link
+                                    href={ROUTES_PATH.COMPANIES.EDIT(
+                                      company._id,
+                                    )}>
                                     <Pencil className="h-3.5 w-3.5" />
                                   </Link>
                                 </Button>

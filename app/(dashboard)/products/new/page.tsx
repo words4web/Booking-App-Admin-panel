@@ -3,6 +3,7 @@
 import { ProductForm } from "@/src/views/products/ProductForm";
 import { useCreateProductMutation } from "@/src/services/productManager/useProductQueries";
 import { useRouter } from "next/navigation";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { ProductFormData } from "@/src/types/product.types";
 
 export default function NewProductPage() {
@@ -12,7 +13,7 @@ export default function NewProductPage() {
   const handleSubmit = (data: ProductFormData) => {
     createMutation.mutate(data, {
       onSuccess: () => {
-        router.push("/products");
+        router.push(ROUTES_PATH.PRODUCTS.BASE);
       },
     });
   };

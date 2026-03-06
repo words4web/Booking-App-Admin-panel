@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { useState } from "react";
-import { Plus, FileText, Pencil, Trash2 } from "lucide-react";
+import { Plus, FileText, Pencil, Trash2, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
@@ -14,6 +15,16 @@ import {
 import { Invoice } from "@/src/types/invoice.types";
 import { InvoicePDFModal } from "./InvoicePDFModal";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
+import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function getClientName(clientId: Invoice["clientId"]): string {
   if (typeof clientId === "string") return clientId;
@@ -38,11 +49,19 @@ export function InvoiceList() {
     number: string;
   } | null>(null);
   const [page, setPage] = useState(1);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
 
   const { data, isLoading } = useInvoicesQuery({
     page,
     limit: PAGINATION_LIMIT,
+    companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
   });
+
+  const { data: companiesData } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData?.companies || [];
 
   const deleteMutation = useDeleteInvoiceMutation();
 
@@ -68,10 +87,42 @@ export function InvoiceList() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
+            {isSuperAdmin && (
+              <div className="w-[200px]">
+                <Select
+                  value={selectedCompanyId}
+                  onValueChange={(val) => {
+                    setSelectedCompanyId(val);
+                    setPage(1);
+                  }}>
+                  <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-4 w-4 text-primary" />
+                      <SelectValue placeholder="Filter by Company" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100] min-w-[220px]">
+                    <SelectItem
+                      value="all"
+                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                      All Companies
+                    </SelectItem>
+                    {companies?.map((company) => (
+                      <SelectItem
+                        key={company._id}
+                        value={company._id}
+                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href="/invoices/new">
+              <Link href={ROUTES_PATH.INVOICES.NEW}>
                 <Plus className="h-5 w-5" />
                 Create Invoice
               </Link>
@@ -94,9 +145,11 @@ export function InvoiceList() {
               <p className="text-muted-foreground text-sm font-medium">
                 No invoices found.
               </p>
-              <Button asChild variant="link" className="mt-2">
-                <Link href="/invoices/new">Create your first invoice</Link>
-              </Button>
+              <div className="mt-8">
+                <Link href={ROUTES_PATH.INVOICES.NEW}>
+                  Create your first invoice
+                </Link>
+              </div>
             </div>
           ) : (
             <>
@@ -110,6 +163,11 @@ export function InvoiceList() {
                       <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Client
                       </th>
+                      {isSuperAdmin && (
+                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          Company
+                        </th>
+                      )}
                       <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Date
                       </th>
@@ -138,6 +196,13 @@ export function InvoiceList() {
                           <td className="px-8 py-5 align-middle text-muted-foreground">
                             {getClientName(inv.clientId)}
                           </td>
+                          {isSuperAdmin && (
+                            <td className="px-8 py-5 align-middle text-muted-foreground">
+                              {typeof inv?.companyId === "object"
+                                ? (inv.companyId as { name: string }).name
+                                : "—"}
+                            </td>
+                          )}
                           <td className="px-8 py-5 align-middle text-muted-foreground">
                             {formatDate(inv.invoiceDate)}
                           </td>
