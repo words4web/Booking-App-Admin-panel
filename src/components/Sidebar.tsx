@@ -65,7 +65,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
     {
       label: "Product",
       icon: <Package className="h-5 w-5" />,
-      href: ROUTES_PATH.PRODUCTS,
+      href: ROUTES_PATH.PRODUCTS.BASE,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
@@ -77,19 +77,19 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
     {
       label: "Driver",
       icon: <UserCheck className="h-5 w-5" />,
-      href: ROUTES_PATH.DRIVERS,
+      href: ROUTES_PATH.DRIVERS.BASE,
       roles: [UserRoles.SUPER_ADMIN],
     },
     {
       label: "Vehicle",
       icon: <Truck className="h-5 w-5" />,
-      href: ROUTES_PATH.VEHICLES,
+      href: ROUTES_PATH.VEHICLES.BASE,
       roles: [UserRoles.SUPER_ADMIN],
     },
     {
       label: "Invoices & Payment",
       icon: <FileText className="h-5 w-5" />,
-      href: ROUTES_PATH.INVOICES,
+      href: ROUTES_PATH.INVOICES.BASE,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
   ];

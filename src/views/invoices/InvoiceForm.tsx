@@ -43,6 +43,7 @@ import {
   useCreateInvoiceMutation,
   useUpdateInvoiceMutation,
 } from "@/src/services/invoiceManager/useInvoiceQueries";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { Booking } from "@/src/types/booking.types";
 import { InvoicePDFModal } from "./InvoicePDFModal";
 import { cn } from "@/lib/utils";
@@ -203,13 +204,13 @@ export function InvoiceForm({
       if (isEdit && invoiceId) {
         updateMutation.mutate(values, {
           onSuccess: () => {
-            router.push(`/invoices/${invoiceId}`);
+            router.push(ROUTES_PATH.INVOICES.VIEW(invoiceId));
           },
         });
       } else {
         createMutation.mutate(values, {
           onSuccess: () => {
-            router.push("/invoices");
+            router.push(ROUTES_PATH.INVOICES.BASE);
           },
         });
       }
@@ -1009,9 +1010,9 @@ export function InvoiceForm({
           <div className="flex items-center justify-end gap-3">
             <Button
               type="button"
-              variant="outline"
-              onClick={() => router.back()}
-              className="h-10 px-6 rounded-lg font-medium text-gray-600 border-gray-300 hover:bg-gray-50 text-sm">
+              variant="ghost"
+              onClick={() => router.push(ROUTES_PATH.INVOICES.BASE)}
+              className="h-11 px-6 rounded-xl text-slate-600 hover:text-slate-900 font-semibold">
               Cancel
             </Button>
             <Button

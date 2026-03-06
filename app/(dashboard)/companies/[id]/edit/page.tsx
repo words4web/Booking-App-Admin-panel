@@ -7,6 +7,7 @@ import {
 } from "@/src/services/companyManager/useCompanyQueries";
 import { CompanyFormData } from "@/src/types/forms.types";
 import { useRouter, useParams } from "next/navigation";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
@@ -26,7 +27,7 @@ export default function EditCompanyPage() {
   const handleSubmit = (data: CompanyFormData) => {
     updateMutation.mutate(data, {
       onSuccess: () => {
-        router.push("/companies");
+        router.push(ROUTES_PATH.COMPANIES.BASE);
       },
     });
   };

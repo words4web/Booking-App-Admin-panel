@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { useState } from "react";
 import { Plus, FileText, Pencil, Trash2, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -121,7 +122,7 @@ export function InvoiceList() {
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href="/invoices/new">
+              <Link href={ROUTES_PATH.INVOICES.NEW}>
                 <Plus className="h-5 w-5" />
                 Create Invoice
               </Link>
@@ -144,9 +145,11 @@ export function InvoiceList() {
               <p className="text-muted-foreground text-sm font-medium">
                 No invoices found.
               </p>
-              <Button asChild variant="link" className="mt-2">
-                <Link href="/invoices/new">Create your first invoice</Link>
-              </Button>
+              <div className="mt-8">
+                <Link href={ROUTES_PATH.INVOICES.NEW}>
+                  Create your first invoice
+                </Link>
+              </div>
             </div>
           ) : (
             <>

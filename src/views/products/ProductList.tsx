@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, Filter, Package } from "lucide-react";
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -122,7 +123,7 @@ export function ProductList() {
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href="/products/new">
+              <Link href={ROUTES_PATH.PRODUCTS.NEW}>
                 <Plus className="h-5 w-5" />
                 Add New Product
               </Link>
@@ -147,7 +148,9 @@ export function ProductList() {
                 No products found.
               </p>
               <Button asChild variant="link" className="mt-2">
-                <Link href="/products/new">Create your first product</Link>
+                <Link href={ROUTES_PATH.PRODUCTS.NEW}>
+                  Create your first product
+                </Link>
               </Button>
             </div>
           ) : (
@@ -212,7 +215,8 @@ export function ProductList() {
                               className="h-9 w-9 rounded-xl border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                               asChild
                               title="Edit Product">
-                              <Link href={`/products/${product._id}/edit`}>
+                              <Link
+                                href={ROUTES_PATH.PRODUCTS.EDIT(product._id)}>
                                 <Pencil className="h-4 w-4" />
                               </Link>
                             </Button>

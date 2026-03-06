@@ -14,7 +14,7 @@ export default function NewVehiclePage() {
   const handleSubmit = (data: CreateVehicleRequest) => {
     createMutation.mutate(data, {
       onSuccess: () => {
-        router.push(ROUTES_PATH.VEHICLES);
+        router.push(ROUTES_PATH.VEHICLES.BASE);
       },
     });
   };

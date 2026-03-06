@@ -1,6 +1,7 @@
 import api from "@/src/lib/axios";
 import API_ENDPOINTS from "@/lib/Api_Endpoints";
 import {
+  Invoice,
   InvoiceFilters,
   InvoiceFormData,
   InvoiceResponse,
@@ -53,5 +54,13 @@ export const InvoiceService = {
     await api.delete<{ success: boolean; message: string }>(
       API_ENDPOINTS.INVOICES.DELETE(id),
     );
+  },
+
+  previewPdf: async (data: Partial<InvoiceFormData> | Invoice) => {
+    const response = await api.post(API_ENDPOINTS.INVOICES.PREVIEW, data, {
+      responseType: "blob",
+      timeout: 20000,
+    });
+    return response.data;
   },
 };

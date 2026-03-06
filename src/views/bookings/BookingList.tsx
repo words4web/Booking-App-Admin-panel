@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { Plus, Pencil, Trash2, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -110,15 +111,17 @@ export function BookingList() {
 
       if (invoicesResponse.invoices && invoicesResponse.invoices.length > 0) {
         // Invoice exists, go to edit
-        router.push(`/invoices/${invoicesResponse.invoices[0]._id}/edit`);
+        router.push(
+          ROUTES_PATH.INVOICES.EDIT(invoicesResponse.invoices[0]._id),
+        );
       } else {
         // No invoice, go to create
-        router.push(`/invoices/new?bookingId=${bookingId}`);
+        router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(bookingId));
       }
     } catch (error) {
       console.error("Failed to check existing invoices:", error);
       // Fallback to new
-      router.push(`/invoices/new?bookingId=${bookingId}`);
+      router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(bookingId));
     } finally {
       setLoadingInvoiceId(null);
     }
@@ -206,7 +209,7 @@ export function BookingList() {
             <Button
               asChild
               className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href="/bookings/new">
+              <Link href={ROUTES_PATH.BOOKINGS.NEW}>
                 <Plus className="h-5 w-5" />
                 Create Booking
               </Link>
@@ -228,7 +231,9 @@ export function BookingList() {
                 No bookings found.
               </p>
               <Button asChild variant="link" className="mt-2">
-                <Link href="/bookings/new">Create your first booking</Link>
+                <Link href={ROUTES_PATH.BOOKINGS.NEW}>
+                  Create your first booking
+                </Link>
               </Button>
             </div>
           ) : (
@@ -306,7 +311,10 @@ export function BookingList() {
                                 className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                 asChild
                                 title="Edit Booking">
-                                <Link href={`/bookings/${booking?._id}/edit`}>
+                                <Link
+                                  href={ROUTES_PATH.BOOKINGS.EDIT(
+                                    booking?._id || "",
+                                  )}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Link>
                               </Button>

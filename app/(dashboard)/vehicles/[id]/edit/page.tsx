@@ -42,7 +42,7 @@ export default function EditVehiclePage({ params }: EditVehiclePageProps) {
       { id, data },
       {
         onSuccess: () => {
-          router.push(ROUTES_PATH.VEHICLES);
+          router.push(ROUTES_PATH.VEHICLES.BASE);
         },
       },
     );

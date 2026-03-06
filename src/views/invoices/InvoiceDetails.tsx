@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
@@ -195,7 +196,7 @@ export function InvoiceDetails() {
         </p>
         <Button
           variant="outline"
-          onClick={() => router.push("/invoices")}
+          onClick={() => router.push(ROUTES_PATH.INVOICES.BASE)}
           className="rounded-xl">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Invoices
@@ -222,7 +223,7 @@ export function InvoiceDetails() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push("/invoices")}
+            onClick={() => router.push(ROUTES_PATH.INVOICES.BASE)}
             className="rounded-xl h-9 gap-2 font-bold text-muted-foreground">
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -274,7 +275,7 @@ export function InvoiceDetails() {
                 PDF Preview
               </Button>
               <Button
-                onClick={() => router.push(`/invoices/${id}/edit`)}
+                onClick={() => router.push(ROUTES_PATH.INVOICES.EDIT(id))}
                 className="h-11 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 gap-2">
                 <Pencil className="h-4 w-4" />
                 Edit Invoice
@@ -715,7 +716,7 @@ export function InvoiceDetails() {
           asChild
           variant="ghost"
           className="h-10 px-5 rounded-xl font-bold text-muted-foreground gap-2 hover:bg-slate-100">
-          <Link href="/invoices">
+          <Link href={ROUTES_PATH.INVOICES.BASE}>
             <ArrowLeft className="h-4 w-4" />
             Back to Invoices
           </Link>

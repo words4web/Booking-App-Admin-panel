@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { BookingSchema } from "@/src/schemas/validationSchemas";
@@ -240,15 +241,17 @@ export function BookingForm({
 
       if (invoicesResponse.invoices && invoicesResponse.invoices.length > 0) {
         // Invoice exists, go to edit
-        router.push(`/invoices/${invoicesResponse.invoices[0]._id}/edit`);
+        router.push(
+          ROUTES_PATH.INVOICES.EDIT(invoicesResponse.invoices[0]._id),
+        );
       } else {
         // No invoice, go to create
-        router.push(`/invoices/new?bookingId=${initialData._id}`);
+        router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(initialData._id));
       }
     } catch (error) {
       console.error("Failed to check existing invoices:", error);
       // Fallback to new
-      router.push(`/invoices/new?bookingId=${initialData._id}`);
+      router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(initialData._id));
     } finally {
       setIsInvoiceLoading(false);
     }

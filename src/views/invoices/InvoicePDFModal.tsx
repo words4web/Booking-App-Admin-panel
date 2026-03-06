@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Invoice } from "@/src/types/invoice.types";
-import api from "@/src/lib/axios";
+import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
 
 interface InvoicePDFModalProps {
   invoice: Invoice;
@@ -34,11 +34,8 @@ export function InvoicePDFModal({
       if (!open) return;
       setIsLoading(true);
       try {
-        const response = await api.post("/admin/invoices/preview", invoice, {
-          responseType: "blob",
-          timeout: 20000,
-        });
-        const blob = new Blob([response.data], { type: "application/pdf" });
+        const responseData = await InvoiceService.previewPdf(invoice);
+        const blob = new Blob([responseData], { type: "application/pdf" });
         objectUrl = URL.createObjectURL(blob);
         setPdfUrl(objectUrl);
       } catch (error) {

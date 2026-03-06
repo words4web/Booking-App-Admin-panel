@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { ProductForm } from "@/src/views/products/ProductForm";
 import {
   useProductDetailsQuery,
@@ -20,7 +21,7 @@ export default function EditProductPage() {
   const handleSubmit = (data: ProductFormData) => {
     updateMutation.mutate(data, {
       onSuccess: () => {
-        router.push("/products");
+        router.push(ROUTES_PATH.PRODUCTS.BASE);
       },
     });
   };
