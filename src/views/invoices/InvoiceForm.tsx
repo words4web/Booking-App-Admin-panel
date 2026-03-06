@@ -96,6 +96,7 @@ interface LineComputedTotals {
 function computeTotals(
   lines: InvoiceLineFormData[],
   waitingTotal: number = 0,
+  nightShiftAmount: number = 0,
 ): LineComputedTotals {
   let subtotal = 0;
   let totalVat = 0;
@@ -110,6 +111,7 @@ function computeTotals(
 
   // Add waiting total to subtotal (since it's also taxable/part of net)
   subtotal += waitingTotal;
+  subtotal += nightShiftAmount;
   // User requested: waiting time cost will be added directly to the total no vat on that
   // totalVat += waitingTotal * 0.2; // Removed VAT from waiting time
 
@@ -152,7 +154,7 @@ export function InvoiceForm({
     (isEdit ? initialData?.bookingId : bookingIdFromUrl) || "",
   );
 
-  const completedBookings = useMemo(() => {
+  const availableBookings = useMemo(() => {
     let list = [...(bookingsData?.bookings ?? [])];
     const specific = specificBookingData;
     if (specific && !list.find((b) => b._id === specific._id)) {
@@ -182,6 +184,8 @@ export function InvoiceForm({
       companyAddress: initialData?.companyAddress || "",
       waitingMinutes: initialData?.waitingMinutes || 0,
       waitingTotal: initialData?.waitingTotal || 0,
+      isNightShift: initialData?.isNightShift || false,
+      nightShiftAmount: initialData?.nightShiftAmount || 0,
       notes: initialData?.notes || "",
       paymentLink: initialData?.paymentLink || "",
       terms:
@@ -265,15 +269,24 @@ export function InvoiceForm({
   );
 
   const totals = useMemo(
-    () => computeTotals(formik.values.lineItems, formik.values.waitingTotal),
-    [formik.values.lineItems, formik.values.waitingTotal],
+    () =>
+      computeTotals(
+        formik.values.lineItems,
+        formik.values.waitingTotal,
+        formik.values.nightShiftAmount,
+      ),
+    [
+      formik.values.lineItems,
+      formik.values.waitingTotal,
+      formik.values.nightShiftAmount,
+    ],
   );
 
   const { setFieldValue } = formik;
 
   const handleBookingSelect = useCallback(
     (bId: string) => {
-      const b = completedBookings.find((x) => x._id === bId);
+      const b = availableBookings.find((x) => x._id === bId);
       if (!b) return;
 
       setFieldValue("bookingId", bId);
@@ -354,19 +367,19 @@ export function InvoiceForm({
         : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
       setFieldValue("companyAddress", companyAddrString);
     },
-    [completedBookings, setFieldValue],
+    [availableBookings, setFieldValue],
   );
 
   useEffect(() => {
     if (
       bookingIdFromUrl &&
-      completedBookings.length > 0 &&
+      availableBookings.length > 0 &&
       !hasAutoselected.current
     ) {
       handleBookingSelect(bookingIdFromUrl);
       hasAutoselected.current = true;
     }
-  }, [bookingIdFromUrl, completedBookings, handleBookingSelect]);
+  }, [bookingIdFromUrl, availableBookings, handleBookingSelect]);
 
   const addLine = () => {
     formik.setFieldValue("lineItems", [...formik.values.lineItems, EMPTY_LINE]);
@@ -386,7 +399,7 @@ export function InvoiceForm({
   };
 
   const previewInvoiceData = useMemo(() => {
-    const selectedBooking = completedBookings.find(
+    const selectedBooking = availableBookings.find(
       (b) => b._id === formik.values.bookingId,
     );
     const client = selectedBooking?.clientId as any;
@@ -420,7 +433,7 @@ export function InvoiceForm({
       })),
       taxBreakdown: [],
     } as unknown as Invoice;
-  }, [formik.values, totals, completedBookings, getExVat, getVatAmt]);
+  }, [formik.values, totals, availableBookings, getExVat, getVatAmt]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-4">
@@ -500,7 +513,7 @@ export function InvoiceForm({
                     <span className="truncate">
                       {formik.values.bookingId
                         ? getBookingLabel(
-                            completedBookings.find(
+                            availableBookings.find(
                               (b) => b._id === formik.values.bookingId,
                             ) as Booking,
                           )
@@ -524,7 +537,7 @@ export function InvoiceForm({
                       )}
                       <CommandEmpty>No bookings found.</CommandEmpty>
                       <CommandGroup>
-                        {completedBookings?.map((b) => (
+                        {availableBookings?.map((b) => (
                           <CommandItem
                             key={b._id}
                             value={b._id}
@@ -809,7 +822,9 @@ export function InvoiceForm({
                 <span className="font-semibold text-gray-900">
                   £
                   {Number(
-                    totals.subtotal - (formik.values.waitingTotal || 0),
+                    totals.subtotal -
+                      (formik.values.waitingTotal || 0) -
+                      (formik.values.nightShiftAmount || 0),
                   ).toFixed(2)}
                 </span>
               </div>
@@ -858,6 +873,50 @@ export function InvoiceForm({
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Night Shift Section */}
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-600 uppercase">
+                    Night Shift
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-[10px] text-slate-400">Apply</Label>
+                    <input
+                      type="checkbox"
+                      checked={formik.values.isNightShift || false}
+                      onChange={(e) => {
+                        setFieldValue("isNightShift", e.target.checked);
+                        if (!e.target.checked)
+                          setFieldValue("nightShiftAmount", 0);
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                {formik.values.isNightShift && (
+                  <div className="grid grid-cols-1 mt-2">
+                    <div>
+                      <Label className="text-[10px] text-slate-400">
+                        Amount (£)
+                      </Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={formik.values.nightShiftAmount || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFieldValue(
+                            "nightShiftAmount",
+                            e.target.value === "" ? 0 : Number(e.target.value),
+                          )
+                        }
+                        placeholder="0.00"
+                        className="h-8 text-xs bg-white font-bold"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-between text-sm">

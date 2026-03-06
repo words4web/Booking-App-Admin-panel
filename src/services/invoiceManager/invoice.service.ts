@@ -18,6 +18,7 @@ export const InvoiceService = {
     if (filters.paymentStatus)
       params.append("paymentStatus", filters.paymentStatus);
     if (filters.search) params.append("search", filters.search);
+    if (filters.bookingId) params.append("bookingId", filters.bookingId);
 
     const response = await api.get<InvoicesResponse>(
       `${API_ENDPOINTS.INVOICES.GET_ALL}?${params.toString()}`,

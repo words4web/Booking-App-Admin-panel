@@ -2,6 +2,7 @@
 
 import { FormikProps } from "formik";
 import { BookingFormData } from "@/src/types/booking.types";
+import { ServiceType } from "@/src/enums/booking.enum";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,8 @@ interface LocationsTabProps {
 }
 
 export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
+  const isHaulage = formik.values.serviceType === ServiceType.HAULAGE;
+
   return (
     <div className="mt-0 space-y-12 animate-in fade-in duration-500">
       {/* Pickup Address */}
@@ -119,6 +122,11 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
             B
           </span>
           Drop-off Address
+          {isHaulage && (
+            <span className="ml-2 text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+              Optional for Haulage
+            </span>
+          )}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/30 p-6 rounded-2xl border border-slate-100">
           <div className="md:col-span-2 space-y-1.5">
@@ -129,12 +137,13 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
               {...formik.getFieldProps("dropLocation.addressLine1")}
               className={cn(
                 "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
-                getFieldError("dropLocation.addressLine1") &&
+                !isHaulage &&
+                  getFieldError("dropLocation.addressLine1") &&
                   "border-destructive",
               )}
               placeholder="e.g. 123 High Street"
             />
-            {getFieldError("dropLocation.addressLine1") && (
+            {!isHaulage && getFieldError("dropLocation.addressLine1") && (
               <p className="text-xs text-destructive font-medium">
                 {getFieldError("dropLocation.addressLine1")}
               </p>
@@ -158,11 +167,13 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
               {...formik.getFieldProps("dropLocation.city")}
               className={cn(
                 "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
-                getFieldError("dropLocation.city") && "border-destructive",
+                !isHaulage &&
+                  getFieldError("dropLocation.city") &&
+                  "border-destructive",
               )}
               placeholder="e.g. London"
             />
-            {getFieldError("dropLocation.city") && (
+            {!isHaulage && getFieldError("dropLocation.city") && (
               <p className="text-xs text-destructive font-medium">
                 {getFieldError("dropLocation.city")}
               </p>
@@ -186,11 +197,13 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
               {...formik.getFieldProps("dropLocation.postcode")}
               className={cn(
                 "h-11 rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm",
-                getFieldError("dropLocation.postcode") && "border-destructive",
+                !isHaulage &&
+                  getFieldError("dropLocation.postcode") &&
+                  "border-destructive",
               )}
               placeholder="e.g. SW1A 1AA"
             />
-            {getFieldError("dropLocation.postcode") && (
+            {!isHaulage && getFieldError("dropLocation.postcode") && (
               <p className="text-xs text-destructive font-medium">
                 {getFieldError("dropLocation.postcode")}
               </p>

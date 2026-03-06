@@ -13,6 +13,15 @@ export const AddressSchema = z.object({
   country: z.string().default("United Kingdom"),
 });
 
+export const OptionalAddressSchema = z.object({
+  addressLine1: z.string().optional(),
+  addressLine2: z.string().optional(),
+  city: z.string().optional(),
+  county: z.string().optional(),
+  postcode: z.string().optional(),
+  country: z.string().default("United Kingdom"),
+});
+
 // ─── Company ──────────────────────────────────────────────────────────────────
 export const CompanySchema = z
   .object({
@@ -101,22 +110,48 @@ export const BookingProductSchema = z.object({
   extraCharges: z.array(ExtraChargeSchema).optional(),
 });
 
-export const BookingSchema = z.object({
-  companyId: z.string().min(1, "Company selection is required"),
-  clientId: z.string().min(1, "Client selection is required"),
-  serviceType: z.nativeEnum(ServiceType, {
-    required_error: "Service type is required",
-  }),
-  pickupLocation: AddressSchema,
-  dropLocation: AddressSchema,
-  scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
-  assignedDriverId: z.string().min(1, "Driver assignment is required"),
-  vehicleId: z.string().min(1, "Vehicle assignment is required"),
-  products: z
-    .array(BookingProductSchema)
-    .min(1, "At least one product is required"),
-  jobDetails: z.string().optional(),
-});
+export const BookingSchema = z
+  .object({
+    companyId: z.string().min(1, "Company selection is required"),
+    clientId: z.string().min(1, "Client selection is required"),
+    serviceType: z.nativeEnum(ServiceType, {
+      required_error: "Service type is required",
+    }),
+    pickupLocation: AddressSchema,
+    dropLocation: OptionalAddressSchema,
+    scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
+    assignedDriverId: z.string().min(1, "Driver assignment is required"),
+    vehicleId: z.string().min(1, "Vehicle assignment is required"),
+    products: z
+      .array(BookingProductSchema)
+      .min(1, "At least one product is required"),
+    jobDetails: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.serviceType !== ServiceType.HAULAGE) {
+      if (!data.dropLocation.addressLine1?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Address Line 1 is required",
+          path: ["dropLocation", "addressLine1"],
+        });
+      }
+      if (!data.dropLocation.city?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "City is required",
+          path: ["dropLocation", "city"],
+        });
+      }
+      if (!data.dropLocation.postcode?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Postcode is required",
+          path: ["dropLocation", "postcode"],
+        });
+      }
+    }
+  });
 
 // ─── Invoice ──────────────────────────────────────────────────────────────────
 export const InvoiceLineSchema = z.object({
@@ -142,6 +177,8 @@ export const InvoiceSchema = z.object({
   companyAddress: z.string().optional(),
   waitingMinutes: z.coerce.number().optional(),
   waitingTotal: z.coerce.number().optional(),
+  isNightShift: z.boolean().optional(),
+  nightShiftAmount: z.coerce.number().optional(),
   notes: z.string().optional(),
   paymentLink: z.string().optional(),
 });

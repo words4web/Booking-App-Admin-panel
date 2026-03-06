@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Pencil, Trash2, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
   [BookingStatus.SCHEDULED]: "Scheduled",
@@ -78,6 +80,9 @@ export function BookingList() {
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [page, setPage] = useState(1);
+  const [loadingInvoiceId, setLoadingInvoiceId] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -97,6 +102,27 @@ export function BookingList() {
 
   const bookings = data?.bookings ?? [];
   const pagination = data?.pagination;
+
+  const handleInvoiceClick = async (bookingId: string) => {
+    try {
+      setLoadingInvoiceId(bookingId);
+      const invoicesResponse = await InvoiceService.getAll({ bookingId });
+
+      if (invoicesResponse.invoices && invoicesResponse.invoices.length > 0) {
+        // Invoice exists, go to edit
+        router.push(`/invoices/${invoicesResponse.invoices[0]._id}/edit`);
+      } else {
+        // No invoice, go to create
+        router.push(`/invoices/new?bookingId=${bookingId}`);
+      }
+    } catch (error) {
+      console.error("Failed to check existing invoices:", error);
+      // Fallback to new
+      router.push(`/invoices/new?bookingId=${bookingId}`);
+    } finally {
+      setLoadingInvoiceId(null);
+    }
+  };
 
   if (isLoading) return <CommonLoader />;
 
@@ -259,19 +285,21 @@ export function BookingList() {
                           </td>
                           <td className="px-8 py-5 align-middle text-right">
                             <div className="flex justify-end gap-2">
-                              {status === BookingStatus.COMPLETED && (
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-md border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-                                  asChild
-                                  title="Create Invoice">
-                                  <Link
-                                    href={`/invoices/new?bookingId=${booking?._id}`}>
-                                    <FileText className="h-3.5 w-3.5" />
-                                  </Link>
-                                </Button>
-                              )}
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-md border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+                                onClick={() =>
+                                  handleInvoiceClick(booking?._id || "")
+                                }
+                                disabled={loadingInvoiceId === booking?._id}
+                                title="Create/Edit Invoice">
+                                {loadingInvoiceId === booking?._id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <FileText className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="icon"

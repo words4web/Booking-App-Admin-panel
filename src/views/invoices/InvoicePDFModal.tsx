@@ -36,6 +36,7 @@ export function InvoicePDFModal({
       try {
         const response = await api.post("/admin/invoices/preview", invoice, {
           responseType: "blob",
+          timeout: 20000,
         });
         const blob = new Blob([response.data], { type: "application/pdf" });
         objectUrl = URL.createObjectURL(blob);

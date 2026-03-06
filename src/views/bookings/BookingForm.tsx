@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { BookingSchema } from "@/src/schemas/validationSchemas";
@@ -29,7 +29,8 @@ import { ProductsTab } from "./tabs/ProductsTab";
 import { AssignmentTab } from "./tabs/AssignmentTab";
 import { CompletionReviewTab } from "./tabs/CompletionReviewTab";
 import { BookingStatus } from "@/src/enums/booking.enum";
-import { ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, Loader2 } from "lucide-react";
+import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
 
 const tabClassName =
   "rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm";
@@ -45,6 +46,9 @@ export function BookingForm({
   isLoading,
 }: BookingFormProps) {
   const [activeTab, setActiveTab] = useState("details");
+  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
+
+  const router = useRouter();
 
   const { user } = useAuth();
 
@@ -225,6 +229,31 @@ export function BookingForm({
     formik.setFieldValue("products", newProducts);
   };
 
+  const handleInvoiceClick = async () => {
+    if (!initialData?._id) return;
+
+    try {
+      setIsInvoiceLoading(true);
+      const invoicesResponse = await InvoiceService.getAll({
+        bookingId: initialData._id,
+      });
+
+      if (invoicesResponse.invoices && invoicesResponse.invoices.length > 0) {
+        // Invoice exists, go to edit
+        router.push(`/invoices/${invoicesResponse.invoices[0]._id}/edit`);
+      } else {
+        // No invoice, go to create
+        router.push(`/invoices/new?bookingId=${initialData._id}`);
+      }
+    } catch (error) {
+      console.error("Failed to check existing invoices:", error);
+      // Fallback to new
+      router.push(`/invoices/new?bookingId=${initialData._id}`);
+    } finally {
+      setIsInvoiceLoading(false);
+    }
+  };
+
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -239,14 +268,18 @@ export function BookingForm({
           </p>
         </div>
         <div className="flex gap-3">
-          {initialData?.status === BookingStatus.COMPLETED && (
+          {initialData && (
             <Button
-              asChild
+              type="button"
+              onClick={handleInvoiceClick}
+              disabled={isInvoiceLoading}
               className="rounded-xl px-6 h-11 font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 gap-2">
-              <Link href={`/invoices/new?bookingId=${initialData._id}`}>
+              {isInvoiceLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
                 <ClipboardCheck className="h-5 w-5" />
-                Create Invoice
-              </Link>
+              )}
+              {isInvoiceLoading ? "Checking..." : "Create Invoice"}
             </Button>
           )}
           {!initialData ||

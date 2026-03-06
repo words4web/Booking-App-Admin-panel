@@ -77,12 +77,9 @@ export function AssignmentTab({
           <div className="w-full">
             <Select
               onValueChange={(val) =>
-                formik.setFieldValue(
-                  "assignedDriverId",
-                  val === "none" ? "" : val,
-                )
+                formik.setFieldValue("assignedDriverId", val)
               }
-              value={formik.values.assignedDriverId || "none"}>
+              value={formik.values.assignedDriverId || undefined}>
               <SelectTrigger
                 className={cn(
                   "w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all shadow-sm",
@@ -116,10 +113,8 @@ export function AssignmentTab({
           </Label>
           <div className="w-full">
             <Select
-              onValueChange={(val) =>
-                formik.setFieldValue("vehicleId", val === "none" ? "" : val)
-              }
-              value={formik.values.vehicleId || "none"}>
+              onValueChange={(val) => formik.setFieldValue("vehicleId", val)}
+              value={formik.values.vehicleId || undefined}>
               <SelectTrigger
                 className={cn(
                   "w-full h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all shadow-sm",
