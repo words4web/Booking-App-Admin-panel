@@ -5,9 +5,20 @@ export interface Company {
   vatNumber: string;
   vatRegistered: boolean;
   invoicePrefix: string;
+  invoiceCounter: number;
   bankAccountNumber?: string;
   bankCode?: string;
+  bankName?: string;
   adminEmail: string;
+  telephone?: string;
+  website?: string;
+  address?: {
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    postcode: string;
+    country: string;
+  };
   adminUserId: string;
   createdAt: string;
   updatedAt: string;
@@ -15,7 +26,12 @@ export interface Company {
 
 export interface AllCompaniesResponse {
   companies: Company[];
-  total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }
 
 export interface CompanyDetailsResponse {

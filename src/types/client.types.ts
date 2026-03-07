@@ -19,15 +19,18 @@ export interface Client {
     registrationNumber: string;
     vatNumber?: string;
     vatRegistered: boolean;
+    purchaseOrderNumber?: string;
+    // nationalInsuranceNumber?: string;
   };
   address: {
     addressLine1: string;
     addressLine2?: string;
     city: string;
-    state: string;
-    postalCode: string;
+    county?: string;
+    postcode: string;
     country: string;
   };
+  vatExempt: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,15 +48,18 @@ export interface ClientFormData {
     registrationNumber: string;
     vatNumber: string;
     vatRegistered: boolean;
+    purchaseOrderNumber: string;
+    // nationalInsuranceNumber: string;
   };
   address: {
     addressLine1: string;
     addressLine2: string;
     city: string;
-    state: string;
-    postalCode: string;
+    county: string;
+    postcode: string;
     country: string;
   };
+  vatExempt: boolean;
 }
 
 export interface ClientFilters {

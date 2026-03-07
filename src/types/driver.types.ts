@@ -1,7 +1,8 @@
 export interface DocumentType {
-  url: string;
+  key: string | null;
+  url?: string | null;
   isVerified: boolean;
-  reason?: string;
+  reason?: string | null;
 }
 
 export interface Driver {
@@ -9,9 +10,10 @@ export interface Driver {
   fullName: string;
   email: string;
   mobileNumber: string;
-  profileImage?: string;
+  profileImage?: string | null;
   isDocumentsVerified: boolean;
   isOtpVerified: boolean;
+  nationalInsuranceNumber?: string | null;
   license?: {
     frontImage?: DocumentType;
     backImage?: DocumentType;
@@ -20,13 +22,20 @@ export interface Driver {
     bioDataPage?: DocumentType;
     signaturePage?: DocumentType;
   };
+  isDeleted?: boolean;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface AllDriversResponse {
   drivers: Driver[];
-  total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }
 
 export interface DriverDetailsResponse {

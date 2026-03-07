@@ -1,66 +1,16 @@
-// import axios, {
-//   type AxiosResponse,
-//   type InternalAxiosRequestConfig,
-// } from "axios";
-// import { API_BASE_URL } from "./endpoints";
-// import commonUtils from "@/utils/common.utils";
-// import ROUTE_PATHS from "@/routes/route-paths";
-// import { addToast } from "@heroui/react";
-// const http = axios.create({
-//   baseURL: API_BASE_URL,
-//   timeout: 10000,
-// });
-// http.interceptors.request.use(
-//   (config: InternalAxiosRequestConfig) => {
-//     const token = localStorage.getItem("token");
-//     if (token && config.headers) {
-//       config.headers.Authorization = Bearer ${token};
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   },
-// );
-// http.interceptors.response.use(
-//   (response: AxiosResponse) => {
-//     return response.data;
-//   },
-//   (error) => {
-//     const errorData = error?.response?.data;
-//     const currentPath = window.location.pathname;
-//     if (
-//       currentPath !== ROUTE_PATHS.AUTH.LOGIN &&
-//       (error?.status === 401 || errorData?.code === 401)
-//     ) {
-//       addToast({
-//         title: "Session expired!",
-//         color: "warning",
-//       });
-//       commonUtils.onLogout();
-//     } else {
-//       addToast({
-//         title: errorData?.message || "Something went wrong!",
-//         color: "danger",
-//       });
-//     }
-//     return Promise.reject(error.response?.data);
-// },
-// );
-// export default http;
-
+import API_ENDPOINTS from "@/lib/Api_Endpoints";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import axios from "axios";
 
 const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
   withCredentials: true,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request Interceptor: Attach token to headers
 api.interceptors.request.use(
   (config) => {
     const token =
@@ -75,24 +25,76 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response Interceptor: Handle errors globally
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    console.log("prom => ", prom);
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const requestUrl = error.config?.url || "";
+  async (error) => {
+    const originalRequest = error.config;
+    const requestUrl = originalRequest?.url || "";
     const isAuthEndpoint = requestUrl.includes("/auth/");
 
-    if (error.response?.status === 401 && !isAuthEndpoint) {
-      // Clear storage and redirect to login only for non-auth endpoints
-      // (e.g. session expired), not for login failures (wrong password)
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("user");
-        window.location.href = ROUTES_PATH.AUTH.LOGIN;
+    if (
+      error.response?.status === 401 &&
+      !isAuthEndpoint &&
+      !originalRequest._retry
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
+        const { accessToken } = response.data.data;
+
+        localStorage.setItem("accessToken", accessToken);
+        api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+        processQueue(null, accessToken);
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("user");
+          window.location.href = ROUTES_PATH.AUTH.LOGIN;
+        }
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
-    // Optionally log error for debugging
-    console.error("API Error:", error.response?.data || error.message);
+
+    if (error.response?.status === 403) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("forbidden-error"));
+      }
+    }
     return Promise.reject(error);
   },
 );

@@ -7,6 +7,7 @@ import {
 } from "@/src/services/clientManager/useClientQueries";
 import { ClientFormData } from "@/src/types/client.types";
 import { useRouter, useParams } from "next/navigation";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 
 export default function EditClientPage() {
@@ -22,7 +23,7 @@ export default function EditClientPage() {
       { id, data },
       {
         onSuccess: () => {
-          router.push("/clients");
+          router.push(ROUTES_PATH.CLIENTS.BASE);
         },
       },
     );

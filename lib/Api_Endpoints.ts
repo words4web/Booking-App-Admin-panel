@@ -5,6 +5,7 @@ const API_ENDPOINTS = {
     LOGIN: `${Admin_Base}/auth/login`,
     PROFILE: `${Admin_Base}/auth/profile`,
     LOGOUT: `${Admin_Base}/auth/logout`,
+    REFRESH_TOKEN: `${Admin_Base}/auth/refresh-token`,
   },
   DRIVERS: {
     GET_ALL_DRIVERS: `${Admin_Base}/drivers`,
@@ -36,6 +37,38 @@ const API_ENDPOINTS = {
   SETTINGS: {
     GET: "/admin/settings",
     UPDATE_PREFERENCE: "/admin/settings/notification-preference",
+  },
+  PRODUCTS: {
+    CREATE: `${Admin_Base}/products`,
+    GET_ALL: `${Admin_Base}/products`,
+    GET_BY_ID: (productId: string) => `${Admin_Base}/products/${productId}`,
+    UPDATE: (productId: string) => `${Admin_Base}/products/${productId}`,
+    DELETE: (productId: string) => `${Admin_Base}/products/${productId}`,
+  },
+  VEHICLES: {
+    CREATE: `${Admin_Base}/vehicles`,
+    GET_ALL: `${Admin_Base}/vehicles`,
+    GET_VEHICLE_DETAILS: (vehicleId: string) =>
+      `${Admin_Base}/vehicles/${vehicleId}`,
+    UPDATE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
+    DELETE: (vehicleId: string) => `${Admin_Base}/vehicles/${vehicleId}`,
+  },
+  BOOKINGS: {
+    CREATE: `${Admin_Base}/bookings`,
+    GET_ALL: `${Admin_Base}/bookings`,
+    GET_BY_ID: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
+    UPDATE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
+    DELETE: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}`,
+    REVIEW: (bookingId: string) => `${Admin_Base}/bookings/${bookingId}/review`,
+    CALENDAR: `${Admin_Base}/bookings/calendar`,
+  },
+  INVOICES: {
+    CREATE: `${Admin_Base}/invoices`,
+    GET_ALL: `${Admin_Base}/invoices`,
+    GET_BY_ID: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+    UPDATE: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+    DELETE: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+    PREVIEW: `${Admin_Base}/invoices/preview`,
   },
 };
 

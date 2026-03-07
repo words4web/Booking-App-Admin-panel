@@ -1,74 +1,103 @@
 import Link from "next/link";
+import ROUTES_PATH from "@/lib/Route_Paths";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  // Plus,
-  UserPlus,
-  // FilePlus,
-  Settings,
-  // Package,
-  Truck,
   ArrowRight,
+  Store,
+  Contact2,
+  Tags,
+  ClipboardCheck,
+  UserSquare2,
+  Construction,
+  CreditCard,
+  Layout,
 } from "lucide-react";
 
-export function Overview() {
-  const quickActions = [
-    {
-      title: "Manage Companies",
-      description: "Configure and manage company profiles",
-      icon: Settings,
-      href: "/companies",
-      color: "bg-slate-900",
-      hoverColor: "hover:bg-slate-950",
-    },
-    {
-      title: "Manage Clients",
-      description: "Register and organize business clients",
-      icon: UserPlus,
-      href: "/clients/new",
-      color: "bg-blue-600",
-      hoverColor: "hover:bg-blue-700",
-    },
-    // {
-    //   title: "Manage Products",
-    //   description: "Update your services and rates",
-    //   icon: Package,
-    //   href: "/products",
-    //   color: "bg-blue-400",
-    //   hoverColor: "hover:bg-blue-500",
-    // },
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
 
-    // {
-    //   title: "Manage Bookings",
-    //   description: "Create and track shipment bookings",
-    //   icon: Plus,
-    //   href: "/bookings/new",
-    //   color: "bg-primary",
-    //   hoverColor: "hover:bg-primary/90",
-    // },
+export function Overview() {
+  const { user } = useAuth();
+
+  const allQuickActions = [
     {
-      title: "Manage Drivers",
-      description: "Onboard and monitor delivery drivers",
-      icon: Truck,
-      href: "/drivers",
-      color: "bg-black",
-      hoverColor: "hover:bg-gray-900",
+      title: "Calendar",
+      description: "Comprehensive schedule and timeline view",
+      icon: Layout,
+      href: ROUTES_PATH.CALENDAR,
+      color: "bg-blue-600",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
-    // {
-    //   title: "Manage Invoices",
-    //   description: "Generate and handle billing invoices",
-    //   icon: FilePlus,
-    //   href: "/invoices",
-    //   color: "bg-blue-800",
-    //   hoverColor: "hover:bg-blue-900",
-    // },
+    {
+      title: "Company",
+      description: "Registered companies and business profiles",
+      icon: Store,
+      href: ROUTES_PATH.COMPANIES.BASE,
+      color: "bg-slate-900",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Client",
+      description: "Business clients and key contacts",
+      icon: Contact2,
+      href: ROUTES_PATH.CLIENTS.BASE,
+      color: "bg-blue-500",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Product",
+      description: "Service products and concrete mix pricing",
+      icon: Tags,
+      href: ROUTES_PATH.PRODUCTS.BASE,
+      color: "bg-indigo-600",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Bookings",
+      description: "Live booking operations and status tracking",
+      icon: ClipboardCheck,
+      href: ROUTES_PATH.BOOKINGS.BASE,
+      color: "bg-blue-700",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      title: "Driver",
+      description: "Driver records and assignment monitoring",
+      icon: UserSquare2,
+      href: ROUTES_PATH.DRIVERS.BASE,
+      color: "bg-black",
+      roles: [UserRoles.SUPER_ADMIN],
+    },
+    {
+      title: "Vehicle",
+      description: "Fleet management and maintenance status",
+      icon: Construction,
+      href: ROUTES_PATH.VEHICLES.BASE,
+      color: "bg-gray-800",
+      roles: [UserRoles.SUPER_ADMIN],
+    },
+    {
+      title: "Invoices & Payment",
+      description: "Financial tracking and payment processing",
+      icon: CreditCard,
+      href: ROUTES_PATH.INVOICES.BASE,
+      color: "bg-blue-800",
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
   ];
+
+  const quickActions = allQuickActions.filter(
+    (action) =>
+      !action.roles ||
+      (user?.role && action.roles.includes(user.role as UserRoles)),
+  );
 
   return (
     <div className="space-y-12 pb-12">
       <div className="flex flex-col gap-2 relative">
-        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" />
+        {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <h1 className="text-5xl font-black tracking-tighter lg:text-6xl text-foreground">
-          RKB <span className="text-primary">Dashboard</span>
+          Divine <span className="text-primary">Dashboard</span>
         </h1>
         {/* <p className="text-xl text-muted-foreground font-medium max-w-2xl">
           Your logistics empire at a glance. Streamlined, efficient, and ready
@@ -85,7 +114,7 @@ export function Overview() {
           <div className="h-px flex-1 bg-primary/10" />
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-2">
           {quickActions.map((action, idx) => {
             const Icon = action.icon;
             // Use a slightly lighter version of the provided color for the icon background if it's primary

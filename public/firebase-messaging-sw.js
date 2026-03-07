@@ -7,12 +7,12 @@ importScripts(
 
 // These values will be replaced by the build process or should match the .env
 firebase.initializeApp({
-  apiKey: "AIzaSyD-zal8OYg4JGhDaCYTYt_GnAH8C9LXBTc",
-  authDomain: "bookingapp-46af6.firebaseapp.com",
-  projectId: "bookingapp-46af6",
-  storageBucket: "bookingapp-46af6.firebasestorage.app",
-  messagingSenderId: "162541135258",
-  appId: "1:162541135258:web:447ce84b2d4bcd37570623",
+  apiKey: "AIzaSyC-Efw2S7oYNzDiMoZF_bHuFpQh7K4ys1k",
+  authDomain: "divine-app-e0237.firebaseapp.com",
+  projectId: "divine-app-e0237",
+  storageBucket: "divine-app-e0237.firebasestorage.app",
+  messagingSenderId: "788891445311",
+  appId: "1:788891445311:web:9210fc6be503128814b08a",
 });
 
 const messaging = firebase.messaging();

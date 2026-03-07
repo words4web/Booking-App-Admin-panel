@@ -37,7 +37,27 @@ export function CompanyForm({
 
   const tabOrder = ["identity", "financial", "admin"];
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Trigger validation and show errors for the current tab fields
+    if (activeTab === "identity") {
+      formik.setTouched({
+        ...formik.touched,
+        name: true,
+        registrationNumber: true,
+        invoicePrefix: true,
+      });
+    } else if (activeTab === "financial") {
+      formik.setTouched({
+        ...formik.touched,
+        vatNumber: true,
+        bankAccountNumber: true,
+        bankCode: true,
+        bankName: true,
+      });
+    }
+
+    await formik.validateForm();
+
     const currentIndex = tabOrder.indexOf(activeTab);
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
@@ -56,17 +76,18 @@ export function CompanyForm({
       name: initialData?.name || "",
       registrationNumber: initialData?.registrationNumber || "",
       vatNumber: initialData?.vatNumber || "",
-      vatRegistered: initialData?.vatRegistered ?? true,
+      vatRegistered: initialData?.vatRegistered ?? false,
       invoicePrefix: initialData?.invoicePrefix || "INV",
       bankAccountNumber: initialData?.bankAccountNumber || "",
       bankCode: initialData?.bankCode || "",
+      bankName: initialData?.bankName || "",
       adminEmail: initialData?.adminEmail || "",
     },
     validationSchema: toFormikValidationSchema(CompanySchema),
     enableReinitialize: true,
     validateOnChange: true,
-    onSubmit: (values) => {
-      onSubmit(values);
+    onSubmit: async (values) => {
+      await onSubmit(values);
     },
   });
 
@@ -95,13 +116,13 @@ export function CompanyForm({
       <form onSubmit={formik.handleSubmit} className="space-y-6">
         <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
           <Tabs value={activeTab} className="w-full">
-            <div className="px-8 pt-8">
-              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit">
+            <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit inline-flex min-w-min">
                 {CompanyTabsData.map((data) => (
                   <TabsTrigger
                     key={data.id}
                     value={data.id}
-                    className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest pointer-events-none data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
+                    className="rounded-xl px-4 sm:px-6 py-2.5 font-bold text-xs uppercase tracking-widest pointer-events-none data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
                     {data.label}
                   </TabsTrigger>
                 ))}
@@ -265,6 +286,21 @@ export function CompanyForm({
                       />
                     </div>
 
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="bankName"
+                        className="text-xs font-semibold text-slate-600">
+                        Bank Name
+                      </Label>
+                      <Input
+                        id="bankName"
+                        placeholder="e.g., Barclays, HSBC"
+                        {...formik.getFieldProps("bankName")}
+                        className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
+                        disabled={!isSuperAdmin}
+                      />
+                    </div>
+
                     <div className="space-y-1.5 md:col-span-2">
                       <Label
                         htmlFor="bankCode"
@@ -348,9 +384,7 @@ export function CompanyForm({
                   {isSuperAdmin && (
                     <Button
                       type="submit"
-                      disabled={
-                        formik.isSubmitting || !formik.isValid || isPending
-                      }
+                      disabled={!formik.isValid || isPending}
                       className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
                       {isPending ? (
                         <>

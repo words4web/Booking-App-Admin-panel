@@ -15,7 +15,7 @@ export function useAllCompaniesQuery(page = 1, limit = 10) {
   return useQuery({
     queryKey: companyKeys.list(page, limit),
     queryFn: () => CompanyService.getAllCompanies(page, limit),
-    select: (data) => data.data.companies,
+    select: (data) => data.data,
   });
 }
 

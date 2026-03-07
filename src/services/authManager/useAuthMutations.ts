@@ -20,17 +20,20 @@ export function useLoginMutation() {
   });
 }
 
+import { FCM_TOKEN } from "@/src/constants/user.constants";
+
 export function useLogoutMutation() {
   const { removeUserContext } = useAuth();
 
   return useMutation({
     mutationFn: AuthService.logout,
     onSuccess: () => {
+      localStorage.removeItem(FCM_TOKEN);
       removeUserContext();
       toast.success("Logged out successfully!");
     },
     onError: () => {
-      // Still remove context on error to ensure user is logged out
+      localStorage.removeItem(FCM_TOKEN);
       removeUserContext();
     },
   });

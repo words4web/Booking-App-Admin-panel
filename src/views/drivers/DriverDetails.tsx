@@ -81,13 +81,13 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
 
       <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
         <Tabs defaultValue="profile" className="w-full">
-          <div className="px-8 pt-8">
-            <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit">
+          <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit inline-flex min-w-min">
               {DriverTabsData.map((data) => (
                 <TabsTrigger
                   key={data.id}
                   value={data.id}
-                  className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all data-[state=active]:bg-primary data-[state=active]:text-white">
+                  className="rounded-xl px-4 sm:px-6 py-2.5 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all data-[state=active]:bg-primary data-[state=active]:text-white">
                   {data.label}
                 </TabsTrigger>
               ))}
@@ -127,17 +127,21 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                 <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <DetailItem
                     label="Full Name"
-                    value={driver.fullName}
+                    value={driver?.fullName}
                     highlight
                   />
-                  <DetailItem label="Email Address" value={driver.email} />
+                  <DetailItem label="Email Address" value={driver?.email} />
                   <DetailItem
                     label="Mobile Number"
-                    value={driver.mobileNumber}
+                    value={driver?.mobileNumber}
+                  />
+                  <DetailItem
+                    label="National Insurance Number"
+                    value={driver?.nationalInsuranceNumber as string}
                   />
                   <DetailItem
                     label="Account Created"
-                    value={new Date(driver.createdAt).toLocaleDateString(
+                    value={new Date(driver?.createdAt).toLocaleDateString(
                       "en-US",
                       {
                         year: "numeric",
@@ -156,18 +160,18 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentViewer
                   title="Front Side"
-                  imageUrl={driver.license?.frontImage?.url || null}
-                  isVerified={driver.license?.frontImage?.isVerified || false}
-                  reason={driver.license?.frontImage?.reason || null}
+                  imageUrl={driver?.license?.frontImage?.url || null}
+                  isVerified={driver?.license?.frontImage?.isVerified || false}
+                  reason={driver?.license?.frontImage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument("license.frontImage", verified, reason)
                   }
                 />
                 <DocumentViewer
                   title="Back Side"
-                  imageUrl={driver.license?.backImage?.url || null}
-                  isVerified={driver.license?.backImage?.isVerified || false}
-                  reason={driver.license?.backImage?.reason || null}
+                  imageUrl={driver?.license?.backImage?.url || null}
+                  isVerified={driver?.license?.backImage?.isVerified || false}
+                  reason={driver?.license?.backImage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument("license.backImage", verified, reason)
                   }
@@ -181,9 +185,11 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentViewer
                   title="Bio Data Page"
-                  imageUrl={driver.passport?.bioDataPage?.url || null}
-                  isVerified={driver.passport?.bioDataPage?.isVerified || false}
-                  reason={driver.passport?.bioDataPage?.reason || null}
+                  imageUrl={driver?.passport?.bioDataPage?.url || null}
+                  isVerified={
+                    driver?.passport?.bioDataPage?.isVerified || false
+                  }
+                  reason={driver?.passport?.bioDataPage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument(
                       "passport.bioDataPage",
@@ -194,11 +200,11 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                 />
                 <DocumentViewer
                   title="Signature Page"
-                  imageUrl={driver.passport?.signaturePage?.url || null}
+                  imageUrl={driver?.passport?.signaturePage?.url || null}
                   isVerified={
-                    driver.passport?.signaturePage?.isVerified || false
+                    driver?.passport?.signaturePage?.isVerified || false
                   }
-                  reason={driver.passport?.signaturePage?.reason || null}
+                  reason={driver?.passport?.signaturePage?.reason || null}
                   onVerify={(verified, reason) =>
                     handleVerifyDocument(
                       "passport.signaturePage",

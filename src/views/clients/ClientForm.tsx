@@ -44,7 +44,34 @@ export function ClientForm({
 
   const tabOrder = ["contact", "legal", "address"];
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Trigger validation and show errors for the current tab fields
+    if (activeTab === "contact") {
+      formik.setTouched({
+        ...formik.touched,
+        contactInfo: {
+          ...formik.touched.contactInfo,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+        },
+      });
+    } else if (activeTab === "legal") {
+      formik.setTouched({
+        ...formik.touched,
+        companyId: true,
+        legalDetails: {
+          ...(formik.touched.legalDetails as any),
+          legalName: true,
+          registrationNumber: true,
+          vatNumber: true,
+        },
+      });
+    }
+
+    await formik.validateForm();
+
     const currentIndex = tabOrder.indexOf(activeTab);
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
@@ -59,7 +86,8 @@ export function ClientForm({
   };
 
   // Fetch companies for Super Admin dropdown
-  const { data: companies = [] } = useAllCompaniesQuery();
+  const { data: companiesData } = useAllCompaniesQuery(1, 100);
+  const companies = companiesData?.companies || [];
 
   const formik = useFormik<ClientFormData>({
     initialValues: {
@@ -78,15 +106,20 @@ export function ClientForm({
         registrationNumber: initialData?.legalDetails.registrationNumber || "",
         vatNumber: initialData?.legalDetails.vatNumber || "",
         vatRegistered: initialData?.legalDetails.vatRegistered ?? false,
+        purchaseOrderNumber:
+          initialData?.legalDetails.purchaseOrderNumber || "",
+        // nationalInsuranceNumber:
+        //   initialData?.legalDetails.nationalInsuranceNumber || "",
       },
       address: {
         addressLine1: initialData?.address.addressLine1 || "",
         addressLine2: initialData?.address.addressLine2 || "",
         city: initialData?.address.city || "",
-        state: initialData?.address.state || "",
-        postalCode: initialData?.address.postalCode || "",
-        country: initialData?.address.country || "",
+        county: initialData?.address.county || "",
+        postcode: initialData?.address.postcode || "",
+        country: initialData?.address.country || "United Kingdom",
       },
+      vatExempt: initialData?.vatExempt ?? false,
     },
     validationSchema: toFormikValidationSchema(ClientSchema),
     enableReinitialize: true,
@@ -124,13 +157,13 @@ export function ClientForm({
       <form onSubmit={formik.handleSubmit} className="space-y-6">
         <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem]">
           <Tabs value={activeTab} className="w-full">
-            <div className="px-8 pt-8">
-              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit">
+            <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+              <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit inline-flex min-w-min">
                 {ClientTabsData.map((data) => (
                   <TabsTrigger
                     key={data.id}
                     value={data.id}
-                    className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg pointer-events-none">
+                    className="rounded-xl px-4 sm:px-6 py-2.5 font-bold text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg pointer-events-none">
                     {data.label}
                   </TabsTrigger>
                 ))}
@@ -345,6 +378,38 @@ export function ClientForm({
                         </p>
                       )}
                     </div>
+
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="legalDetails.purchaseOrderNumber"
+                        className="text-xs font-semibold text-slate-600">
+                        Purchase Order Number
+                      </Label>
+                      <Input
+                        id="legalDetails.purchaseOrderNumber"
+                        placeholder="PO-123456"
+                        {...formik.getFieldProps(
+                          "legalDetails.purchaseOrderNumber",
+                        )}
+                        className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.purchaseOrderNumber") ? "border-destructive" : ""}`}
+                      />
+                    </div>
+
+                    {/* <div className="space-y-1.5">
+                      <Label
+                        htmlFor="legalDetails.nationalInsuranceNumber"
+                        className="text-xs font-semibold text-slate-600">
+                        National Insurance Number
+                      </Label>
+                      <Input
+                        id="legalDetails.nationalInsuranceNumber"
+                        placeholder="QQ 12 34 56 C"
+                        {...formik.getFieldProps(
+                          "legalDetails.nationalInsuranceNumber",
+                        )}
+                        className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.nationalInsuranceNumber") ? "border-destructive" : ""}`}
+                      />
+                    </div> */}
                   </div>
 
                   <div
@@ -377,11 +442,52 @@ export function ClientForm({
                           "legalDetails.vatRegistered",
                           checked,
                         );
-                        if (!checked) {
+                        if (checked) {
+                          formik.setFieldValue("vatExempt", false);
+                        } else {
                           formik.setFieldValue("legalDetails.vatNumber", "");
                         }
                       }}
                       className="data-[state=checked]:bg-emerald-600"
+                    />
+                  </div>
+
+                  <div
+                    className={cn(
+                      "flex items-center justify-between p-4 rounded-lg border transition-all duration-300",
+                      formik.values.vatExempt
+                        ? "bg-amber-50/50 border-amber-200 ring-4 ring-amber-50"
+                        : "bg-slate-50 border-slate-200",
+                    )}>
+                    <div className="space-y-0.5">
+                      <Label
+                        htmlFor="vatExempt"
+                        className={cn(
+                          "text-sm font-bold select-none transition-colors cursor-pointer",
+                          formik.values.vatExempt
+                            ? "text-amber-700"
+                            : "text-slate-900",
+                        )}>
+                        VAT Exempt
+                      </Label>
+                      <p className="text-[11px] text-slate-500 font-medium leading-none">
+                        Toggle if client is exempt from VAT charges
+                      </p>
+                    </div>
+                    <Switch
+                      id="vatExempt"
+                      checked={formik.values.vatExempt}
+                      onCheckedChange={(checked) => {
+                        formik.setFieldValue("vatExempt", checked);
+                        if (checked) {
+                          formik.setFieldValue(
+                            "legalDetails.vatRegistered",
+                            false,
+                          );
+                          formik.setFieldValue("legalDetails.vatNumber", "");
+                        }
+                      }}
+                      className="data-[state=checked]:bg-amber-600"
                     />
                   </div>
 
@@ -486,38 +592,38 @@ export function ClientForm({
 
                   <div className="space-y-1.5">
                     <Label
-                      htmlFor="address.state"
+                      htmlFor="address.county"
                       className="text-xs font-semibold text-slate-600">
-                      State / Province
+                      County (Optional)
                     </Label>
                     <Input
-                      id="address.state"
-                      placeholder="State"
-                      {...formik.getFieldProps("address.state")}
-                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.state") ? "border-destructive" : ""}`}
+                      id="address.county"
+                      placeholder="County"
+                      {...formik.getFieldProps("address.county")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.county") ? "border-destructive" : ""}`}
                     />
-                    {getFieldError("address.state") && (
+                    {getFieldError("address.county") && (
                       <p className="text-xs text-destructive">
-                        {getFieldError("address.state")}
+                        {getFieldError("address.county")}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-1.5">
                     <Label
-                      htmlFor="address.postalCode"
+                      htmlFor="address.postcode"
                       className="text-xs font-semibold text-slate-600">
-                      Postal Code
+                      Postcode
                     </Label>
                     <Input
-                      id="address.postalCode"
-                      placeholder="Postal Code"
-                      {...formik.getFieldProps("address.postalCode")}
-                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.postalCode") ? "border-destructive" : ""}`}
+                      id="address.postcode"
+                      placeholder="Postcode"
+                      {...formik.getFieldProps("address.postcode")}
+                      className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("address.postcode") ? "border-destructive" : ""}`}
                     />
-                    {getFieldError("address.postalCode") && (
+                    {getFieldError("address.postcode") && (
                       <p className="text-xs text-destructive">
-                        {getFieldError("address.postalCode")}
+                        {getFieldError("address.postcode")}
                       </p>
                     )}
                   </div>
@@ -553,7 +659,6 @@ export function ClientForm({
                   <Button
                     type="submit"
                     disabled={
-                      formik.isSubmitting ||
                       !formik.isValid ||
                       isPending ||
                       (isSuperAdmin && !formik.values.companyId)
