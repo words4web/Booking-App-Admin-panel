@@ -69,4 +69,11 @@ export const InvoiceService = {
     });
     return response.data;
   },
+  sendEmail: async (id: string, email?: string) => {
+    await api.post<{ success: boolean; message: string }>(
+      API_ENDPOINTS.INVOICES.SEND_EMAIL(id),
+      { email },
+      { timeout: 20000 },
+    );
+  },
 };

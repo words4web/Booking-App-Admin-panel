@@ -78,3 +78,20 @@ export const useToggleInvoicePaymentMutation = () => {
     },
   });
 };
+
+export const useSendInvoiceEmailMutation = () => {
+  return useMutation({
+    mutationFn: ({ id, email }: { id: string; email?: string }) =>
+      InvoiceService.sendEmail(id, email),
+    onSuccess: () => {
+      toast.success(
+        "Invoice is being sent — you'll receive a notification once delivered.",
+      );
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Failed to schedule invoice delivery",
+      );
+    },
+  });
+};

@@ -55,6 +55,8 @@ export default function NotificationListener() {
           "admin_new_driver",
           "driver_verified",
           "driver_updated",
+          "driver_document_approved",
+          "driver_document_rejected",
         ];
 
         if (type && driverEvents.includes(type)) {

@@ -175,7 +175,9 @@ export function InvoiceForm({
       clientId: initialData?.clientId || "",
       companyId: initialData?.companyId || "",
       invoiceDate: initialData?.invoiceDate || defaultDate,
-      dueDate: initialData?.dueDate || "",
+      dueDate: initialData?.dueDate
+        ? new Date(initialData.dueDate).toISOString().split("T")[0]
+        : "",
       transactionType: TransactionType.SALES,
       status: initialData?.status || InvoiceStatus.DRAFT,
       paymentStatus: initialData?.paymentStatus || PaymentStatus.PENDING,
@@ -204,7 +206,7 @@ export function InvoiceForm({
       if (isEdit && invoiceId) {
         updateMutation.mutate(values, {
           onSuccess: () => {
-            router.push(ROUTES_PATH.INVOICES.VIEW(invoiceId));
+            router.push(ROUTES_PATH.INVOICES.BASE);
           },
         });
       } else {

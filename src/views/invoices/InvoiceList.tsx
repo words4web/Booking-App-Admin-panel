@@ -11,6 +11,7 @@ import {
   Filter,
   CheckCircle,
   Clock,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,7 @@ import {
 } from "@/src/services/invoiceManager/useInvoiceQueries";
 import { Invoice } from "@/src/types/invoice.types";
 import { InvoicePDFModal } from "./InvoicePDFModal";
+import EmailInvoiceModal from "./EmailInvoiceModal";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
@@ -62,6 +64,7 @@ export function InvoiceList() {
   const [toggleStatusDialog, setToggleStatusDialog] = useState<Invoice | null>(
     null,
   );
+  const [emailModal, setEmailModal] = useState<Invoice | null>(null);
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -291,6 +294,14 @@ export function InvoiceList() {
                               <Button
                                 variant="outline"
                                 size="icon"
+                                className="h-8 w-8 rounded-md border-border hover:bg-blue-50 text-blue-600 shadow-sm"
+                                title="Send via Email"
+                                onClick={() => setEmailModal(inv)}>
+                                <Mail className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
                                 className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                 asChild
                                 title="Edit Invoice">
@@ -357,6 +368,21 @@ export function InvoiceList() {
           invoice={pdfInvoice}
           open={!!pdfInvoice}
           onClose={() => setPdfInvoice(null)}
+        />
+      )}
+
+      {/* Email Modal */}
+      {emailModal && (
+        <EmailInvoiceModal
+          isOpen={!!emailModal}
+          onClose={() => setEmailModal(null)}
+          invoiceId={emailModal._id}
+          invoiceNumber={emailModal.invoiceNumber}
+          defaultEmail={
+            typeof emailModal.clientId === "object"
+              ? (emailModal.clientId.contactInfo?.email ?? "")
+              : ""
+          }
         />
       )}
 

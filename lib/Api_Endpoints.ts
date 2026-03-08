@@ -71,6 +71,8 @@ const API_ENDPOINTS = {
     TOGGLE_PAYMENT: (invoiceId: string) =>
       `${Admin_Base}/invoices/${invoiceId}/toggle-payment`,
     PREVIEW: `${Admin_Base}/invoices/preview`,
+    SEND_EMAIL: (invoiceId: string) =>
+      `${Admin_Base}/invoices/${invoiceId}/send-email`,
   },
 };
 

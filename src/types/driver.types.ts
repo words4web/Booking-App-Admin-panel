@@ -13,14 +13,14 @@ export interface Driver {
   profileImage?: string | null;
   isDocumentsVerified: boolean;
   isOtpVerified: boolean;
-  nationalInsuranceNumber?: string | null;
-  license?: {
-    frontImage?: DocumentType;
-    backImage?: DocumentType;
+  nationalInsuranceNumber: string;
+  license: {
+    frontImage: DocumentType;
+    backImage: DocumentType;
   };
-  passport?: {
-    bioDataPage?: DocumentType;
-    signaturePage?: DocumentType;
+  passport: {
+    bioDataPage: DocumentType;
+    signaturePage: DocumentType;
   };
   isDeleted?: boolean;
   deletedAt?: string | null;
