@@ -19,6 +19,8 @@ api.interceptors.request.use(
         : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      delete config.headers.Authorization;
     }
     return config;
   },
@@ -46,7 +48,9 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const requestUrl = originalRequest?.url || "";
-    const isAuthEndpoint = requestUrl.includes("/auth/");
+    const isAuthEndpoint =
+      requestUrl.includes(API_ENDPOINTS.AUTH.LOGIN) ||
+      requestUrl.includes(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
 
     if (
       error.response?.status === 401 &&
@@ -72,7 +76,6 @@ api.interceptors.response.use(
         const { accessToken } = response.data.data;
 
         localStorage.setItem("accessToken", accessToken);
-        api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
         processQueue(null, accessToken);

@@ -56,6 +56,12 @@ export const InvoiceService = {
     );
   },
 
+  togglePaymentStatus: async (id: string) => {
+    await api.patch<{ success: boolean; message: string }>(
+      API_ENDPOINTS.INVOICES.TOGGLE_PAYMENT(id),
+    );
+  },
+
   previewPdf: async (data: Partial<InvoiceFormData> | Invoice) => {
     const response = await api.post(API_ENDPOINTS.INVOICES.PREVIEW, data, {
       responseType: "blob",

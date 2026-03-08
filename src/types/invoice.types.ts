@@ -81,6 +81,7 @@ export interface Invoice {
   terms?: string;
   paymentLink?: string;
   paymentStatus: PaymentStatus;
+  isPaid: boolean;
   paidAt?: string;
   sentAt?: string;
   status: InvoiceStatus;

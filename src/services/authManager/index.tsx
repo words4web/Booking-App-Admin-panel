@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { User } from "@/src/types/user.types";
 import { type UserContext as IUserContext } from "@/src/types/auth.types";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { ACCESS_TOKEN } from "@/src/constants/user.constants";
+import { ACCESS_TOKEN, SESSION_ACTIVE } from "@/src/constants/user.constants";
 import { AuthService } from "./auth.service";
 import ROUTES_PATH from "@/lib/Route_Paths";
 
@@ -29,9 +29,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const token = getLocalStorage(ACCESS_TOKEN);
 
+  const removeUserContext = useCallback(() => {
+    removeLocalStorageItem(ACCESS_TOKEN);
+    removeLocalStorageItem(SESSION_ACTIVE);
+    setUser(null);
+    router.push(ROUTES_PATH.AUTH.LOGIN);
+  }, [router, removeLocalStorageItem]);
+
+  const setUserContext = useCallback(
+    (newToken: string, userData: User) => {
+      setLocalStorage(ACCESS_TOKEN, newToken);
+      setLocalStorage(SESSION_ACTIVE, "true");
+      setUser(userData);
+      router.push(ROUTES_PATH.DASHBOARD);
+    },
+    [router, setLocalStorage],
+  );
+
   const getLoggedInUser = useCallback(async () => {
+    // If no token, maybe we can refresh it from cookie?
+    const hasSessionHint = getLocalStorage(SESSION_ACTIVE);
+
     if (!token) {
+      // Only attempt refresh if there was a previous session
+      if (!hasSessionHint) {
+        setIsUserLoading(false);
+        return;
+      }
+
+      try {
+        const refreshRes = await AuthService.refreshToken();
+        if (refreshRes?.success && refreshRes?.data?.accessToken) {
+          // Success! Interceptor already stored it if it went through axios,
+          // but we manualy set it here just in case or to trigger re-run
+          setLocalStorage(ACCESS_TOKEN, refreshRes.data.accessToken);
+          setLocalStorage(SESSION_ACTIVE, "true");
+          // Now try profile again
+          const profileRes = await AuthService.getProfile();
+          if (profileRes?.success && profileRes?.data.user) {
+            setUser(profileRes.data.user);
+            return;
+          }
+        }
+      } catch (refreshErr) {
+        // Refresh failed, probably no valid cookie
+        console.error("Session recovery failed:", refreshErr);
+        removeLocalStorageItem(SESSION_ACTIVE);
+      }
       setIsUserLoading(false);
+      removeUserContext();
       return;
     }
 
@@ -48,30 +94,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsUserLoading(false);
     }
-  }, [token]);
+  }, [
+    token,
+    removeUserContext,
+    setLocalStorage,
+    getLocalStorage,
+    removeLocalStorageItem,
+  ]);
 
   useEffect(() => {
-    if (token && !user) {
+    if (!user) {
       getLoggedInUser();
     } else {
       setIsUserLoading(false);
     }
-  }, [token, user, router]);
-
-  const removeUserContext = useCallback(() => {
-    removeLocalStorageItem(ACCESS_TOKEN);
-    setUser(null);
-    router.push(ROUTES_PATH.AUTH.LOGIN);
-  }, [router, removeLocalStorageItem]);
-
-  const setUserContext = useCallback(
-    (newToken: string, userData: User) => {
-      setLocalStorage(ACCESS_TOKEN, newToken);
-      setUser(userData);
-      router.push(ROUTES_PATH.DASHBOARD);
-    },
-    [router, setLocalStorage],
-  );
+  }, [user, getLoggedInUser]);
 
   return (
     <AuthContext.Provider
