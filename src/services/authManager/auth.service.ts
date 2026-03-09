@@ -20,4 +20,12 @@ export const AuthService = {
     const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT, data);
     return response.data;
   },
+
+  refreshToken: async (): Promise<{
+    success: boolean;
+    data: { accessToken: string };
+  }> => {
+    const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
+    return response.data;
+  },
 };

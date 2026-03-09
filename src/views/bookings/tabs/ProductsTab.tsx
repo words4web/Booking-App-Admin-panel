@@ -161,9 +161,10 @@ export function ProductsTab({
                   step="any"
                   {...formik.getFieldProps(`products.${index}.quantity`)}
                   onChange={(e) => {
+                    const val = e.target.value;
                     formik.setFieldValue(
                       `products.${index}.quantity`,
-                      e.target.value,
+                      val === "" ? "" : Number(val),
                     );
                   }}
                   className={cn(
@@ -189,9 +190,10 @@ export function ProductsTab({
                   step="any"
                   {...formik.getFieldProps(`products.${index}.rate`)}
                   onChange={(e) => {
+                    const val = e.target.value;
                     formik.setFieldValue(
                       `products.${index}.rate`,
-                      e.target.value,
+                      val === "" ? "" : Number(val),
                     );
                   }}
                   className={cn(
@@ -217,9 +219,10 @@ export function ProductsTab({
                   step="any"
                   {...formik.getFieldProps(`products.${index}.baseCharge`)}
                   onChange={(e) => {
+                    const val = e.target.value;
                     formik.setFieldValue(
                       `products.${index}.baseCharge`,
-                      e.target.value,
+                      val === "" ? "" : Number(val),
                     );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
@@ -236,9 +239,10 @@ export function ProductsTab({
                   step="any"
                   {...formik.getFieldProps(`products.${index}.hourlyRate`)}
                   onChange={(e) => {
+                    const val = e.target.value;
                     formik.setFieldValue(
                       `products.${index}.hourlyRate`,
-                      e.target.value,
+                      val === "" ? "" : Number(val),
                     );
                   }}
                   className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"

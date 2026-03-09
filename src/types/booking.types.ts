@@ -16,6 +16,8 @@ export interface IBookingProduct {
   rate: number; // basePrice from product
   baseCharge?: number;
   hourlyRate?: number;
+  waitingRate?: number;
+  waitingTimeUnit?: string;
   extraCharges?: { label: string; amount: number }[];
 }
 

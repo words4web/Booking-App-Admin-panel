@@ -90,13 +90,15 @@ export function AssignmentTab({
               <SelectContent className="bg-white w-[--radix-select-trigger-width]">
                 {drivers &&
                   drivers?.length > 0 &&
-                  drivers?.map((driver) => {
-                    return (
-                      <SelectItem key={driver?._id} value={driver?._id}>
-                        {driver?.fullName}
-                      </SelectItem>
-                    );
-                  })}
+                  drivers
+                    ?.filter((d) => d.isDocumentsVerified)
+                    ?.map((driver) => {
+                      return (
+                        <SelectItem key={driver?._id} value={driver?._id}>
+                          {driver?.fullName}
+                        </SelectItem>
+                      );
+                    })}
               </SelectContent>
             </Select>
           </div>

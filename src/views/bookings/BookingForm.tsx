@@ -207,7 +207,9 @@ export function BookingForm({
 
     if (existingProductIndex !== -1) {
       const updatedProducts = [...formik.values.products];
-      updatedProducts[existingProductIndex].quantity += 1;
+      const currentQty = updatedProducts[existingProductIndex].quantity;
+      updatedProducts[existingProductIndex].quantity =
+        Number(currentQty || 0) + 1;
       formik.setFieldValue("products", updatedProducts);
     } else {
       const newProduct: IBookingProduct = {

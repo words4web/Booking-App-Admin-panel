@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookingService } from "./booking.service";
 import { BookingFilters, BookingFormData } from "../../types/booking.types";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 export const useBookingsQuery = (filters: BookingFilters = {}) => {
   return useQuery({

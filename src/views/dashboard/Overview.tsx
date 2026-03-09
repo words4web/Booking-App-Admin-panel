@@ -77,8 +77,8 @@ export function Overview() {
       roles: [UserRoles.SUPER_ADMIN],
     },
     {
-      title: "Invoices & Payment",
-      description: "Financial tracking and payment processing",
+      title: "Invoices",
+      description: "Generate and manage invoices",
       icon: CreditCard,
       href: ROUTES_PATH.INVOICES.BASE,
       color: "bg-blue-800",
@@ -147,7 +147,7 @@ export function Overview() {
                         </div>
                       </div>
                       <p className="text-muted-foreground text-base font-medium leading-relaxed group-hover:text-foreground/70 transition-colors duration-500">
-                        {action.description}. Elevate your logistics experience.
+                        {action.description}
                       </p>
                     </div>
                   </CardContent>
