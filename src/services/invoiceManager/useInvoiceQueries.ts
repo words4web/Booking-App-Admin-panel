@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { InvoiceService } from "./invoice.service";
 import { InvoiceFilters, InvoiceFormData } from "../../types/invoice.types";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 export const useInvoicesQuery = (filters: InvoiceFilters = {}) => {
   return useQuery({
@@ -58,6 +58,40 @@ export const useDeleteInvoiceMutation = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to delete invoice");
+    },
+  });
+};
+
+export const useToggleInvoicePaymentMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => InvoiceService.togglePaymentStatus(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoice", id] });
+      toast.success("Invoice status updated successfully");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Failed to toggle payment status",
+      );
+    },
+  });
+};
+
+export const useSendInvoiceEmailMutation = () => {
+  return useMutation({
+    mutationFn: ({ id, email }: { id: string; email?: string }) =>
+      InvoiceService.sendEmail(id, email),
+    onSuccess: () => {
+      toast.success(
+        "Invoice is being sent — you'll receive a notification once delivered.",
+      );
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Failed to schedule invoice delivery",
+      );
     },
   });
 };

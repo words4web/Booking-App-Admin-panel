@@ -52,7 +52,12 @@ export interface Invoice {
     | string
     | {
         _id: string;
-        contactInfo: { firstName: string; lastName: string };
+        contactInfo: {
+          firstName: string;
+          lastName: string;
+          email: string;
+          phone: string;
+        };
         legalDetails: { legalName: string };
         address: {
           addressLine1: string;
@@ -81,6 +86,7 @@ export interface Invoice {
   terms?: string;
   paymentLink?: string;
   paymentStatus: PaymentStatus;
+  isPaid: boolean;
   paidAt?: string;
   sentAt?: string;
   status: InvoiceStatus;

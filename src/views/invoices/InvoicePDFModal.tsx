@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Invoice } from "@/src/types/invoice.types";
 import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
+import { toast } from "react-toastify";
 
 interface InvoicePDFModalProps {
   invoice: Invoice;
@@ -40,6 +41,7 @@ export function InvoicePDFModal({
         setPdfUrl(objectUrl);
       } catch (error) {
         console.error("Failed to fetch PDF preview:", error);
+        toast.error("Failed to load invoice preview. Please try again.");
       } finally {
         setIsLoading(false);
       }

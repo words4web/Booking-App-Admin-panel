@@ -3,7 +3,16 @@
 import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { useState } from "react";
-import { Plus, FileText, Pencil, Trash2, Filter } from "lucide-react";
+import {
+  Plus,
+  FileText,
+  Pencil,
+  Trash2,
+  Filter,
+  CheckCircle,
+  Clock,
+  Mail,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
@@ -11,9 +20,11 @@ import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import {
   useInvoicesQuery,
   useDeleteInvoiceMutation,
+  useToggleInvoicePaymentMutation,
 } from "@/src/services/invoiceManager/useInvoiceQueries";
 import { Invoice } from "@/src/types/invoice.types";
 import { InvoicePDFModal } from "./InvoicePDFModal";
+import EmailInvoiceModal from "./EmailInvoiceModal";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
@@ -50,6 +61,10 @@ export function InvoiceList() {
   } | null>(null);
   const [page, setPage] = useState(1);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
+  const [toggleStatusDialog, setToggleStatusDialog] = useState<Invoice | null>(
+    null,
+  );
+  const [emailModal, setEmailModal] = useState<Invoice | null>(null);
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -64,6 +79,7 @@ export function InvoiceList() {
   const companies = companiesData?.companies || [];
 
   const deleteMutation = useDeleteInvoiceMutation();
+  const toggleStatusMutation = useToggleInvoicePaymentMutation();
 
   const invoices = data?.invoices ?? [];
   const pagination = data?.pagination;
@@ -174,6 +190,9 @@ export function InvoiceList() {
                       <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Due Date
                       </th>
+                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        Status
+                      </th>
                       <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Amount
                       </th>
@@ -209,6 +228,26 @@ export function InvoiceList() {
                           <td className="px-8 py-5 align-middle text-muted-foreground">
                             {inv.dueDate ? formatDate(inv.dueDate) : "—"}
                           </td>
+                          <td className="px-8 py-5 align-middle">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+                                inv.isPaid
+                                  ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                  : "bg-amber-50 text-amber-600 border-amber-100"
+                              }`}>
+                              {inv.isPaid ? (
+                                <>
+                                  <CheckCircle className="h-3 w-3" />
+                                  Paid
+                                </>
+                              ) : (
+                                <>
+                                  <Clock className="h-3 w-3" />
+                                  Pending
+                                </>
+                              )}
+                            </span>
+                          </td>
                           <td className="px-8 py-5 align-middle text-right font-bold text-foreground">
                             £{Number(inv.totalAmount || 0).toFixed(2)}
                           </td>
@@ -232,6 +271,34 @@ export function InvoiceList() {
                                   <Eye className="h-3.5 w-3.5" />
                                 </Link>
                               </Button> */}
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className={`h-8 w-8 rounded-md border-border transition-all shadow-sm ${
+                                  inv.isPaid
+                                    ? "text-emerald-600 hover:bg-emerald-50 border-emerald-100"
+                                    : "text-amber-600 hover:bg-amber-50 border-amber-100"
+                                }`}
+                                title={
+                                  inv.isPaid
+                                    ? "Mark as Pending"
+                                    : "Mark as Paid"
+                                }
+                                onClick={() => setToggleStatusDialog(inv)}>
+                                {inv.isPaid ? (
+                                  <CheckCircle className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Clock className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-md border-border hover:bg-blue-50 text-blue-600 shadow-sm"
+                                title="Send via Email"
+                                onClick={() => setEmailModal(inv)}>
+                                <Mail className="h-3.5 w-3.5" />
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="icon"
@@ -304,6 +371,21 @@ export function InvoiceList() {
         />
       )}
 
+      {/* Email Modal */}
+      {emailModal && (
+        <EmailInvoiceModal
+          isOpen={!!emailModal}
+          onClose={() => setEmailModal(null)}
+          invoiceId={emailModal._id}
+          invoiceNumber={emailModal.invoiceNumber}
+          defaultEmail={
+            typeof emailModal.clientId === "object"
+              ? (emailModal.clientId.contactInfo?.email ?? "")
+              : ""
+          }
+        />
+      )}
+
       {/* Delete Confirm */}
       <ConfirmModal
         isOpen={!!deleteDialog}
@@ -322,6 +404,26 @@ export function InvoiceList() {
         variant="destructive"
         icon={Trash2}
         isLoading={deleteMutation.isPending}
+      />
+
+      {/* Toggle Status Confirm */}
+      <ConfirmModal
+        isOpen={!!toggleStatusDialog}
+        onOpenChange={(open) => !open && setToggleStatusDialog(null)}
+        title={`Mark as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}`}
+        description={`Are you sure you want to mark invoice ${toggleStatusDialog?.invoiceNumber} as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}?`}
+        confirmText={`Yes, Mark as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}`}
+        cancelText="Cancel"
+        onConfirm={() => {
+          if (toggleStatusDialog) {
+            toggleStatusMutation.mutate(toggleStatusDialog._id, {
+              onSuccess: () => setToggleStatusDialog(null),
+            });
+          }
+        }}
+        variant="primary"
+        icon={toggleStatusDialog?.isPaid ? Clock : CheckCircle}
+        isLoading={toggleStatusMutation.isPending}
       />
     </div>
   );

@@ -5,7 +5,7 @@ import {
   ClientFilters,
   Client,
 } from "../../types/client.types";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 export const clientKeys = {
   all: ["clients"] as const,

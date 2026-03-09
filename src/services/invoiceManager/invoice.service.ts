@@ -56,11 +56,24 @@ export const InvoiceService = {
     );
   },
 
+  togglePaymentStatus: async (id: string) => {
+    await api.patch<{ success: boolean; message: string }>(
+      API_ENDPOINTS.INVOICES.TOGGLE_PAYMENT(id),
+    );
+  },
+
   previewPdf: async (data: Partial<InvoiceFormData> | Invoice) => {
     const response = await api.post(API_ENDPOINTS.INVOICES.PREVIEW, data, {
       responseType: "blob",
       timeout: 20000,
     });
     return response.data;
+  },
+  sendEmail: async (id: string, email?: string) => {
+    await api.post<{ success: boolean; message: string }>(
+      API_ENDPOINTS.INVOICES.SEND_EMAIL(id),
+      { email },
+      { timeout: 20000 },
+    );
   },
 };

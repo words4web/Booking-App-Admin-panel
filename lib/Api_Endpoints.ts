@@ -68,7 +68,11 @@ const API_ENDPOINTS = {
     GET_BY_ID: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
     UPDATE: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
     DELETE: (invoiceId: string) => `${Admin_Base}/invoices/${invoiceId}`,
+    TOGGLE_PAYMENT: (invoiceId: string) =>
+      `${Admin_Base}/invoices/${invoiceId}/toggle-payment`,
     PREVIEW: `${Admin_Base}/invoices/preview`,
+    SEND_EMAIL: (invoiceId: string) =>
+      `${Admin_Base}/invoices/${invoiceId}/send-email`,
   },
 };
 
