@@ -5,14 +5,13 @@ importScripts(
   "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js",
 );
 
-// These values will be replaced by the build process or should match the .env
 firebase.initializeApp({
-  apiKey: "AIzaSyC-Efw2S7oYNzDiMoZF_bHuFpQh7K4ys1k",
-  authDomain: "divine-app-e0237.firebaseapp.com",
-  projectId: "divine-app-e0237",
-  storageBucket: "divine-app-e0237.firebasestorage.app",
-  messagingSenderId: "788891445311",
-  appId: "1:788891445311:web:9210fc6be503128814b08a",
+  apiKey: "AIzaSyC-AIzaSyAAgFET5dX4_Mq_ZKkDhrsL_PwayZ3IdSA",
+  authDomain: "rkb-divine-app.firebaseapp.com",
+  projectId: "rkb-divine-app",
+  storageBucket: "rkb-divine-app.firebasestorage.app",
+  messagingSenderId: "20802354440",
+  appId: "1:20802354440:web:3128e9c9edb5ec6f1580bd",
 });
 
 const messaging = firebase.messaging();
