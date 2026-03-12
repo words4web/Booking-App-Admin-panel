@@ -78,6 +78,7 @@ export interface Invoice {
   waitingTotal?: number;
   isNightShift?: boolean;
   nightShiftAmount?: number;
+  logoFile?: string;
   subtotal: number;
   totalVat: number;
   totalAmount: number;
@@ -119,6 +120,7 @@ export interface InvoiceFormData {
   waitingTotal?: number;
   isNightShift?: boolean;
   nightShiftAmount?: number;
+  logoFile?: string;
   status?: InvoiceStatus;
   paymentStatus?: PaymentStatus;
   notes?: string;

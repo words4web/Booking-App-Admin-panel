@@ -15,12 +15,14 @@ import { toast } from "react-toastify";
 
 interface InvoicePDFModalProps {
   invoice: Invoice;
+  invoiceId?: string;
   open: boolean;
   onClose: () => void;
 }
 
 export function InvoicePDFModal({
   invoice,
+  invoiceId,
   open,
   onClose,
 }: InvoicePDFModalProps) {
@@ -30,31 +32,42 @@ export function InvoicePDFModal({
 
   useEffect(() => {
     let objectUrl: string | null = null;
+    let cancelled = false;
 
     const fetchPdf = async () => {
       if (!open) return;
       setIsLoading(true);
       try {
-        const responseData = await InvoiceService.previewPdf(invoice);
+        let responseData;
+        if (invoiceId) {
+          responseData = await InvoiceService.downloadPdf(invoiceId);
+        } else {
+          responseData = await InvoiceService.previewPdf(invoice);
+        }
+        if (cancelled) return;
         const blob = new Blob([responseData], { type: "application/pdf" });
         objectUrl = URL.createObjectURL(blob);
         setPdfUrl(objectUrl);
       } catch (error) {
-        console.error("Failed to fetch PDF preview:", error);
-        toast.error("Failed to load invoice preview. Please try again.");
+        if (!cancelled) {
+          console.error("Failed to fetch PDF preview:", error);
+          toast.error("Failed to load invoice preview. Please try again.");
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     fetchPdf();
 
     return () => {
+      cancelled = true;
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [open, invoice]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, invoiceId]);
 
   const handleDownload = () => {
     if (!pdfUrl) return;

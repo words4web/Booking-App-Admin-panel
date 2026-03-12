@@ -7,8 +7,8 @@ import { AuthProvider } from "@/src/services/authManager";
 import NotificationListener from "@/src/components/NotificationListener";
 
 export const metadata: Metadata = {
-  title: "Divine Admin Panel",
-  description: "Admin dashboard for Divine booking management",
+  title: "DivineGo Admin Panel",
+  description: "Admin dashboard for DivineGo booking management",
 };
 
 export default function RootLayout({

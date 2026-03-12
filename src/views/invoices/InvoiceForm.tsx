@@ -10,11 +10,10 @@ import React, {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { ArrowLeft, Plus, Trash2, Eye, Save } from "lucide-react";
+import { ArrowLeft, Trash2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -89,6 +88,7 @@ const EMPTY_LINE: InvoiceLineFormData = {
 };
 
 interface LineComputedTotals {
+  productTotal: number;
   subtotal: number;
   totalVat: number;
   totalAmount: number;
@@ -99,24 +99,21 @@ function computeTotals(
   waitingTotal: number = 0,
   nightShiftAmount: number = 0,
 ): LineComputedTotals {
-  let subtotal = 0;
+  let productTotal = 0;
   let totalVat = 0;
   lines.forEach((l) => {
     const qty = Number(l.quantity) || 0;
     const price = Number(l.unitPrice) || 0;
     const vat = Number(l.vatPercent) || 0;
     const exVat = qty * price;
-    subtotal += exVat;
+    productTotal += exVat;
     totalVat += exVat * (vat / 100);
   });
 
-  // Add waiting total to subtotal (since it's also taxable/part of net)
-  subtotal += waitingTotal;
-  subtotal += nightShiftAmount;
-  // User requested: waiting time cost will be added directly to the total no vat on that
-  // totalVat += waitingTotal * 0.2; // Removed VAT from waiting time
+  const subtotal = productTotal + waitingTotal + nightShiftAmount;
+  const totalAmount = subtotal + totalVat;
 
-  return { subtotal, totalVat, totalAmount: subtotal + totalVat };
+  return { productTotal, subtotal, totalVat, totalAmount };
 }
 
 interface InvoiceFormProps {
@@ -138,6 +135,10 @@ export function InvoiceForm({
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [availableLogos] = useState<string[]>([
+    "RKB-CCONCRETE-LTD-LOGO.png",
+    "RKB-HAULAGE-LTD-LOGO.png",
+  ]);
   const hasAutoselected = useRef(false);
 
   const bookingFilters = useMemo(
@@ -194,6 +195,7 @@ export function InvoiceForm({
       terms:
         initialData?.terms ||
         "Late payment will be subject to a compensation payment, plus interest charged at 8% above the Bank Of England base rate.\nPayment should be made by bank transfer to the following account:\nAccount Name : RKB KENT Concrete Ltd\nSort Code: 60-06-33\nAccount No: 34965254\nName of Bank: Natwest",
+      logoFile: initialData?.logoFile || "RKB-CCONCRETE-LTD-LOGO.png",
     }),
     [initialData, bookingIdFromUrl, defaultDate],
   );
@@ -384,10 +386,6 @@ export function InvoiceForm({
     }
   }, [bookingIdFromUrl, availableBookings, handleBookingSelect]);
 
-  const addLine = () => {
-    formik.setFieldValue("lineItems", [...formik.values.lineItems, EMPTY_LINE]);
-  };
-
   const removeLine = (index: number) => {
     const newLines = [...formik.values.lineItems];
     newLines.splice(index, 1);
@@ -454,29 +452,53 @@ export function InvoiceForm({
             {isEdit ? "Edit Invoice" : "New Sale"}
           </h1>
         </div>
-        <div className="flex items-center gap-2">
-          {isEdit && (
-            <Badge
-              variant="outline"
-              className="text-xs font-bold bg-slate-100 uppercase mr-2">
-              Editing #{invoiceId}
-            </Badge>
-          )}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setPreviewOpen(true)}
-            className="h-9 rounded-lg font-medium border-gray-300 text-gray-700 hover:bg-gray-100">
-            <Eye className="h-4 w-4 mr-1.5" />
-            Preview
-          </Button>
-        </div>
       </div>
 
       {/* Main Form */}
       <div className="max-w-full mx-auto bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-6 lg:p-8">
+          {/* Logo Selection */}
+          <div className="mb-6 flex gap-6 items-start">
+            <div className="flex-1">
+              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+                Invoice Logo
+              </Label>
+              <Select
+                value={formik.values.logoFile || "RKB-CCONCRETE-LTD-LOGO.png"}
+                onValueChange={(v) => formik.setFieldValue("logoFile", v)}>
+                <SelectTrigger className="w-full h-10 rounded-lg border-gray-300 bg-white text-sm">
+                  <SelectValue placeholder="Select logo" />
+                </SelectTrigger>
+                <SelectContent className="w-[--radix-select-trigger-width] bg-white border border-gray-200">
+                  {availableLogos.map((logo) => (
+                    <SelectItem key={logo} value={logo}>
+                      {logo
+                        .replace(/\.(png|jpg|jpeg|svg|webp)$/i, "")
+                        .replace(/-/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Logo Preview */}
+            <div className="w-48 h-20 bg-gray-50 border border-gray-200 rounded-lg hidden sm:flex items-center justify-center p-2 overflow-hidden">
+              {formik.values.logoFile ? (
+                <img
+                  src={`/${formik.values.logoFile}`}
+                  alt="Logo Preview"
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src =
+                      "https://placehold.co/200x80?text=Preview+Error";
+                  }}
+                />
+              ) : (
+                <span className="text-xs text-gray-400">No Logo Selected</span>
+              )}
+            </div>
+          </div>
+
           {/* Header Fields - 4 columns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div>
@@ -525,7 +547,9 @@ export function InvoiceForm({
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[400px] p-0" align="start">
+                <PopoverContent
+                  className="w-[--radix-popover-trigger-width] p-0"
+                  align="start">
                   <Command shouldFilter={false}>
                     <CommandInput
                       placeholder="Search booking ID or client..."
@@ -642,14 +666,16 @@ export function InvoiceForm({
                   <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
                     Line {idx + 1}
                   </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeLine(idx)}
-                    className="h-7 w-7 text-gray-400 hover:text-red-500 rounded-md">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  {!isEdit && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeLine(idx)}
+                      className="h-7 w-7 text-gray-400 hover:text-red-500 rounded-md">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                 </div>
 
                 {/* Line fields - all on one row on desktop */}
@@ -665,7 +691,7 @@ export function InvoiceForm({
                       <SelectTrigger className="h-9 rounded-md border-gray-300 bg-white text-sm w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-full min-w-[200px]">
+                      <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-[--radix-select-trigger-width]">
                         <SelectItem value="Income">Income</SelectItem>
                         <SelectItem value="Sale of Goods">
                           Sale of Goods
@@ -797,21 +823,6 @@ export function InvoiceForm({
                 </div>
               </div>
             ))}
-
-            {/* New Line button */}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={addLine}
-              className="w-full h-10 rounded-lg border-dashed border-gray-300 text-gray-500 hover:text-gray-700 hover:border-gray-400 text-sm font-medium">
-              <Plus className="h-4 w-4 mr-1.5" />
-              NEW LINE
-            </Button>
-            {getFieldError("lineItems") && (
-              <p className="text-xs text-destructive font-bold text-center mt-2">
-                {getFieldError("lineItems")}
-              </p>
-            )}
           </div>
 
           {/* Divider */}
@@ -821,14 +832,9 @@ export function InvoiceForm({
           <div className="flex justify-end">
             <div className="w-full max-w-sm space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-500">Product Total</span>
                 <span className="font-semibold text-gray-900">
-                  £
-                  {Number(
-                    totals.subtotal -
-                      (formik.values.waitingTotal || 0) -
-                      (formik.values.nightShiftAmount || 0),
-                  ).toFixed(2)}
+                  £{Number(totals.productTotal || 0).toFixed(2)}
                 </span>
               </div>
 
@@ -848,7 +854,7 @@ export function InvoiceForm({
                       type="number"
                       value={formik.values.waitingMinutes || ""}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFieldValue(
+                        formik.setFieldValue(
                           "waitingMinutes",
                           e.target.value === "" ? 0 : Number(e.target.value),
                         )
@@ -866,7 +872,7 @@ export function InvoiceForm({
                       step="0.01"
                       value={formik.values.waitingTotal || ""}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFieldValue(
+                        formik.setFieldValue(
                           "waitingTotal",
                           e.target.value === "" ? 0 : Number(e.target.value),
                         )
@@ -890,9 +896,16 @@ export function InvoiceForm({
                       type="checkbox"
                       checked={formik.values.isNightShift || false}
                       onChange={(e) => {
-                        setFieldValue("isNightShift", e.target.checked);
-                        if (!e.target.checked)
-                          setFieldValue("nightShiftAmount", 0);
+                        const checked = e.target.checked;
+                        formik.setFieldValue("isNightShift", checked);
+                        if (!checked) {
+                          formik.setFieldValue("nightShiftAmount", 0);
+                        } else if (
+                          !formik.values.nightShiftAmount ||
+                          Number(formik.values.nightShiftAmount) === 0
+                        ) {
+                          formik.setFieldValue("nightShiftAmount", 2);
+                        }
                       }}
                       className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
@@ -909,7 +922,7 @@ export function InvoiceForm({
                         step="0.01"
                         value={formik.values.nightShiftAmount || ""}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFieldValue(
+                          formik.setFieldValue(
                             "nightShiftAmount",
                             e.target.value === "" ? 0 : Number(e.target.value),
                           )
@@ -920,6 +933,15 @@ export function InvoiceForm({
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
+                <span className="text-gray-500 font-bold text-xs uppercase">
+                  Subtotal
+                </span>
+                <span className="font-bold text-gray-900">
+                  £{Number(totals.subtotal || 0).toFixed(2)}
+                </span>
               </div>
 
               <div className="flex justify-between text-sm">
@@ -943,27 +965,15 @@ export function InvoiceForm({
           <div className="border-t border-gray-200 mt-6 mb-6" />
 
           {/* Notes & Terms */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Internal Notes
-              </Label>
-              <textarea
-                className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="Add internal notes..."
-                {...formik.getFieldProps("notes")}
-              />
-            </div>
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Terms & Conditions
-              </Label>
-              <textarea
-                className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="Add payment terms or conditions..."
-                {...formik.getFieldProps("terms")}
-              />
-            </div>
+          <div className="mb-6">
+            <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+              Terms & Conditions
+            </Label>
+            <textarea
+              className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              placeholder="Add payment terms or conditions..."
+              {...formik.getFieldProps("terms")}
+            />
           </div>
 
           {/* Billing & Company Detail Overrides */}

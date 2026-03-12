@@ -10,7 +10,7 @@ import {
   Trash2,
   Filter,
   CheckCircle,
-  Clock,
+  AlertCircle,
   Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -242,8 +242,8 @@ export function InvoiceList() {
                                 </>
                               ) : (
                                 <>
-                                  <Clock className="h-3 w-3" />
-                                  Pending
+                                  <AlertCircle className="h-3 w-3" />
+                                  Pending Payment
                                 </>
                               )}
                             </span>
@@ -253,14 +253,14 @@ export function InvoiceList() {
                           </td>
                           <td className="px-8 py-5 align-middle text-right">
                             <div className="flex justify-end gap-2">
-                              {/* <Button
+                              <Button
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
                                 title="View PDF"
                                 onClick={() => setPdfInvoice(inv)}>
                                 <FileText className="h-3.5 w-3.5" />
-                              </Button> */}
+                              </Button>
                               {/* <Button
                                 variant="outline"
                                 size="icon"
@@ -288,7 +288,7 @@ export function InvoiceList() {
                                 {inv.isPaid ? (
                                   <CheckCircle className="h-3.5 w-3.5" />
                                 ) : (
-                                  <Clock className="h-3.5 w-3.5" />
+                                  <AlertCircle className="h-3.5 w-3.5" />
                                 )}
                               </Button>
                               <Button
@@ -366,6 +366,7 @@ export function InvoiceList() {
       {pdfInvoice && (
         <InvoicePDFModal
           invoice={pdfInvoice}
+          invoiceId={pdfInvoice._id}
           open={!!pdfInvoice}
           onClose={() => setPdfInvoice(null)}
         />
@@ -412,7 +413,7 @@ export function InvoiceList() {
         onOpenChange={(open) => !open && setToggleStatusDialog(null)}
         title={`Mark as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}`}
         description={`Are you sure you want to mark invoice ${toggleStatusDialog?.invoiceNumber} as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}?`}
-        confirmText={`Yes, Mark as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}`}
+        confirmText={`Yes, Mark as ${toggleStatusDialog?.isPaid ? "Pending Payment" : "Paid"}`}
         cancelText="Cancel"
         onConfirm={() => {
           if (toggleStatusDialog) {
@@ -422,7 +423,7 @@ export function InvoiceList() {
           }
         }}
         variant="primary"
-        icon={toggleStatusDialog?.isPaid ? Clock : CheckCircle}
+        icon={toggleStatusDialog?.isPaid ? AlertCircle : CheckCircle}
         isLoading={toggleStatusMutation.isPending}
       />
     </div>

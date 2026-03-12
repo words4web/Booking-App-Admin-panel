@@ -181,6 +181,8 @@ export const InvoiceSchema = z.object({
   nightShiftAmount: z.coerce.number().optional(),
   notes: z.string().optional(),
   paymentLink: z.string().optional(),
+  terms: z.string().optional(),
+  logoFile: z.string().optional(),
 });
 
 // ─── Other ────────────────────────────────────────────────────────────────────

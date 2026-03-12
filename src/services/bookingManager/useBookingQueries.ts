@@ -7,6 +7,7 @@ export const useBookingsQuery = (filters: BookingFilters = {}) => {
   return useQuery({
     queryKey: ["bookings", filters],
     queryFn: () => BookingService.getAll(filters),
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -27,6 +28,7 @@ export const useBookingDetailsQuery = (id: string) => {
     queryKey: ["booking", id],
     queryFn: () => BookingService.getById(id),
     enabled: !!id,
+    refetchOnWindowFocus: false,
   });
 };
 

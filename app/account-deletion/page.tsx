@@ -121,7 +121,7 @@ export default function AccountDeletionPage() {
           <footer className="bg-slate-900 rounded-3xl p-8 text-center text-white shadow-xl relative overflow-hidden">
             <div className="relative z-10 flex flex-col items-center space-y-4">
               <p className="text-slate-400 text-sm font-medium">
-                © 2026 Divine Logistics Solutions
+                © {new Date().getFullYear()} DivineGo Logistics Solutions
               </p>
               <div className="flex gap-6">
                 <a

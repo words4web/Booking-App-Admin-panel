@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-slate-600 leading-relaxed text-lg">
               This Privacy Policy describes how{" "}
               <span className="font-semibold text-slate-800">
-                Divine Logistics
+                DivineGo Logistics
               </span>{" "}
               collects, uses, and shares your personal information when you use
               our mobile application and admin panel.
@@ -156,7 +156,9 @@ export default function PrivacyPolicyPage() {
                 Privacy Protected
               </span>
               <span className="text-slate-300">|</span>
-              <p className="text-sm text-slate-400">© 2026 Divine Logistics</p>
+              <p className="text-sm text-slate-400">
+                © {new Date().getFullYear()} DivineGo Logistics
+              </p>
             </div>
           </footer>
         </main>

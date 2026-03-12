@@ -7,6 +7,7 @@ export const useInvoicesQuery = (filters: InvoiceFilters = {}) => {
   return useQuery({
     queryKey: ["invoices", filters],
     queryFn: () => InvoiceService.getAll(filters),
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -15,6 +16,7 @@ export const useInvoiceDetailsQuery = (id: string) => {
     queryKey: ["invoice", id],
     queryFn: () => InvoiceService.getById(id),
     enabled: !!id,
+    refetchOnWindowFocus: false,
   });
 };
 
