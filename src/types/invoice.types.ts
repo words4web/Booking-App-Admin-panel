@@ -7,7 +7,6 @@ import {
 export interface IInvoiceLine {
   productId?: string;
   description: string;
-  account: string;
   quantity: number;
   unitPrice: number;
   exVat: number;
@@ -99,7 +98,6 @@ export interface Invoice {
 export interface InvoiceLineFormData {
   productId?: string;
   description: string;
-  account: string;
   quantity: number;
   unitPrice: number;
   vatPercent: number;

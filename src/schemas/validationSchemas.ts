@@ -157,7 +157,6 @@ export const BookingSchema = z
 export const InvoiceLineSchema = z.object({
   productId: z.string().optional(),
   description: z.string().min(1, "Description is required"),
-  account: z.string().default("Income"),
   quantity: z.coerce.number().min(0).default(1),
   unitPrice: z.coerce.number().min(0, "Unit price cannot be negative"),
   vatPercent: z.coerce.number().min(0).max(100).default(20),

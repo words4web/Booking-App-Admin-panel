@@ -81,7 +81,7 @@ function getBookingLabel(b: Booking): string {
 const EMPTY_LINE: InvoiceLineFormData = {
   productId: "",
   description: "",
-  account: "Income",
+
   quantity: 1,
   unitPrice: 0,
   vatPercent: 20,
@@ -311,7 +311,7 @@ export function InvoiceForm({
         productId:
           typeof p.productId === "string" ? p.productId : p.productId?._id,
         description: p.name,
-        account: "Income",
+
         quantity: p.quantity,
         unitPrice: p.rate,
         vatPercent: isClientVatExempt ? 0 : 20,
@@ -680,29 +680,6 @@ export function InvoiceForm({
 
                 {/* Line fields - all on one row on desktop */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {/* Account */}
-                  <div>
-                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                      Account
-                    </Label>
-                    <Select
-                      value={line.account}
-                      onValueChange={(v) => setLineField(idx, "account", v)}>
-                      <SelectTrigger className="h-9 rounded-md border-gray-300 bg-white text-sm w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-[--radix-select-trigger-width]">
-                        <SelectItem value="Income">Income</SelectItem>
-                        <SelectItem value="Sale of Goods">
-                          Sale of Goods
-                        </SelectItem>
-                        <SelectItem value="Other Income">
-                          Other Income
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Ex-VAT (Unit Price) */}
                   <div>
                     <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
