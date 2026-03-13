@@ -1,0 +1,150 @@
+import React from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { FormikProps } from "formik";
+import { InvoiceFormData } from "@/src/types/invoice.types";
+
+interface Totals {
+  productTotal: number;
+  subtotal: number;
+  totalVat: number;
+  totalAmount: number;
+}
+
+interface InvoiceFormTotalsProps {
+  formik: FormikProps<InvoiceFormData>;
+  totals: Totals;
+}
+
+export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
+  formik,
+  totals,
+}) => {
+  return (
+    <div className="flex justify-end">
+      <div className="w-full max-w-sm space-y-3">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Product Total</span>
+          <span className="font-semibold text-gray-900">
+            £{Number(totals.productTotal || 0).toFixed(2)}
+          </span>
+        </div>
+
+        {/* Waiting Time Section */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-600 uppercase">
+              Waiting Time
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[10px] text-slate-400">Minutes</Label>
+              <Input
+                type="number"
+                value={formik.values.waitingMinutes || ""}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  formik.setFieldValue(
+                    "waitingMinutes",
+                    e.target.value === "" ? 0 : Number(e.target.value),
+                  )
+                }
+                placeholder="0"
+                className="h-8 text-xs bg-white"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] text-slate-400">Cost (£)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={formik.values.waitingTotal || ""}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  formik.setFieldValue(
+                    "waitingTotal",
+                    e.target.value === "" ? 0 : Number(e.target.value),
+                  )
+                }
+                placeholder="0.00"
+                className="h-8 text-xs bg-white font-bold"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Night Shift Section */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-600 uppercase">
+              Night Shift
+            </span>
+            <div className="flex items-center gap-2">
+              <Label className="text-[10px] text-slate-400">Apply</Label>
+              <input
+                type="checkbox"
+                checked={formik.values.isNightShift || false}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  formik.setFieldValue("isNightShift", checked);
+                  if (!checked) {
+                    formik.setFieldValue("nightShiftAmount", 0);
+                  } else if (
+                    !formik.values.nightShiftAmount ||
+                    Number(formik.values.nightShiftAmount) === 0
+                  ) {
+                    formik.setFieldValue("nightShiftAmount", 2);
+                  }
+                }}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          {formik.values.isNightShift && (
+            <div className="grid grid-cols-1 mt-2">
+              <div>
+                <Label className="text-[10px] text-slate-400">Amount (£)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={formik.values.nightShiftAmount || ""}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    formik.setFieldValue(
+                      "nightShiftAmount",
+                      e.target.value === "" ? 0 : Number(e.target.value),
+                    )
+                  }
+                  placeholder="0.00"
+                  className="h-8 text-xs bg-white font-bold"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
+          <span className="text-gray-500 font-bold text-xs uppercase">
+            Subtotal
+          </span>
+          <span className="font-bold text-gray-900">
+            £{Number(totals.subtotal || 0).toFixed(2)}
+          </span>
+        </div>
+
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">VAT (20%)</span>
+          <span className="font-semibold text-gray-900">
+            £{Number(totals.totalVat || 0).toFixed(2)}
+          </span>
+        </div>
+        <div className="border-t border-gray-300 pt-2 flex justify-between">
+          <span className="text-sm font-bold text-gray-900">
+            Total Including VAT
+          </span>
+          <span className="text-lg font-bold text-gray-900">
+            £{Number(totals.totalAmount || 0).toFixed(2)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};

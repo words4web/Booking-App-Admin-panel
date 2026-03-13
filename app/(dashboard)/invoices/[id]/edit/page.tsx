@@ -35,7 +35,6 @@ export default function EditInvoicePage() {
     lineItems: invoice.lineItems.map((l) => ({
       productId: typeof l.productId === "string" ? l.productId : undefined,
       description: l.description,
-      account: l.account || "Income",
       quantity: l.quantity,
       unitPrice: l.unitPrice,
       vatPercent: l.vatPercent,

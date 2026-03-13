@@ -1,27 +1,11 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { ArrowLeft, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { DateTimePicker } from "@/src/components/DateTimePicker";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { InvoiceSchema } from "@/src/schemas/validationSchemas";
 import {
@@ -44,23 +28,13 @@ import {
 } from "@/src/services/invoiceManager/useInvoiceQueries";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { Booking } from "@/src/types/booking.types";
-import { InvoicePDFModal } from "./InvoicePDFModal";
-import { cn } from "@/lib/utils";
 import { useDebounce } from "@/src/hooks/useDebounce";
-import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { InvoiceFormHeader } from "./components/InvoiceFormHeader";
+import { InvoiceFormBookingSection } from "./components/InvoiceFormBookingSection";
+import { InvoiceFormLineItems } from "./components/InvoiceFormLineItems";
+import { InvoiceFormTotals } from "./components/InvoiceFormTotals";
+import { InvoiceFormTerms } from "./components/InvoiceFormTerms";
+import { InvoicePDFModal } from "./InvoicePDFModal";
 
 function getBookingLabel(b: Booking): string {
   if (!b || !b._id) return "Unknown Booking";
@@ -457,546 +431,42 @@ export function InvoiceForm({
       {/* Main Form */}
       <div className="max-w-full mx-auto bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-6 lg:p-8">
-          {/* Logo Selection */}
-          <div className="mb-6 flex gap-6 items-start">
-            <div className="flex-1">
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Invoice Logo
-              </Label>
-              <Select
-                value={formik.values.logoFile || "RKB-CCONCRETE-LTD-LOGO.png"}
-                onValueChange={(v) => formik.setFieldValue("logoFile", v)}>
-                <SelectTrigger className="w-full h-10 rounded-lg border-gray-300 bg-white text-sm">
-                  <SelectValue placeholder="Select logo" />
-                </SelectTrigger>
-                <SelectContent className="w-[--radix-select-trigger-width] bg-white border border-gray-200">
-                  {availableLogos.map((logo) => (
-                    <SelectItem key={logo} value={logo}>
-                      {logo
-                        .replace(/\.(png|jpg|jpeg|svg|webp)$/i, "")
-                        .replace(/-/g, " ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {/* Logo Preview */}
-            <div className="w-48 h-20 bg-gray-50 border border-gray-200 rounded-lg hidden sm:flex items-center justify-center p-2 overflow-hidden">
-              {formik.values.logoFile ? (
-                <img
-                  src={`/${formik.values.logoFile}`}
-                  alt="Logo Preview"
-                  className="max-w-full max-h-full object-contain"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "https://placehold.co/200x80?text=Preview+Error";
-                  }}
-                />
-              ) : (
-                <span className="text-xs text-gray-400">No Logo Selected</span>
-              )}
-            </div>
-          </div>
-
-          {/* Header Fields - 4 columns */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Date
-              </Label>
-              <DateTimePicker
-                value={formik.values.invoiceDate}
-                onChange={(iso: string) =>
-                  formik.setFieldValue("invoiceDate", iso)
-                }
-                className={cn(
-                  "h-10 rounded-lg border-gray-300 bg-white text-sm",
-                  getFieldError("invoiceDate") && "border-destructive",
-                )}
-              />
-              {getFieldError("invoiceDate") && (
-                <p className="text-[11px] text-destructive font-medium mt-1">
-                  {getFieldError("invoiceDate")}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Selected Booking
-              </Label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className={cn(
-                      "h-10 w-full justify-between rounded-lg border-gray-300 bg-white text-sm font-normal overflow-hidden",
-                      getFieldError("bookingId") && "border-destructive",
-                    )}>
-                    <span className="truncate">
-                      {formik.values.bookingId
-                        ? getBookingLabel(
-                            availableBookings.find(
-                              (b) => b._id === formik.values.bookingId,
-                            ) as Booking,
-                          )
-                        : "Select Booking"}
-                    </span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-[--radix-popover-trigger-width] p-0"
-                  align="start">
-                  <Command shouldFilter={false}>
-                    <CommandInput
-                      placeholder="Search booking ID or client..."
-                      value={searchTerm}
-                      onValueChange={setSearchTerm}
-                    />
-                    <CommandList>
-                      {isLoadingBookings && (
-                        <div className="p-4 text-center text-sm text-muted-foreground">
-                          Searching...
-                        </div>
-                      )}
-                      <CommandEmpty>No bookings found.</CommandEmpty>
-                      <CommandGroup>
-                        {availableBookings?.map((b) => (
-                          <CommandItem
-                            key={b._id}
-                            value={b._id}
-                            onSelect={(currentValue) => {
-                              handleBookingSelect(currentValue);
-                              setOpen(false);
-                            }}>
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                formik.values.bookingId === b._id
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
-                            />
-                            {getBookingLabel(b)}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {getFieldError("bookingId") && (
-                <p className="text-[11px] text-destructive font-medium mt-1">
-                  {getFieldError("bookingId")}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Transaction Type
-              </Label>
-              <Select
-                value={formik.values.transactionType}
-                onValueChange={(v) =>
-                  formik.setFieldValue("transactionType", v)
-                }>
-                <SelectTrigger className="h-10 rounded-lg border-gray-300 bg-white text-sm w-full">
-                  <SelectValue placeholder="Select Type" />
-                </SelectTrigger>
-                <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-[--radix-select-trigger-width]">
-                  <SelectItem value={TransactionType.SALES}>Sale</SelectItem>
-                  <SelectItem value={TransactionType.CREDIT_NOTE}>
-                    Credit Note
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Invoice Number
-              </Label>
-              <Input
-                value={
-                  formik.values.bookingId
-                    ? `#${previewInvoiceData.invoiceNumber}`
-                    : "PENDING SELECTION"
-                }
-                disabled
-                className="h-10 rounded-lg border-gray-200 bg-gray-50 text-gray-500 font-bold text-sm"
-              />
-            </div>
-          </div>
-
-          {/* Due Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div>
-              <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                Due Date
-              </Label>
-              <DateTimePicker
-                value={formik.values.dueDate || ""}
-                onChange={(iso: string) => formik.setFieldValue("dueDate", iso)}
-                className={cn(
-                  "h-10 rounded-lg border-gray-300 bg-white text-sm",
-                  getFieldError("dueDate") && "border-destructive",
-                )}
-              />
-              {getFieldError("dueDate") && (
-                <p className="text-[11px] text-destructive font-medium mt-1">
-                  {getFieldError("dueDate")}
-                </p>
-              )}
-            </div>
-          </div>
-
+          {/* Logo Selection & Header */}
+          <InvoiceFormHeader formik={formik} availableLogos={availableLogos} />
+          {/* Booking & Dates */}
+          <InvoiceFormBookingSection
+            formik={formik}
+            getFieldError={getFieldError}
+            open={open}
+            setOpen={setOpen}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            isLoadingBookings={isLoadingBookings}
+            availableBookings={availableBookings}
+            handleBookingSelect={handleBookingSelect}
+            getBookingLabel={getBookingLabel}
+            previewInvoiceData={previewInvoiceData}
+          />
           {/* Divider */}
           <div className="border-t border-gray-200 mb-6" />
-
           {/* Line Items */}
-          <div className="space-y-4">
-            {formik.values.lineItems.map((line, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50 rounded-lg border border-gray-200 p-5">
-                {/* Line header */}
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                    Line {idx + 1}
-                  </span>
-                  {!isEdit && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeLine(idx)}
-                      className="h-7 w-7 text-gray-400 hover:text-red-500 rounded-md">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
-
-                {/* Line fields - all on one row on desktop */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {/* Ex-VAT (Unit Price) */}
-                  <div>
-                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                      Ex-VAT (£)
-                    </Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      value={line.unitPrice}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setLineField(idx, "unitPrice", Number(e.target.value))
-                      }
-                      className={cn(
-                        "h-9 rounded-md border-gray-300 text-sm bg-white",
-                        getFieldError(`lineItems.${idx}.unitPrice`) &&
-                          "border-destructive",
-                      )}
-                    />
-                    {getFieldError(`lineItems.${idx}.unitPrice`) && (
-                      <p className="text-[10px] text-destructive font-medium mt-1">
-                        {getFieldError(`lineItems.${idx}.unitPrice`)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* VAT Rate - editable as percentage */}
-                  <div>
-                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                      VAT Rate (%)
-                    </Label>
-                    <Input
-                      type="number"
-                      step="1"
-                      min="0"
-                      max="100"
-                      value={line.vatPercent || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setLineField(
-                          idx,
-                          "vatPercent",
-                          e.target.value === "" ? 0 : Number(e.target.value),
-                        )
-                      }
-                      placeholder="20"
-                      className={cn(
-                        "h-9 rounded-md border-gray-300 text-sm bg-white",
-                        getFieldError(`lineItems.${idx}.vatPercent`) &&
-                          "border-destructive",
-                      )}
-                    />
-                    {getFieldError(`lineItems.${idx}.vatPercent`) && (
-                      <p className="text-[10px] text-destructive font-medium mt-1">
-                        {getFieldError(`lineItems.${idx}.vatPercent`)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* VAT Amount (auto-calculated, read-only) */}
-                  <div>
-                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                      VAT (£)
-                    </Label>
-                    <div className="h-9 flex items-center px-3 text-sm text-gray-600 bg-gray-100 rounded-md border border-gray-200">
-                      {Number(getVatAmt(line) || 0).toFixed(2)}
-                    </div>
-                  </div>
-
-                  {/* Quantity */}
-                  <div>
-                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                      Quantity
-                    </Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      step="0.1"
-                      value={line.quantity}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setLineField(idx, "quantity", Number(e.target.value))
-                      }
-                      className={cn(
-                        "h-9 rounded-md border-gray-300 text-sm bg-white",
-                        getFieldError(`lineItems.${idx}.quantity`) &&
-                          "border-destructive",
-                      )}
-                    />
-                    {getFieldError(`lineItems.${idx}.quantity`) && (
-                      <p className="text-[10px] text-destructive font-medium mt-1">
-                        {getFieldError(`lineItems.${idx}.quantity`)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Detail (Description) */}
-                  <div>
-                    <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                      Detail
-                    </Label>
-                    <Input
-                      placeholder="Description"
-                      value={line.description}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setLineField(idx, "description", e.target.value)
-                      }
-                      className={cn(
-                        "h-9 rounded-md border-gray-300 text-sm bg-white",
-                        getFieldError(`lineItems.${idx}.description`) &&
-                          "border-destructive",
-                      )}
-                    />
-                    {getFieldError(`lineItems.${idx}.description`) && (
-                      <p className="text-[10px] text-destructive font-medium mt-1">
-                        {getFieldError(`lineItems.${idx}.description`)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
+          <InvoiceFormLineItems
+            formik={formik}
+            isEdit={!!isEdit}
+            getFieldError={getFieldError}
+            removeLine={removeLine}
+            setLineField={setLineField}
+            getVatAmt={getVatAmt}
+          />
           {/* Divider */}
           <div className="border-t border-gray-200 mt-6 mb-6" />
-
-          {/* Payment Breakdown */}
-          <div className="flex justify-end">
-            <div className="w-full max-w-sm space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Product Total</span>
-                <span className="font-semibold text-gray-900">
-                  £{Number(totals.productTotal || 0).toFixed(2)}
-                </span>
-              </div>
-
-              {/* Waiting Time Section */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-600 uppercase">
-                    Waiting Time
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-[10px] text-slate-400">
-                      Minutes
-                    </Label>
-                    <Input
-                      type="number"
-                      value={formik.values.waitingMinutes || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        formik.setFieldValue(
-                          "waitingMinutes",
-                          e.target.value === "" ? 0 : Number(e.target.value),
-                        )
-                      }
-                      placeholder="0"
-                      className="h-8 text-xs bg-white"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-slate-400">
-                      Cost (£)
-                    </Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formik.values.waitingTotal || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        formik.setFieldValue(
-                          "waitingTotal",
-                          e.target.value === "" ? 0 : Number(e.target.value),
-                        )
-                      }
-                      placeholder="0.00"
-                      className="h-8 text-xs bg-white font-bold"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Night Shift Section */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-600 uppercase">
-                    Night Shift
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Label className="text-[10px] text-slate-400">Apply</Label>
-                    <input
-                      type="checkbox"
-                      checked={formik.values.isNightShift || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        formik.setFieldValue("isNightShift", checked);
-                        if (!checked) {
-                          formik.setFieldValue("nightShiftAmount", 0);
-                        } else if (
-                          !formik.values.nightShiftAmount ||
-                          Number(formik.values.nightShiftAmount) === 0
-                        ) {
-                          formik.setFieldValue("nightShiftAmount", 2);
-                        }
-                      }}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                {formik.values.isNightShift && (
-                  <div className="grid grid-cols-1 mt-2">
-                    <div>
-                      <Label className="text-[10px] text-slate-400">
-                        Amount (£)
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={formik.values.nightShiftAmount || ""}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          formik.setFieldValue(
-                            "nightShiftAmount",
-                            e.target.value === "" ? 0 : Number(e.target.value),
-                          )
-                        }
-                        placeholder="0.00"
-                        className="h-8 text-xs bg-white font-bold"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
-                <span className="text-gray-500 font-bold text-xs uppercase">
-                  Subtotal
-                </span>
-                <span className="font-bold text-gray-900">
-                  £{Number(totals.subtotal || 0).toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">VAT (20%)</span>
-                <span className="font-semibold text-gray-900">
-                  £{Number(totals.totalVat || 0).toFixed(2)}
-                </span>
-              </div>
-              <div className="border-t border-gray-300 pt-2 flex justify-between">
-                <span className="text-sm font-bold text-gray-900">
-                  Total Including VAT
-                </span>
-                <span className="text-lg font-bold text-gray-900">
-                  £{Number(totals.totalAmount || 0).toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
-
+          {/* Payment Breakdown / Totals */}
+          <InvoiceFormTotals formik={formik} totals={totals as any} />
           {/* Divider */}
           <div className="border-t border-gray-200 mt-6 mb-6" />
-
-          {/* Notes & Terms */}
-          <div className="mb-6">
-            <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-              Terms & Conditions
-            </Label>
-            <textarea
-              className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              placeholder="Add payment terms or conditions..."
-              {...formik.getFieldProps("terms")}
-            />
-          </div>
-
-          {/* Billing & Company Detail Overrides */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-            <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
-              Address & Billing Details (Overrides)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
-                    Bill To: Legal Name
-                  </Label>
-                  <Input
-                    placeholder="Client Legal Name"
-                    {...formik.getFieldProps("billingName")}
-                    className="h-10 rounded-lg border-gray-300 bg-white text-sm"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
-                    Bill To: Full Address
-                  </Label>
-                  <textarea
-                    className="w-full min-h-[80px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter full billing address..."
-                    {...formik.getFieldProps("billingAddress")}
-                  />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
-                    From: Company Address
-                  </Label>
-                  <textarea
-                    className="w-full min-h-[120px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter full company address..."
-                    {...formik.getFieldProps("companyAddress")}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-3">
+          {/* Notes, Terms & Overrides */}
+          <InvoiceFormTerms formik={formik} />
+          <div className="flex items-center justify-end gap-3 mt-8">
             <Button
               type="button"
               variant="ghost"

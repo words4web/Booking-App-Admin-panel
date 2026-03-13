@@ -72,7 +72,6 @@ function formatDate(d: string) {
 
 const EMPTY_LINE: InvoiceLineFormData = {
   description: "",
-  account: "Income",
   quantity: 1,
   unitPrice: 0,
   vatPercent: 20,
@@ -111,7 +110,6 @@ export function InvoiceDetails() {
         invoice.lineItems.map((l) => ({
           productId: l.productId,
           description: l.description,
-          account: l.account || "Income",
           quantity: l.quantity,
           unitPrice: l.unitPrice,
           vatPercent: l.vatPercent,
@@ -149,7 +147,6 @@ export function InvoiceDetails() {
         invoice.lineItems.map((l) => ({
           productId: l.productId,
           description: l.description,
-          account: l.account || "Income",
           quantity: l.quantity,
           unitPrice: l.unitPrice,
           vatPercent: l.vatPercent,
@@ -468,13 +465,7 @@ export function InvoiceDetails() {
                             />
                           </td>
                           <td className="py-4 px-4 align-top w-40">
-                            <Input
-                              value={line.account}
-                              onChange={(e) =>
-                                setLineField(i, "account", e.target.value)
-                              }
-                              className="h-10 border-none font-bold text-slate-600 focus:bg-slate-50 transition-colors bg-transparent p-0 text-sm"
-                            />
+                            {/* Account column removed */}
                           </td>
                           <td className="py-4 px-4 align-top">
                             <Input
@@ -548,9 +539,7 @@ export function InvoiceDetails() {
                           <td className="py-5 font-bold text-slate-900">
                             {line.description}
                           </td>
-                          <td className="py-5 px-4 font-bold text-slate-500 text-sm">
-                            {line.account}
-                          </td>
+                          <td className="py-5 px-4 font-bold text-slate-500 text-sm"></td>
                           <td className="py-5 px-4 text-right font-black text-slate-900">
                             {line.quantity}
                           </td>
