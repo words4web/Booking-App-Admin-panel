@@ -25,14 +25,16 @@ export function Login() {
     validateOnMount: true,
     validateOnChange: true,
     onSubmit: async (values) => {
-      let fcmToken = "";
-      await requestNotificationPermission().then((token) => {
+      let fcmToken = localStorage.getItem(FCM_TOKEN) || "";
+
+      if (!fcmToken) {
+        const token = await requestNotificationPermission();
         if (token) {
-          console.log("FCM Token:", token);
           fcmToken = token;
           localStorage.setItem(FCM_TOKEN, token);
         }
-      });
+      }
+
       const newValues = {
         ...values,
         deviceInfo: {
@@ -81,7 +83,7 @@ export function Login() {
 
         <CardContent className="px-10 pb-6 relative z-10">
           <form className="space-y-6" onSubmit={formik.handleSubmit}>
-            <div className="space-y-4 flex flex-col gap-6 mb-6">
+            <div className="space-y-4 flex flex-col gap-10 mb-10">
               <FormInput
                 label="Email Address"
                 name="email"

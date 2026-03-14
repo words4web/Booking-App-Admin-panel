@@ -1,9 +1,15 @@
 "use client";
 
-import { Pencil, Trash2, Plus, Truck } from "lucide-react";
+import { Pencil, Trash2, Plus, Truck, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import {
   useVehiclesQuery,
@@ -116,42 +122,41 @@ export function VehicleList() {
                         </span>
                       </td>
                       <td className="px-8 py-5 align-middle text-right">
-                        <div className="flex justify-end gap-2">
-                          {/* <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
-                            asChild
-                          >
-                            <Link
-                              href={`${ROUTES_PATH.VEHICLES}/${vehicle._id}`}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-full hover:bg-slate-100"
                             >
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button> */}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 rounded-xl hover:bg-amber-100 hover:text-amber-600 transition-all"
-                            asChild>
-                            <Link href={ROUTES_PATH.VEHICLES.EDIT(vehicle._id)}>
-                              <Pencil className="h-4 w-4" />
-                            </Link>
-                          </Button>
+                              <MoreVertical className="h-4 w-4 text-slate-600" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                            <DropdownMenuItem
+                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                              asChild
+                            >
+                              <Link href={ROUTES_PATH.VEHICLES.EDIT(vehicle._id)}>
+                                <Pencil className="h-4 w-4 text-slate-500" />
+                                Edit Vehicle
+                              </Link>
+                            </DropdownMenuItem>
 
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 rounded-xl hover:bg-red-100 hover:text-red-600 transition-all"
-                            onClick={() =>
-                              setVehicleToDelete({
-                                id: vehicle._id,
-                                name: vehicle.vehicleName,
-                              })
-                            }>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                            <DropdownMenuItem
+                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
+                              onClick={() =>
+                                setVehicleToDelete({
+                                  id: vehicle._id,
+                                  name: vehicle.vehicleName,
+                                })
+                              }
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete Vehicle
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))

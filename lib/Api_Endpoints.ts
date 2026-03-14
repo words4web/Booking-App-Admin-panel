@@ -34,6 +34,10 @@ const API_ENDPOINTS = {
     MARK_READ: (id: string) => `/notification/${id}/read`,
     UNREAD_COUNT: "/notification/unread-count",
   },
+  DEVICES: {
+    SYNC: `${Admin_Base}/devices/sync`,
+    REMOVE: `${Admin_Base}/devices/remove`,
+  },
   SETTINGS: {
     GET: "/admin/settings",
     UPDATE_PREFERENCE: "/admin/settings/notification-preference",
@@ -76,6 +80,8 @@ const API_ENDPOINTS = {
     LOGOS: `${Admin_Base}/invoices/logos`,
     SEND_EMAIL: (invoiceId: string) =>
       `${Admin_Base}/invoices/${invoiceId}/send-email`,
+    SEND_PAYMENT_LINK: (invoiceId: string) =>
+      `${Admin_Base}/invoices/${invoiceId}/send-payment-link`,
   },
 };
 

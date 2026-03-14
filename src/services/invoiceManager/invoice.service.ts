@@ -85,4 +85,15 @@ export const InvoiceService = {
       { timeout: 20000 },
     );
   },
+
+  sendPaymentLink: async (
+    id: string,
+    payload: { email: string; phoneNumber?: string; paymentUrl: string },
+  ) => {
+    await api.post<{ success: boolean; message: string }>(
+      API_ENDPOINTS.INVOICES.SEND_PAYMENT_LINK(id),
+      payload,
+      { timeout: 20000 },
+    );
+  },
 };

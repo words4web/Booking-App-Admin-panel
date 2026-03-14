@@ -97,3 +97,29 @@ export const useSendInvoiceEmailMutation = () => {
     },
   });
 };
+
+export const useSendPaymentLinkMutation = () => {
+  return useMutation({
+    mutationFn: ({
+      id,
+      email,
+      phoneNumber,
+      paymentUrl,
+    }: {
+      id: string;
+      email: string;
+      phoneNumber?: string;
+      paymentUrl: string;
+    }) => InvoiceService.sendPaymentLink(id, { email, phoneNumber, paymentUrl }),
+    onSuccess: () => {
+      toast.success(
+        "Payment link is being sent.",
+      );
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Failed to send payment link",
+      );
+    },
+  });
+};

@@ -1,8 +1,14 @@
 "use client";
-import { Eye, CheckCircle, AlertCircle } from "lucide-react";
+import { Eye, CheckCircle, AlertCircle, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
@@ -95,12 +101,28 @@ export function DriverList() {
                         )}
                       </td>
                       <td className="p-4 align-middle text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={ROUTES_PATH.DRIVERS.VIEW(driver._id)}>
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Details
-                          </Link>
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-full hover:bg-muted"
+                            >
+                              <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                            <DropdownMenuItem
+                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                              asChild
+                            >
+                              <Link href={ROUTES_PATH.DRIVERS.VIEW(driver._id)}>
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                View Details
+                              </Link>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))

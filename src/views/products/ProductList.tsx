@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Filter, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, Filter, Package, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAuth } from "@/src/services/authManager";
@@ -208,28 +214,36 @@ export function ProductList() {
                           </td>
                         )}
                         <td className="px-8 py-6 align-middle text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-9 w-9 rounded-xl border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                              asChild
-                              title="Edit Product">
-                              <Link
-                                href={ROUTES_PATH.PRODUCTS.EDIT(product._id)}>
-                                <Pencil className="h-4 w-4" />
-                              </Link>
-                            </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-full hover:bg-slate-100"
+                              >
+                                <MoreVertical className="h-4 w-4 text-slate-600" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                              <DropdownMenuItem
+                                className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                asChild
+                              >
+                                <Link href={ROUTES_PATH.PRODUCTS.EDIT(product._id)}>
+                                  <Pencil className="h-4 w-4 text-slate-500" />
+                                  Edit Product
+                                </Link>
+                              </DropdownMenuItem>
 
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-9 w-9 rounded-xl border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                              title="Delete Product"
-                              onClick={() => handleDeleteClick(product)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                              <DropdownMenuItem
+                                className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
+                                onClick={() => handleDeleteClick(product)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete Product
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))}
