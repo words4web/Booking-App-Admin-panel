@@ -193,6 +193,9 @@ export function ClientForm({
                         {getFieldError("contactInfo.firstName")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., John
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -212,6 +215,9 @@ export function ClientForm({
                         {getFieldError("contactInfo.lastName")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., Doe
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -232,6 +238,9 @@ export function ClientForm({
                         {getFieldError("contactInfo.email")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., john.doe@example.com
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -274,8 +283,8 @@ export function ClientForm({
                       }}
                       className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("contactInfo.phone") ? "border-destructive" : ""}`}
                     />
-                    <p className="text-[10px] text-slate-400 font-medium mt-1">
-                      Accepts UK mobile or landline formats (+44 or 0 prefix)
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., 07123 456789 or +44 7123 456789
                     </p>
                     {getFieldError("contactInfo.phone") && (
                       <p className="text-xs text-destructive">
@@ -356,6 +365,9 @@ export function ClientForm({
                           {getFieldError("legalDetails.legalName")}
                         </p>
                       )}
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., Acme Corp Ltd
+                      </p>
                     </div>
 
                     <div className="space-y-1.5">
@@ -377,6 +389,9 @@ export function ClientForm({
                           {getFieldError("legalDetails.registrationNumber")}
                         </p>
                       )}
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., 01234567
+                      </p>
                     </div>
 
                     <div className="space-y-1.5">
@@ -393,6 +408,9 @@ export function ClientForm({
                         )}
                         className={`h-11 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.purchaseOrderNumber") ? "border-destructive" : ""}`}
                       />
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., PO-123456
+                      </p>
                     </div>
 
                     {/* <div className="space-y-1.5">
@@ -507,6 +525,9 @@ export function ClientForm({
                           className={`h-11 pl-10 rounded-lg border-border focus:ring-primary focus:border-primary ${getFieldError("legalDetails.vatNumber") ? "border-destructive" : ""}`}
                         />
                       </div>
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., GB123456789
+                      </p>
                       {getFieldError("legalDetails.vatNumber") && (
                         <p className="text-xs text-destructive">
                           {getFieldError("legalDetails.vatNumber")}
@@ -555,6 +576,9 @@ export function ClientForm({
                         {getFieldError("address.addressLine1")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., 123 High Street
+                    </p>
                   </div>
 
                   <div className="space-y-1.5 md:col-span-2">
@@ -569,6 +593,9 @@ export function ClientForm({
                       {...formik.getFieldProps("address.addressLine2")}
                       className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary"
                     />
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., Flat 1, Building Name
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -588,6 +615,9 @@ export function ClientForm({
                         {getFieldError("address.city")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., London
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -607,6 +637,9 @@ export function ClientForm({
                         {getFieldError("address.county")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., Greater London
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -626,6 +659,9 @@ export function ClientForm({
                         {getFieldError("address.postcode")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., SW1A 1AA
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -645,6 +681,9 @@ export function ClientForm({
                         {getFieldError("address.country")}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., United Kingdom
+                    </p>
                   </div>
                 </div>
 

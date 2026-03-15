@@ -1,5 +1,11 @@
 "use client";
-import { Eye, CheckCircle, AlertCircle, MoreVertical } from "lucide-react";
+import {
+  Eye,
+  CheckCircle,
+  AlertCircle,
+  MoreVertical,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,14 +16,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
-import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
+import { ConfirmModal } from "@/src/components/common/ConfirmModal";
+import {
+  useAllDriversQuery,
+  useDeleteDriverMutation,
+} from "@/src/services/driverManager/useDriverQueries";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useState } from "react";
 import ROUTES_PATH from "@/lib/Route_Paths";
 
 export function DriverList() {
   const [page, setPage] = useState(1);
+  const [deleteDriverId, setDeleteDriverId] = useState<string | null>(null);
+
   const { data, isLoading, error } = useAllDriversQuery(page, PAGINATION_LIMIT);
+  const { mutateAsync: deleteDriver, isPending: isDeleting } =
+    useDeleteDriverMutation();
+
+  const handleDelete = async () => {
+    if (deleteDriverId) {
+      await deleteDriver(deleteDriverId);
+      setDeleteDriverId(null);
+    }
+  };
 
   const drivers = data?.drivers || [];
   const pagination = data?.pagination;
@@ -106,20 +127,26 @@ export function DriverList() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 rounded-full hover:bg-muted"
-                            >
+                              className="h-8 w-8 rounded-full hover:bg-muted">
                               <MoreVertical className="h-4 w-4 text-muted-foreground" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-48 rounded-2xl border-border bg-white p-1.5 shadow-xl">
                             <DropdownMenuItem
-                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                              asChild
-                            >
+                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                              asChild>
                               <Link href={ROUTES_PATH.DRIVERS.VIEW(driver._id)}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                                 View Details
                               </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-colors focus:bg-destructive/5 text-destructive"
+                              onClick={() => setDeleteDriverId(driver._id)}>
+                              <Trash2 className="h-4 w-4" />
+                              Delete Driver
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -159,6 +186,17 @@ export function DriverList() {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmModal
+        isOpen={!!deleteDriverId}
+        onOpenChange={(open) => !open && setDeleteDriverId(null)}
+        title="Delete Driver"
+        description="Are you sure you want to delete this driver? All documents and driver details will be deleted permanently. This action cannot be undone."
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        variant="destructive"
+        icon={Trash2}
+      />
     </div>
   );
 }

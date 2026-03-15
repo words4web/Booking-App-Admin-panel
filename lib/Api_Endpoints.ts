@@ -13,6 +13,7 @@ const API_ENDPOINTS = {
       `${Admin_Base}/drivers/${driverId}`,
     VERIFY_DOCUMENT: (driverId: string) =>
       `${Admin_Base}/drivers/${driverId}/verify-document`,
+    DELETE: (driverId: string) => `${Admin_Base}/drivers/${driverId}`,
   },
   COMPANIES: {
     CREATE: `${Admin_Base}/companies`,
