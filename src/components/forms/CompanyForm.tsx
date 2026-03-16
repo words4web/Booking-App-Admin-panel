@@ -153,6 +153,9 @@ export function CompanyForm({
                         {formik.errors.name}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., Global Logistics Ltd
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -173,6 +176,9 @@ export function CompanyForm({
                         {formik.errors.registrationNumber}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., 01234567
+                    </p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -193,6 +199,9 @@ export function CompanyForm({
                         {formik.errors.invoicePrefix}
                       </p>
                     )}
+                    <p className="text-[11px] text-slate-500 font-medium mt-1">
+                      e.g., GLO
+                    </p>
                   </div>
                 </div>
 
@@ -269,6 +278,9 @@ export function CompanyForm({
                           className={`h-11 pl-10 rounded-lg border-border focus:ring-primary focus:border-primary transition-all ${getFieldError("vatNumber") ? "border-destructive border-2" : ""}`}
                         />
                       </div>
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., GB123456789
+                      </p>
                     </div>
 
                     <div className="space-y-1.5">
@@ -284,6 +296,9 @@ export function CompanyForm({
                         className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
                         disabled={!isSuperAdmin}
                       />
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., 12345678
+                      </p>
                     </div>
 
                     <div className="space-y-1.5">
@@ -299,6 +314,9 @@ export function CompanyForm({
                         className="h-11 rounded-lg border-border focus:ring-primary focus:border-primary transition-all"
                         disabled={!isSuperAdmin}
                       />
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., Barclays, HSBC, Lloyds
+                      </p>
                     </div>
 
                     <div className="space-y-1.5 md:col-span-2">
@@ -319,6 +337,9 @@ export function CompanyForm({
                           {formik.errors.bankCode}
                         </p>
                       )}
+                      <p className="text-[11px] text-slate-500 font-medium mt-1">
+                        e.g., 12-34-56 (Sort Code) or SWIFTCODE
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -366,6 +387,9 @@ export function CompanyForm({
                       {formik.errors.adminEmail}
                     </p>
                   )}
+                  <p className="text-[11px] text-slate-500 font-medium mt-1">
+                    e.g., admin@company.co.uk
+                  </p>
                   <p className="text-[10px] text-slate-400 font-medium mt-1">
                     {mode === "create"
                       ? "* A company admin account will be created with this email. Login credentials will be sent via email."

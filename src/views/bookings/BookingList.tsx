@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ROUTES_PATH from "@/lib/Route_Paths";
-import { Plus, Pencil, Trash2, FileText, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, FileText, Loader2, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
@@ -289,49 +295,54 @@ export function BookingList() {
                             {getDriverName(booking?.assignedDriverId)}
                           </td>
                           <td className="px-8 py-5 align-middle text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-                                onClick={() =>
-                                  handleInvoiceClick(booking?._id || "")
-                                }
-                                disabled={loadingInvoiceId === booking?._id}
-                                title="Create/Edit Invoice">
-                                {loadingInvoiceId === booking?._id ? (
-                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <FileText className="h-3.5 w-3.5" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                                asChild
-                                title="Edit Booking">
-                                <Link
-                                  href={ROUTES_PATH.BOOKINGS.EDIT(
-                                    booking?._id || "",
-                                  )}>
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </Link>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                                title="Delete Booking"
-                                onClick={() =>
-                                  setDeleteDialog({
-                                    id: booking?._id,
-                                    bookingId: booking?.bookingId,
-                                  })
-                                }>
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-full hover:bg-slate-100"
+                                >
+                                  <MoreVertical className="h-4 w-4 text-slate-600" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                  onClick={() => handleInvoiceClick(booking?._id || "")}
+                                  disabled={loadingInvoiceId === booking?._id}
+                                >
+                                  {loadingInvoiceId === booking?._id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <FileText className="h-4 w-4 text-slate-500" />
+                                  )}
+                                  Invoice
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                  asChild
+                                >
+                                  <Link href={ROUTES_PATH.BOOKINGS.EDIT(booking?._id || "")}>
+                                    <Pencil className="h-4 w-4 text-slate-500" />
+                                    Edit Booking
+                                  </Link>
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
+                                  onClick={() =>
+                                    setDeleteDialog({
+                                      id: booking?._id,
+                                      bookingId: booking?.bookingId,
+                                    })
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                  Delete Booking
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </td>
                         </tr>
                       );

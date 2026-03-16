@@ -23,6 +23,8 @@ export function useUnreadCountQuery() {
     queryFn: () => NotificationService.getUnreadCount(),
     select: (data) => data.data.count,
     refetchInterval: 1000 * 60 * 2,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 }
 

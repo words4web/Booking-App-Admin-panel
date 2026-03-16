@@ -7,7 +7,6 @@ import {
 export interface IInvoiceLine {
   productId?: string;
   description: string;
-  account: string;
   quantity: number;
   unitPrice: number;
   exVat: number;
@@ -78,10 +77,12 @@ export interface Invoice {
   waitingTotal?: number;
   isNightShift?: boolean;
   nightShiftAmount?: number;
+  logoFile?: string;
   subtotal: number;
   totalVat: number;
   totalAmount: number;
   taxBreakdown: ITaxBreakdownRow[];
+  extraCharges?: { label: string; amount: number }[];
   notes?: string;
   terms?: string;
   paymentLink?: string;
@@ -98,7 +99,6 @@ export interface Invoice {
 export interface InvoiceLineFormData {
   productId?: string;
   description: string;
-  account: string;
   quantity: number;
   unitPrice: number;
   vatPercent: number;
@@ -119,6 +119,8 @@ export interface InvoiceFormData {
   waitingTotal?: number;
   isNightShift?: boolean;
   nightShiftAmount?: number;
+  extraCharges?: { label: string; amount: number }[];
+  logoFile?: string;
   status?: InvoiceStatus;
   paymentStatus?: PaymentStatus;
   notes?: string;

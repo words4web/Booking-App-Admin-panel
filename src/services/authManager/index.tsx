@@ -12,15 +12,22 @@ import { useRouter } from "next/navigation";
 import { User } from "@/src/types/user.types";
 import { type UserContext as IUserContext } from "@/src/types/auth.types";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { ACCESS_TOKEN, SESSION_ACTIVE } from "@/src/constants/user.constants";
+import {
+  ACCESS_TOKEN,
+  FCM_TOKEN,
+  SESSION_ACTIVE,
+} from "@/src/constants/user.constants";
 import { AuthService } from "./auth.service";
 import ROUTES_PATH from "@/lib/Route_Paths";
+import { useFcmLifecycle } from "@/src/hooks/useFcmLifecycle";
 
 const AuthContext = createContext<IUserContext | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
+
+  useFcmLifecycle(user);
 
   const { getLocalStorage, setLocalStorage, removeLocalStorageItem } =
     useLocalStorage();
@@ -32,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const removeUserContext = useCallback(() => {
     removeLocalStorageItem(ACCESS_TOKEN);
     removeLocalStorageItem(SESSION_ACTIVE);
+    removeLocalStorageItem(FCM_TOKEN);
     setUser(null);
     router.push(ROUTES_PATH.AUTH.LOGIN);
   }, [router, removeLocalStorageItem]);

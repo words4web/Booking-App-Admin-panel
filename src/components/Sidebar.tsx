@@ -7,7 +7,7 @@ import {
   Package,
   Truck,
   FileText,
-  Calendar,
+  BookCheck,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -70,7 +70,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
     },
     {
       label: "Bookings",
-      icon: <Calendar className="h-5 w-5" />,
+      icon: <BookCheck className="h-5 w-5" />,
       href: ROUTES_PATH.BOOKINGS.BASE,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },

@@ -13,11 +13,14 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { LogOut, User, Mail, Shield } from "lucide-react";
+import { useState } from "react";
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const { mutate: logout, isPending } = useLogoutMutation();
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
 
   const onLogout = () => {
     const fcmToken = localStorage.getItem(FCM_TOKEN);
@@ -123,13 +126,26 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="p-8 pt-0!" style={{ paddingTop: 0 }}>
             <Button
-              onClick={onLogout}
               disabled={isPending}
               variant="destructive"
+              onClick={() => setIsSignOutModalOpen(true)}
               className="h-12 px-8 rounded-xl font-bold text-sm uppercase tracking-wider transition-all gap-2 bg-destructive/10 hover:bg-destructive/20 text-destructive border-none">
               <LogOut className="h-4 w-4" />
               {isPending ? "Signing Out..." : "Sign Out"}
             </Button>
+
+            <ConfirmModal
+              isOpen={isSignOutModalOpen}
+              onOpenChange={setIsSignOutModalOpen}
+              title="Confirm Sign Out"
+              description="Are you sure you want to sign out of your account?"
+              confirmText="Sign Out"
+              cancelText="Cancel"
+              onConfirm={onLogout}
+              isLoading={isPending}
+              icon={LogOut}
+              variant="destructive"
+            />
           </CardContent>
         </Card>
       </div>

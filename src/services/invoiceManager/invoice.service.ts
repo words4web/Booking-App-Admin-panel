@@ -69,10 +69,30 @@ export const InvoiceService = {
     });
     return response.data;
   },
+
+  downloadPdf: async (id: string) => {
+    const response = await api.get(API_ENDPOINTS.INVOICES.DOWNLOAD(id), {
+      responseType: "blob",
+      timeout: 20000,
+    });
+    return response.data;
+  },
+
   sendEmail: async (id: string, email?: string) => {
     await api.post<{ success: boolean; message: string }>(
       API_ENDPOINTS.INVOICES.SEND_EMAIL(id),
       { email },
+      { timeout: 20000 },
+    );
+  },
+
+  sendPaymentLink: async (
+    id: string,
+    payload: { email: string; phoneNumber?: string; paymentUrl: string },
+  ) => {
+    await api.post<{ success: boolean; message: string }>(
+      API_ENDPOINTS.INVOICES.SEND_PAYMENT_LINK(id),
+      payload,
       { timeout: 20000 },
     );
   },

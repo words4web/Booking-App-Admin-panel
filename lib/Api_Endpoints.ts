@@ -13,6 +13,7 @@ const API_ENDPOINTS = {
       `${Admin_Base}/drivers/${driverId}`,
     VERIFY_DOCUMENT: (driverId: string) =>
       `${Admin_Base}/drivers/${driverId}/verify-document`,
+    DELETE: (driverId: string) => `${Admin_Base}/drivers/${driverId}`,
   },
   COMPANIES: {
     CREATE: `${Admin_Base}/companies`,
@@ -33,6 +34,10 @@ const API_ENDPOINTS = {
     MARK_ALL_READ: "/notification/read-all",
     MARK_READ: (id: string) => `/notification/${id}/read`,
     UNREAD_COUNT: "/notification/unread-count",
+  },
+  DEVICES: {
+    SYNC: `${Admin_Base}/devices/sync`,
+    REMOVE: `${Admin_Base}/devices/remove`,
   },
   SETTINGS: {
     GET: "/admin/settings",
@@ -71,8 +76,13 @@ const API_ENDPOINTS = {
     TOGGLE_PAYMENT: (invoiceId: string) =>
       `${Admin_Base}/invoices/${invoiceId}/toggle-payment`,
     PREVIEW: `${Admin_Base}/invoices/preview`,
+    DOWNLOAD: (invoiceId: string) =>
+      `${Admin_Base}/invoices/${invoiceId}/download`,
+    LOGOS: `${Admin_Base}/invoices/logos`,
     SEND_EMAIL: (invoiceId: string) =>
       `${Admin_Base}/invoices/${invoiceId}/send-email`,
+    SEND_PAYMENT_LINK: (invoiceId: string) =>
+      `${Admin_Base}/invoices/${invoiceId}/send-payment-link`,
   },
 };
 

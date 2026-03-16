@@ -97,7 +97,7 @@ export function Overview() {
       <div className="flex flex-col gap-2 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <h1 className="text-5xl font-black tracking-tighter lg:text-6xl text-foreground">
-          Divine <span className="text-primary">Dashboard</span>
+          DivineGo <span className="text-primary">Dashboard</span>
         </h1>
         {/* <p className="text-xl text-muted-foreground font-medium max-w-2xl">
           Your logistics empire at a glance. Streamlined, efficient, and ready

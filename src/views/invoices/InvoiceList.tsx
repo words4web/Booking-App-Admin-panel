@@ -10,8 +10,10 @@ import {
   Trash2,
   Filter,
   CheckCircle,
-  Clock,
+  AlertCircle,
   Mail,
+  Link2,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +27,7 @@ import {
 import { Invoice } from "@/src/types/invoice.types";
 import { InvoicePDFModal } from "./InvoicePDFModal";
 import EmailInvoiceModal from "./EmailInvoiceModal";
+import SendPaymentLinkModal from "./SendPaymentLinkModal";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
@@ -36,6 +39,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 function getClientName(clientId: Invoice["clientId"]): string {
   if (typeof clientId === "string") return clientId;
@@ -65,6 +75,7 @@ export function InvoiceList() {
     null,
   );
   const [emailModal, setEmailModal] = useState<Invoice | null>(null);
+  const [sendPaymentLinkModal, setSendPaymentLinkModal] = useState<Invoice | null>(null);
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -242,8 +253,8 @@ export function InvoiceList() {
                                 </>
                               ) : (
                                 <>
-                                  <Clock className="h-3 w-3" />
-                                  Pending
+                                  <AlertCircle className="h-3 w-3" />
+                                  Pending Payment
                                 </>
                               )}
                             </span>
@@ -252,77 +263,80 @@ export function InvoiceList() {
                             £{Number(inv.totalAmount || 0).toFixed(2)}
                           </td>
                           <td className="px-8 py-5 align-middle text-right">
-                            <div className="flex justify-end gap-2">
-                              {/* <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                                title="View PDF"
-                                onClick={() => setPdfInvoice(inv)}>
-                                <FileText className="h-3.5 w-3.5" />
-                              </Button> */}
-                              {/* <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                                asChild
-                                title="View Details">
-                                <Link href={`/invoices/${inv._id}`}>
-                                  <Eye className="h-3.5 w-3.5" />
-                                </Link>
-                              </Button> */}
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className={`h-8 w-8 rounded-md border-border transition-all shadow-sm ${
-                                  inv.isPaid
-                                    ? "text-emerald-600 hover:bg-emerald-50 border-emerald-100"
-                                    : "text-amber-600 hover:bg-amber-50 border-amber-100"
-                                }`}
-                                title={
-                                  inv.isPaid
-                                    ? "Mark as Pending"
-                                    : "Mark as Paid"
-                                }
-                                onClick={() => setToggleStatusDialog(inv)}>
-                                {inv.isPaid ? (
-                                  <CheckCircle className="h-3.5 w-3.5" />
-                                ) : (
-                                  <Clock className="h-3.5 w-3.5" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-border hover:bg-blue-50 text-blue-600 shadow-sm"
-                                title="Send via Email"
-                                onClick={() => setEmailModal(inv)}>
-                                <Mail className="h-3.5 w-3.5" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-border hover:bg-slate-100 text-slate-600 shadow-sm"
-                                asChild
-                                title="Edit Invoice">
-                                <Link href={`/invoices/${inv._id}/edit`}>
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </Link>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-md border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm"
-                                title="Delete Invoice"
-                                onClick={() =>
-                                  setDeleteDialog({
-                                    id: inv._id,
-                                    number: inv.invoiceNumber,
-                                  })
-                                }>
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-full hover:bg-slate-100"
+                                >
+                                  <MoreVertical className="h-4 w-4 text-slate-600" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-56 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                  onClick={() => setPdfInvoice(inv)}>
+                                  <FileText className="h-4 w-4 text-slate-500" />
+                                  View PDF
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  className={`flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 ${
+                                    inv.isPaid ? "text-emerald-600 focus:text-emerald-700" : "text-amber-600 focus:text-amber-700"
+                                  }`}
+                                  onClick={() => setToggleStatusDialog(inv)}>
+                                  {inv.isPaid ? (
+                                    <>
+                                      <CheckCircle className="h-4 w-4" />
+                                      Mark as Pending
+                                    </>
+                                  ) : (
+                                    <>
+                                      <AlertCircle className="h-4 w-4" />
+                                      Mark as Paid
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-blue-600"
+                                  onClick={() => setEmailModal(inv)}>
+                                  <Mail className="h-4 w-4 text-blue-500" />
+                                  Send via Email
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-indigo-600"
+                                  onClick={() => setSendPaymentLinkModal(inv)}>
+                                  <Link2 className="h-4 w-4 text-indigo-500" />
+                                  Send Payment Link
+                                </DropdownMenuItem>
+
+                                <DropdownMenuSeparator className="my-1 bg-border/50" />
+
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                  asChild>
+                                  <Link href={`/invoices/${inv._id}/edit`}>
+                                    <Pencil className="h-4 w-4 text-slate-500" />
+                                    Edit Invoice
+                                  </Link>
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
+                                  onClick={() =>
+                                    setDeleteDialog({
+                                      id: inv._id,
+                                      number: inv.invoiceNumber,
+                                    })
+                                  }>
+                                  <Trash2 className="h-4 w-4" />
+                                  Delete Invoice
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </td>
                         </tr>
                       );
@@ -366,6 +380,7 @@ export function InvoiceList() {
       {pdfInvoice && (
         <InvoicePDFModal
           invoice={pdfInvoice}
+          invoiceId={pdfInvoice._id}
           open={!!pdfInvoice}
           onClose={() => setPdfInvoice(null)}
         />
@@ -381,6 +396,26 @@ export function InvoiceList() {
           defaultEmail={
             typeof emailModal.clientId === "object"
               ? (emailModal.clientId.contactInfo?.email ?? "")
+              : ""
+          }
+        />
+      )}
+
+      {/* Send Payment Link Modal */}
+      {sendPaymentLinkModal && (
+        <SendPaymentLinkModal
+          isOpen={!!sendPaymentLinkModal}
+          onClose={() => setSendPaymentLinkModal(null)}
+          invoiceId={sendPaymentLinkModal._id}
+          invoiceNumber={sendPaymentLinkModal.invoiceNumber}
+          defaultEmail={
+            typeof sendPaymentLinkModal.clientId === "object"
+              ? (sendPaymentLinkModal.clientId.contactInfo?.email ?? "")
+              : ""
+          }
+          defaultPhone={
+            typeof sendPaymentLinkModal.clientId === "object"
+              ? (sendPaymentLinkModal.clientId.contactInfo?.phone ?? "")
               : ""
           }
         />
@@ -412,7 +447,7 @@ export function InvoiceList() {
         onOpenChange={(open) => !open && setToggleStatusDialog(null)}
         title={`Mark as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}`}
         description={`Are you sure you want to mark invoice ${toggleStatusDialog?.invoiceNumber} as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}?`}
-        confirmText={`Yes, Mark as ${toggleStatusDialog?.isPaid ? "Pending" : "Paid"}`}
+        confirmText={`Yes, Mark as ${toggleStatusDialog?.isPaid ? "Pending Payment" : "Paid"}`}
         cancelText="Cancel"
         onConfirm={() => {
           if (toggleStatusDialog) {
@@ -422,7 +457,7 @@ export function InvoiceList() {
           }
         }}
         variant="primary"
-        icon={toggleStatusDialog?.isPaid ? Clock : CheckCircle}
+        icon={toggleStatusDialog?.isPaid ? AlertCircle : CheckCircle}
         isLoading={toggleStatusMutation.isPending}
       />
     </div>

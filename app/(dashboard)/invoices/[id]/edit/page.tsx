@@ -30,12 +30,11 @@ export default function EditInvoicePage() {
       typeof invoice.companyId === "string"
         ? invoice.companyId
         : invoice.companyId?._id,
-    invoiceDate: new Date(invoice.invoiceDate),
-    dueDate: invoice.dueDate ? new Date(invoice.dueDate) : undefined,
+    invoiceDate: new Date(invoice.invoiceDate).toISOString(),
+    dueDate: invoice.dueDate ? new Date(invoice.dueDate).toISOString() : undefined,
     lineItems: invoice.lineItems.map((l) => ({
       productId: typeof l.productId === "string" ? l.productId : undefined,
       description: l.description,
-      account: l.account || "Income",
       quantity: l.quantity,
       unitPrice: l.unitPrice,
       vatPercent: l.vatPercent,
@@ -45,9 +44,14 @@ export default function EditInvoicePage() {
     companyAddress: invoice.companyAddress,
     waitingMinutes: invoice.waitingMinutes,
     waitingTotal: invoice.waitingTotal,
+    isNightShift: invoice.isNightShift,
+    nightShiftAmount: invoice.nightShiftAmount,
+    logoFile: invoice.logoFile,
     notes: invoice.notes,
     terms: invoice.terms,
     paymentLink: invoice.paymentLink,
+    extraCharges: invoice.extraCharges,
+    transactionType: invoice.transactionType,
   };
 
   return (
