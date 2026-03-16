@@ -157,7 +157,6 @@ export const BookingSchema = z
 export const InvoiceLineSchema = z.object({
   productId: z.string().optional(),
   description: z.string().min(1, "Description is required"),
-  account: z.string().default("Income"),
   quantity: z.coerce.number().min(0).default(1),
   unitPrice: z.coerce.number().min(0, "Unit price cannot be negative"),
   vatPercent: z.coerce.number().min(0).max(100).default(20),
@@ -167,6 +166,7 @@ export const InvoiceSchema = z.object({
   companyId: z.string().optional(),
   clientId: z.string().min(1, "Client is required"),
   bookingId: z.string().min(1, "Booking reference is required"),
+  invoiceDate: z.string().optional(),
   dueDate: z.string().optional(),
   transactionType: z.nativeEnum(TransactionType).default(TransactionType.SALES),
   lineItems: z
@@ -179,9 +179,30 @@ export const InvoiceSchema = z.object({
   waitingTotal: z.coerce.number().optional(),
   isNightShift: z.boolean().optional(),
   nightShiftAmount: z.coerce.number().optional(),
+  extraCharges: z
+    .array(
+      z.object({
+        label: z.string().min(1, "Charge label is required"),
+        amount: z.coerce.number().min(0, "Amount cannot be negative"),
+      })
+    )
+    .optional(),
   notes: z.string().optional(),
   paymentLink: z.string().optional(),
-});
+  terms: z.string().optional(),
+  logoFile: z.string().optional(),
+}).refine(
+  (data) => {
+    if (!data.dueDate) return true;
+    const invDate = new Date(data.invoiceDate || new Date());
+    const dDate = new Date(data.dueDate);
+    return dDate >= invDate;
+  },
+  {
+    message: "Due date cannot be before the invoice date",
+    path: ["dueDate"],
+  }
+);
 
 // ─── Other ────────────────────────────────────────────────────────────────────
 export const DriverSchema = z.object({

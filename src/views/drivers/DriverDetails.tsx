@@ -60,7 +60,7 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Driver Verification
             </h1>
-            <p className="text-sm font-medium text-slate-400">
+            <p className="text-sm font-medium text-slate-500">
               Manage and verify driver documents
             </p>
           </div>
@@ -233,7 +233,7 @@ function DetailItem({
 }) {
   return (
     <div className="space-y-1.5 group">
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+      <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
         {label}
       </p>
       <p

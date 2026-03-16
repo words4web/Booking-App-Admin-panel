@@ -72,7 +72,6 @@ function formatDate(d: string) {
 
 const EMPTY_LINE: InvoiceLineFormData = {
   description: "",
-  account: "Income",
   quantity: 1,
   unitPrice: 0,
   vatPercent: 20,
@@ -111,7 +110,6 @@ export function InvoiceDetails() {
         invoice.lineItems.map((l) => ({
           productId: l.productId,
           description: l.description,
-          account: l.account || "Income",
           quantity: l.quantity,
           unitPrice: l.unitPrice,
           vatPercent: l.vatPercent,
@@ -149,7 +147,6 @@ export function InvoiceDetails() {
         invoice.lineItems.map((l) => ({
           productId: l.productId,
           description: l.description,
-          account: l.account || "Income",
           quantity: l.quantity,
           unitPrice: l.unitPrice,
           vatPercent: l.vatPercent,
@@ -379,7 +376,7 @@ export function InvoiceDetails() {
             </div>
             <div className="flex flex-col items-center flex-1 text-center">
               <h1 className="text-2xl font-black text-slate-900">
-                Sales Invoice
+                {invoice.transactionType}
               </h1>
               <p className="text-sm font-bold text-slate-400">
                 #{invoice.invoiceNumber}
@@ -468,13 +465,7 @@ export function InvoiceDetails() {
                             />
                           </td>
                           <td className="py-4 px-4 align-top w-40">
-                            <Input
-                              value={line.account}
-                              onChange={(e) =>
-                                setLineField(i, "account", e.target.value)
-                              }
-                              className="h-10 border-none font-bold text-slate-600 focus:bg-slate-50 transition-colors bg-transparent p-0 text-sm"
-                            />
+                            {/* Account column removed */}
                           </td>
                           <td className="py-4 px-4 align-top">
                             <Input
@@ -548,9 +539,7 @@ export function InvoiceDetails() {
                           <td className="py-5 font-bold text-slate-900">
                             {line.description}
                           </td>
-                          <td className="py-5 px-4 font-bold text-slate-500 text-sm">
-                            {line.account}
-                          </td>
+                          <td className="py-5 px-4 font-bold text-slate-500 text-sm"></td>
                           <td className="py-5 px-4 text-right font-black text-slate-900">
                             {line.quantity}
                           </td>
@@ -607,8 +596,45 @@ export function InvoiceDetails() {
 
             <div className="w-[340px] space-y-4">
               <div className="bg-slate-50 rounded-3xl p-6 sm:p-8 space-y-4">
+                {/* Product Total (computed roughly as subtotal - waiting - night - extra) */}
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-bold text-slate-500">Subtotal</span>
+                  <span className="font-bold text-slate-500">Product Total</span>
+                  <span className="font-black text-slate-900">
+                    £{Number(
+                        (invoice.subtotal || 0) -
+                        (invoice.waitingTotal || 0) -
+                        (invoice.isNightShift ? invoice.nightShiftAmount || 0 : 0) -
+                        (invoice.extraCharges || []).reduce((sum, c) => sum + (c.amount || 0), 0)
+                      ).toFixed(2)}
+                  </span>
+                </div>
+                {(invoice.waitingTotal ?? 0) > 0 && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-bold text-slate-500">Waiting Time ({invoice.waitingMinutes} mins)</span>
+                    <span className="font-black text-slate-900">
+                      £{Number(invoice.waitingTotal || 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {invoice.isNightShift && (invoice.nightShiftAmount ?? 0) > 0 && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-bold text-slate-500">Night Shift</span>
+                    <span className="font-black text-slate-900">
+                      £{Number(invoice.nightShiftAmount || 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {(invoice.extraCharges || []).map((charge, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-sm">
+                    <span className="font-bold text-slate-500">{charge.label}</span>
+                    <span className="font-black text-slate-900">
+                      £{Number(charge.amount || 0).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+                
+                <div className="pt-4 border-t-2 border-slate-200 flex justify-between items-center text-sm">
+                  <span className="font-black text-slate-900">Subtotal</span>
                   <span className="font-black text-slate-900">
                     £{Number(displaySubtotal || 0).toFixed(2)}
                   </span>

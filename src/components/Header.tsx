@@ -52,7 +52,7 @@ export function Header({
             <div className="relative h-24 w-24">
               <Image
                 src="/divineLogo.png"
-                alt="Divine Logo"
+                alt="DivineGo Logo"
                 fill
                 sizes="96px"
                 className="object-contain"
@@ -75,7 +75,7 @@ export function Header({
                 </h1>
               )}
               <span className="hidden md:block text-[10px] uppercase tracking-widest font-bold text-primary/60 mt-1">
-                Divine Booking System
+                DivineGo Booking System
               </span>
             </div>
           </Link>

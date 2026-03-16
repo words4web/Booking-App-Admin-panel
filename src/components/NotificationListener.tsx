@@ -57,11 +57,20 @@ export default function NotificationListener() {
           "driver_updated",
           "driver_document_approved",
           "driver_document_rejected",
+          "admin_document_upload",
         ];
 
         if (type && driverEvents.includes(type)) {
           console.log(`Event [${type}] received. Invalidating drivers...`);
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
+        }
+
+        // List of invoice related events
+        const invoiceEvents = ["invoice_email_sent", "invoice_email_failed"];
+
+        if (type && invoiceEvents.includes(type)) {
+          console.log(`Event [${type}] received. Invalidating invoices...`);
+          queryClient.invalidateQueries({ queryKey: ["invoices"] });
         }
       });
     };

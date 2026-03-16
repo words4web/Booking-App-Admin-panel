@@ -1,12 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lock, Mail } from "lucide-react";
+import Image from "next/image";
 
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
@@ -30,14 +25,16 @@ export function Login() {
     validateOnMount: true,
     validateOnChange: true,
     onSubmit: async (values) => {
-      let fcmToken = "";
-      await requestNotificationPermission().then((token) => {
+      let fcmToken = localStorage.getItem(FCM_TOKEN) || "";
+
+      if (!fcmToken) {
+        const token = await requestNotificationPermission();
         if (token) {
-          console.log("FCM Token:", token);
           fcmToken = token;
           localStorage.setItem(FCM_TOKEN, token);
         }
-      });
+      }
+
       const newValues = {
         ...values,
         deviceInfo: {
@@ -50,46 +47,76 @@ export function Login() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-200 px-4">
-      <Card className="w-full max-w-md rounded-2xl border border-slate-200 shadow-lg">
-        <CardHeader className="space-y-3 text-center pb-6">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15">
-            <Lock className="h-6 w-6 text-primary" />
+    <div className="relative flex min-h-screen items-center justify-center bg-slate-50 overflow-hidden px-4">
+      {/* Decorative Background Accents */}
+      <div className="absolute -top-24 -left-20 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-pulse" />
+      <div
+        className="absolute top-1/2 -right-20 w-80 h-80 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-50 animate-bounce"
+        style={{ animationDuration: "8s" }}
+      />
+      <div
+        className="absolute -bottom-24 left-1/3 w-96 h-96 bg-indigo-300/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-pulse"
+        style={{ animationDuration: "6s" }}
+      />
+
+      <Card className="relative w-full max-w-md rounded-[2rem] border border-white/40 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.1)] bg-white/70 backdrop-blur-2xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
+
+        <CardHeader className="space-y-6 text-center pb-2 pt-4 relative z-10">
+          <div className="mx-auto flex items-center justify-center">
+            <div className="relative">
+              <Image
+                src="/divineLogo.png"
+                alt="DivineGo Logo"
+                width={160}
+                height={160}
+                className="object-contain drop-shadow-xl"
+                priority
+              />
+            </div>
           </div>
 
-          <CardTitle className="text-2xl font-semibold tracking-tight">
-            Admin Login
+          <CardTitle className="text-4xl font-black tracking-tight text-slate-900">
+            DivineGo <span className="text-primary">Admin</span>
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
-            Secure access to your dashboard
-          </CardDescription>
         </CardHeader>
 
-        <CardContent className="px-8 pb-8">
-          <form className="space-y-5" onSubmit={formik.handleSubmit}>
-            <FormInput
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              icon={Mail}
-              formik={formik}
-            />
+        <CardContent className="px-10 pb-6 relative z-10">
+          <form className="space-y-6" onSubmit={formik.handleSubmit}>
+            <div className="space-y-4 flex flex-col gap-10 mb-10">
+              <FormInput
+                label="Email Address"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                icon={Mail}
+                formik={formik}
+                className="bg-white/40 border-slate-200/50 focus:bg-white transition-all rounded-xl h-12"
+              />
 
-            <FormInput
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              icon={Lock}
-              formik={formik}
-            />
+              <FormInput
+                label="Password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
+                formik={formik}
+                className="bg-white/40 border-slate-200/50 focus:bg-white transition-all rounded-xl h-12"
+              />
+            </div>
 
             <Button
               type="submit"
-              className="h-11 w-full text-sm font-medium"
+              className="h-14 w-full text-base font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-[0.98]"
               disabled={!formik.isValid || !formik.dirty || isPending}>
-              {isPending ? "Logging in..." : "Login"}
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Logging in...
+                </span>
+              ) : (
+                "Login to Dashboard"
+              )}
             </Button>
           </form>
         </CardContent>

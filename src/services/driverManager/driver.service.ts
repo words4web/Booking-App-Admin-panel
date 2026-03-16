@@ -43,4 +43,8 @@ export const DriverService = {
     );
     return response.data;
   },
+  deleteDriver: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete(API_ENDPOINTS.DRIVERS.DELETE(id));
+    return response.data;
+  },
 };

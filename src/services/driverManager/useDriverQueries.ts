@@ -53,3 +53,21 @@ export function useVerifyDocumentMutation(driverId: string) {
     },
   });
 }
+
+export function useDeleteDriverMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (driverId: string) => DriverService.deleteDriver(driverId),
+    onSuccess: () => {
+      toast.success("Driver deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: driverKeys.all });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      const message =
+        error.response?.data?.message ||
+        "Failed to delete driver. Please try again.";
+      toast.error(message);
+    },
+  });
+}

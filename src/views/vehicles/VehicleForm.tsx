@@ -89,6 +89,9 @@ export function VehicleForm({
                   {getFieldError("vehicleName")}
                 </p>
               )}
+              <p className="text-[11px] text-slate-500 font-medium mt-1">
+                e.g., Mercedes Sprinter
+              </p>
             </div>
 
             <div className="space-y-1.5">
@@ -111,6 +114,9 @@ export function VehicleForm({
                   {getFieldError("vehicleNumber")}
                 </p>
               )}
+              <p className="text-[11px] text-slate-500 font-medium mt-1">
+                e.g., AB12 CDE
+              </p>
             </div>
 
             <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
