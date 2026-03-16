@@ -196,6 +196,7 @@ export const InvoiceFormBookingSection: React.FC<
           <DateTimePicker
             value={formik.values.dueDate || ""}
             onChange={(iso: string) => formik.setFieldValue("dueDate", iso)}
+            minDate={formik.values.invoiceDate}
             className={cn(
               "h-10 rounded-lg border-gray-300 bg-white text-sm",
               getFieldError("dueDate") && "border-destructive",

@@ -72,6 +72,7 @@ function computeTotals(
   lines: InvoiceLineFormData[],
   waitingTotal: number = 0,
   nightShiftAmount: number = 0,
+  extraCharges: { label: string; amount: number }[] = []
 ): LineComputedTotals {
   let productTotal = 0;
   let totalVat = 0;
@@ -84,7 +85,12 @@ function computeTotals(
     totalVat += exVat * (vat / 100);
   });
 
-  const subtotal = productTotal + waitingTotal + nightShiftAmount;
+  const extraChargesSum = extraCharges.reduce(
+    (acc, charge) => acc + (Number(charge.amount) || 0),
+    0
+  );
+
+  const subtotal = productTotal + waitingTotal + nightShiftAmount + extraChargesSum;
   const totalAmount = subtotal + totalVat;
 
   return { productTotal, subtotal, totalVat, totalAmount };
@@ -149,11 +155,13 @@ export function InvoiceForm({
       bookingId: initialData?.bookingId || bookingIdFromUrl || "",
       clientId: initialData?.clientId || "",
       companyId: initialData?.companyId || "",
-      invoiceDate: initialData?.invoiceDate || defaultDate,
+      invoiceDate: initialData?.invoiceDate
+        ? new Date(initialData.invoiceDate).toISOString()
+        : defaultDate,
       dueDate: initialData?.dueDate
-        ? new Date(initialData.dueDate).toISOString().split("T")[0]
+        ? new Date(initialData.dueDate).toISOString()
         : "",
-      transactionType: TransactionType.SALES,
+      transactionType: initialData?.transactionType || TransactionType.SALES,
       status: initialData?.status || InvoiceStatus.DRAFT,
       paymentStatus: initialData?.paymentStatus || PaymentStatus.PENDING,
       lineItems: initialData?.lineItems || [EMPTY_LINE],
@@ -164,6 +172,7 @@ export function InvoiceForm({
       waitingTotal: initialData?.waitingTotal || 0,
       isNightShift: initialData?.isNightShift || false,
       nightShiftAmount: initialData?.nightShiftAmount || 0,
+      extraCharges: initialData?.extraCharges || [],
       notes: initialData?.notes || "",
       paymentLink: initialData?.paymentLink || "",
       terms:
@@ -253,11 +262,13 @@ export function InvoiceForm({
         formik.values.lineItems,
         formik.values.waitingTotal,
         formik.values.nightShiftAmount,
+        formik.values.extraCharges
       ),
     [
       formik.values.lineItems,
       formik.values.waitingTotal,
       formik.values.nightShiftAmount,
+      formik.values.extraCharges,
     ],
   );
 
@@ -281,17 +292,35 @@ export function InvoiceForm({
       const isClientVatExempt =
         typeof b.clientId !== "string" && (b.clientId as any)?.vatExempt;
 
-      const lines: InvoiceLineFormData[] = (b.products || []).map((p) => ({
-        productId:
-          typeof p.productId === "string" ? p.productId : p.productId?._id,
-        description: p.name,
+      const lines: InvoiceLineFormData[] = [];
+      (b.products || []).forEach((p) => {
+        const vatPct = isClientVatExempt ? 0 : 20;
+        // Main product line
+        lines.push({
+          productId:
+            typeof p.productId === "string" ? p.productId : p.productId?._id,
+          description: p.name,
+          quantity: p.quantity,
+          unitPrice: p.rate,
+          vatPercent: vatPct,
+        });
+      });
 
-        quantity: p.quantity,
-        unitPrice: p.rate,
-        vatPercent: isClientVatExempt ? 0 : 20,
-      }));
+      const extraChargesArr: { label: string; amount: number }[] = [];
+      (b.products || []).forEach((p: any) => {
+        // Also check if extraCharges exist under productId (if populated)
+        const pExtraCharges = p.extraCharges || p.productId?.extraCharges;
+        if (Array.isArray(pExtraCharges)) {
+          pExtraCharges.forEach((ec: any) => {
+            if (ec.label && ec.amount) {
+              extraChargesArr.push({ label: ec.label, amount: ec.amount });
+            }
+          });
+        }
+      });
 
       setFieldValue("lineItems", lines.length > 0 ? lines : [EMPTY_LINE]);
+      setFieldValue("extraCharges", extraChargesArr);
 
       // Auto-set waiting time as dedicated fields
       if (

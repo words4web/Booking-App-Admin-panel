@@ -30,8 +30,8 @@ export default function EditInvoicePage() {
       typeof invoice.companyId === "string"
         ? invoice.companyId
         : invoice.companyId?._id,
-    invoiceDate: new Date(invoice.invoiceDate),
-    dueDate: invoice.dueDate ? new Date(invoice.dueDate) : undefined,
+    invoiceDate: new Date(invoice.invoiceDate).toISOString(),
+    dueDate: invoice.dueDate ? new Date(invoice.dueDate).toISOString() : undefined,
     lineItems: invoice.lineItems.map((l) => ({
       productId: typeof l.productId === "string" ? l.productId : undefined,
       description: l.description,
@@ -50,6 +50,8 @@ export default function EditInvoicePage() {
     notes: invoice.notes,
     terms: invoice.terms,
     paymentLink: invoice.paymentLink,
+    extraCharges: invoice.extraCharges,
+    transactionType: invoice.transactionType,
   };
 
   return (

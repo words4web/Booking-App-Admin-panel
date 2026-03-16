@@ -82,6 +82,7 @@ export interface Invoice {
   totalVat: number;
   totalAmount: number;
   taxBreakdown: ITaxBreakdownRow[];
+  extraCharges?: { label: string; amount: number }[];
   notes?: string;
   terms?: string;
   paymentLink?: string;
@@ -118,6 +119,7 @@ export interface InvoiceFormData {
   waitingTotal?: number;
   isNightShift?: boolean;
   nightShiftAmount?: number;
+  extraCharges?: { label: string; amount: number }[];
   logoFile?: string;
   status?: InvoiceStatus;
   paymentStatus?: PaymentStatus;

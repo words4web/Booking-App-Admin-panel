@@ -3,6 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { FormikProps } from "formik";
 import { InvoiceFormData } from "@/src/types/invoice.types";
+import { Button } from "@/components/ui/button";
+import { Plus, Trash2 } from "lucide-react";
 
 interface Totals {
   productTotal: number;
@@ -119,6 +121,74 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
               </div>
             </div>
           )}
+        </div>
+
+        {/* Extra Charges Section */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-600 uppercase">
+              Extra Charges
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-6 px-2 text-[10px]"
+              onClick={() => {
+                const current = formik.values.extraCharges || [];
+                formik.setFieldValue("extraCharges", [
+                  ...current,
+                  { label: "New Charge", amount: 0 },
+                ]);
+              }}
+            >
+              <Plus className="w-3 h-3 mr-1" /> Add
+            </Button>
+          </div>
+          {(formik.values.extraCharges || []).map((charge, idx) => (
+            <div key={idx} className="flex gap-2 items-center mt-2">
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  value={charge.label}
+                  onChange={(e) => {
+                    const newVal = [...(formik.values.extraCharges || [])];
+                    newVal[idx].label = e.target.value;
+                    formik.setFieldValue("extraCharges", newVal);
+                  }}
+                  className="h-8 text-xs bg-white"
+                  placeholder="Charge Name"
+                />
+              </div>
+              <div className="w-24">
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={charge.amount || ""}
+                  onChange={(e) => {
+                    const newVal = [...(formik.values.extraCharges || [])];
+                    newVal[idx].amount = e.target.value === "" ? 0 : Number(e.target.value);
+                    formik.setFieldValue("extraCharges", newVal);
+                  }}
+                  className="h-8 text-xs bg-white text-right font-bold"
+                  placeholder="0.00"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                onClick={() => {
+                  const newVal = [...(formik.values.extraCharges || [])];
+                  newVal.splice(idx, 1);
+                  formik.setFieldValue("extraCharges", newVal);
+                }}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
         </div>
 
         <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
