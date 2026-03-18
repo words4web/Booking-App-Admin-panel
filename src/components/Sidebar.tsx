@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   UserCheck,
+  Layout,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -91,6 +92,12 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
       icon: <FileText className="h-5 w-5" />,
       href: ROUTES_PATH.INVOICES.BASE,
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
+    },
+    {
+      label: "CMS",
+      icon: <Layout className="h-5 w-5" />,
+      href: ROUTES_PATH.CMS,
+      roles: [UserRoles.SUPER_ADMIN],
     },
   ];
 
