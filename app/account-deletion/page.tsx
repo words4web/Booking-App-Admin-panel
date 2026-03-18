@@ -37,9 +37,9 @@ export default function AccountDeletionPage() {
               <p className="text-slate-700 text-lg">
                 Send an email to{" "}
                 <a
-                  href="mailto:appdivine23@gmail.com"
+                  href="mailto:info@appdivine.rkbkentconcrete.co.uk"
                   className="text-blue-600 font-bold hover:underline">
-                  appdivine23@gmail.com
+                  info@appdivine.rkbkentconcrete.co.uk
                 </a>{" "}
                 from your registered email address with the subject{" "}
                 <span className="font-bold">"Account Deletion Request"</span>.
@@ -121,7 +121,7 @@ export default function AccountDeletionPage() {
           <footer className="bg-slate-900 rounded-3xl p-8 text-center text-white shadow-xl relative overflow-hidden">
             <div className="relative z-10 flex flex-col items-center space-y-4">
               <p className="text-slate-400 text-sm font-medium">
-                © {new Date().getFullYear()} DivineGo Logistics Solutions
+                © {new Date().getFullYear()} RKB Kent Concrete Ltd
               </p>
               <div className="flex gap-6">
                 <a
