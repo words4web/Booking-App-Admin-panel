@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-slate-600 leading-relaxed text-lg">
               This Privacy Policy describes how{" "}
               <span className="font-semibold text-slate-800">
-                DivineGo Logistics
+                RKB Kent Concrete Ltd
               </span>{" "}
               collects, uses, and shares your personal information when you use
               our mobile application and admin panel.
@@ -149,7 +149,9 @@ export default function PrivacyPolicyPage() {
             <h3 className="text-lg font-bold text-blue-900">Questions?</h3>
             <p className="text-blue-700">
               Reach out to us at{" "}
-              <span className="font-bold underline">appdivine23@gmail.com</span>
+              <span className="font-bold underline">
+                info@appdivine.rkbkentconcrete.co.uk
+              </span>
             </p>
             <div className="flex gap-6 pt-2">
               <span className="text-sm font-semibold text-slate-400 cursor-default">
@@ -157,7 +159,7 @@ export default function PrivacyPolicyPage() {
               </span>
               <span className="text-slate-300">|</span>
               <p className="text-sm text-slate-400">
-                © {new Date().getFullYear()} DivineGo Logistics
+                © {new Date().getFullYear()} RKB Kent Concrete Ltd
               </p>
             </div>
           </footer>
