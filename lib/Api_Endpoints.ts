@@ -84,6 +84,11 @@ const API_ENDPOINTS = {
     SEND_PAYMENT_LINK: (invoiceId: string) =>
       `${Admin_Base}/invoices/${invoiceId}/send-payment-link`,
   },
+  CMS: {
+    GET_ALL: "/cms",
+    GET_BY_SLUG: (slug: string) => `/cms/${slug}`,
+    UPSERT: "/cms",
+  },
 };
 
 export default API_ENDPOINTS;

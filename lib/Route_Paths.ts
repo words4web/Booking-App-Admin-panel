@@ -50,6 +50,7 @@ const ROUTES_PATH = {
     EDIT: (vehicleId: string) => `/vehicles/${vehicleId}/edit`,
     VIEW: (vehicleId: string) => `/vehicles/${vehicleId}`,
   },
+  CMS: "/cms",
 };
 
 export default ROUTES_PATH;
