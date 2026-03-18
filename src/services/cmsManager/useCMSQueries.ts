@@ -31,7 +31,7 @@ export function useUpsertCMSMutation() {
 
   return useMutation({
     mutationFn: (data: IUpsertCMSRequest) => CMSService.upsertContent(data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("CMS content updated successfully!");
       queryClient.invalidateQueries({ queryKey: cmsKeys.all });
     },
