@@ -1,41 +1,27 @@
 "use client";
 
-import { useState } from "react";
 import { useAllCMSQuery, useUpsertCMSMutation } from "@/src/services/cmsManager/useCMSQueries";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
-import { Plus, Edit2, Layout } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ICMSContent } from "@/src/types/cms.types";
+import { ShieldCheck, FileText, ArrowRight } from "lucide-react";
 import { CMSForm } from "@/src/components/forms/CMSForm";
+import { useState } from "react";
+
+const PRIVACY_SLUG = "privacy-policy";
+const TERMS_SLUG = "terms-and-conditions";
 
 export default function CMSManagementPage() {
   const { data: cmsList, isLoading } = useAllCMSQuery();
   const upsertMutation = useUpsertCMSMutation();
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  const [selectedContent, setSelectedContent] = useState<ICMSContent | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-
-  const handleEdit = (cms: ICMSContent) => {
-    setSelectedContent(cms);
-    setIsCreating(false);
-  };
-
-  const handleCreateNew = () => {
-    setSelectedContent(null);
-    setIsCreating(true);
-  };
-
-  const handleCancel = () => {
-    setSelectedContent(null);
-    setIsCreating(false);
-  };
+  const privacyPage = cmsList?.find(cms => cms.slug === PRIVACY_SLUG);
+  const termsPage = cmsList?.find(cms => cms.slug === TERMS_SLUG);
 
   const handleSubmit = (formData: any) => {
     upsertMutation.mutate(formData, {
       onSuccess: () => {
-        handleCancel();
+        setActiveTab(null);
       },
     });
   };
@@ -43,87 +29,69 @@ export default function CMSManagementPage() {
   if (isLoading) return <CommonLoader />;
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-6xl space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">CMS Management</h1>
-          <p className="text-muted-foreground">
-            Manage your application's dynamic content with a modular section-based editor.
-          </p>
-        </div>
-        <Button onClick={handleCreateNew} className="rounded-xl gap-2 h-12 px-6 shadow-md shadow-primary/10">
-          <Plus className="h-4 w-4" />
-          Create New Page
-        </Button>
+    <div className="container mx-auto py-10 px-4 max-w-5xl space-y-10">
+      <div className="flex flex-col gap-2 text-center mb-4">
+        <h1 className="text-4xl font-black tracking-tighter text-slate-900">CMS Revamp</h1>
+        <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">
+          Legal Document Management
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* List View */}
-        <div className="lg:col-span-4 space-y-4 sticky top-24">
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
-            <CardHeader className="p-6">
-              <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <Layout className="h-5 w-5 text-primary" />
-                Existing Pages
-              </CardTitle>
+      {!activeTab ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
+          {/* Privacy Policy Prompt */}
+          <Card 
+            className="group cursor-pointer border-none shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(60,10,80,0.1)] transition-all duration-500 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl ring-1 ring-slate-100 hover:ring-primary/20"
+            onClick={() => setActiveTab(PRIVACY_SLUG)}
+          >
+            <CardHeader className="p-10 pb-6 text-center space-y-4">
+              <div className="w-20 h-20 rounded-[2rem] bg-primary/10 text-primary flex items-center justify-center mx-auto transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                <ShieldCheck className="h-10 w-10" />
+              </div>
+              <div className="space-y-2">
+                <CardTitle className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">Privacy Policy</CardTitle>
+                <CardDescription className="text-slate-500 font-medium">Protect your users' data and clarify your usage terms.</CardDescription>
+              </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <ScrollArea className="h-[600px]">
-                <div className="px-4 pb-4 space-y-2">
-                  {cmsList?.map((cms) => (
-                    <div
-                      key={cms._id}
-                      className={`p-4 rounded-2xl cursor-pointer transition-all border group ${
-                        selectedContent?._id === cms._id
-                          ? "bg-primary/5 border-primary/20"
-                          : "bg-slate-50 border-slate-100 hover:border-primary/20 hover:bg-white"
-                      }`}
-                      onClick={() => handleEdit(cms)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors text-sm">
-                            {cms.title}
-                          </h4>
-                          <p className="text-[10px] text-muted-foreground font-mono">
-                            /{cms.slug}
-                          </p>
-                        </div>
-                        <Edit2 className={`h-3.5 w-3.5 ${selectedContent?._id === cms._id ? 'text-primary' : 'text-slate-300'}`} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+            <CardContent className="p-10 pt-0 text-center">
+              <div className="inline-flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest bg-primary/5 px-6 py-3 rounded-full group-hover:bg-primary group-hover:text-white transition-all">
+                Edit Page <ArrowRight className="h-4 w-4" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Terms and Conditions Prompt */}
+          <Card 
+            className="group cursor-pointer border-none shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(60,10,80,0.1)] transition-all duration-500 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl ring-1 ring-slate-100 hover:ring-primary/20"
+            onClick={() => setActiveTab(TERMS_SLUG)}
+          >
+            <CardHeader className="p-10 pb-6 text-center space-y-4">
+              <div className="w-20 h-20 rounded-[2rem] bg-primary/10 text-primary flex items-center justify-center mx-auto transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3">
+                <FileText className="h-10 w-10" />
+              </div>
+              <div className="space-y-2">
+                <CardTitle className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">Terms & Conditions</CardTitle>
+                <CardDescription className="text-slate-500 font-medium">Define the rules, requirements, and legal standards for your app.</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="p-10 pt-0 text-center">
+              <div className="inline-flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest bg-primary/5 px-6 py-3 rounded-full group-hover:bg-primary group-hover:text-white transition-all">
+                Edit Page <ArrowRight className="h-4 w-4" />
+              </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Editor View */}
-        <div className="lg:col-span-8">
-          {(selectedContent || isCreating) ? (
-            <CMSForm
-              isEdit={!!selectedContent}
-              initialData={selectedContent || undefined}
-              onSubmit={handleSubmit}
-              onCancel={handleCancel}
-              isPending={upsertMutation.isPending}
-            />
-          ) : (
-            <Card className="h-[400px] border-dashed border-2 border-slate-200 bg-slate-50/50 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center space-y-4">
-              <div className="p-4 rounded-full bg-slate-100 text-slate-400">
-                <Layout className="h-12 w-12" />
-              </div>
-              <div className="max-w-xs">
-                <h3 className="text-lg font-bold text-slate-900">Get Started</h3>
-                <p className="text-sm text-muted-foreground">
-                  Select a page to edit or create a new one using the section-based form.
-                </p>
-              </div>
-            </Card>
-          )}
+      ) : (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <CMSForm
+            isEdit={true}
+            initialData={activeTab === PRIVACY_SLUG ? privacyPage : termsPage}
+            onSubmit={handleSubmit}
+            onCancel={() => setActiveTab(null)}
+            isPending={upsertMutation.isPending}
+          />
         </div>
-      </div>
+      )}
     </div>
   );
 }

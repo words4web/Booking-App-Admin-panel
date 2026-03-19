@@ -51,11 +51,11 @@ export function Login() {
       {/* Decorative Background Accents */}
       <div className="absolute -top-24 -left-20 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-pulse" />
       <div
-        className="absolute top-1/2 -right-20 w-80 h-80 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-50 animate-bounce"
+        className="absolute top-1/2 -right-20 w-80 h-80 bg-primary/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-50 animate-bounce"
         style={{ animationDuration: "8s" }}
       />
       <div
-        className="absolute -bottom-24 left-1/3 w-96 h-96 bg-indigo-300/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-pulse"
+        className="absolute -bottom-24 left-1/3 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-pulse"
         style={{ animationDuration: "6s" }}
       />
 

@@ -35,7 +35,7 @@ import { InvoicePDFModal } from "./InvoicePDFModal";
 
 const STATUS_CLASSES: Record<InvoiceStatus, string> = {
   [InvoiceStatus.DRAFT]: "bg-muted text-muted-foreground border-border",
-  [InvoiceStatus.SENT]: "bg-blue-50 text-blue-700 border-blue-200",
+  [InvoiceStatus.SENT]: "bg-primary/10 text-primary border-primary/20",
   [InvoiceStatus.PAID]: "bg-emerald-50 text-emerald-700 border-emerald-200",
   [InvoiceStatus.OVERDUE]: "bg-red-50 text-red-700 border-red-200",
 };
@@ -366,7 +366,7 @@ export function InvoiceDetails() {
               ) : (
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-2 h-2 rounded-full ${STATUS_CLASSES[invoice.status as InvoiceStatus]?.includes("emerald") ? "bg-emerald-500" : "bg-blue-500"}`}
+                    className={`w-2 h-2 rounded-full ${STATUS_CLASSES[invoice.status as InvoiceStatus]?.includes("emerald") ? "bg-emerald-500" : "bg-primary"}`}
                   />
                   <p className="text-sm font-black text-slate-900">
                     {invoice.status}

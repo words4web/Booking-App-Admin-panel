@@ -54,9 +54,9 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
 
 const STATUS_CLASSES: Record<BookingStatus, string> = {
   [BookingStatus.SCHEDULED]: "bg-amber-50 text-amber-700 border-amber-200",
-  [BookingStatus.ACCEPTED]: "bg-blue-50 text-blue-700 border-blue-200",
-  [BookingStatus.JOB_STARTED]: "bg-blue-50 text-blue-700 border-blue-200",
-  [BookingStatus.JOB_SUBMITTED]: "bg-blue-50 text-blue-700 border-blue-200",
+  [BookingStatus.ACCEPTED]: "bg-primary/10 text-primary border-primary/20",
+  [BookingStatus.JOB_STARTED]: "bg-primary/10 text-primary border-primary/20",
+  [BookingStatus.JOB_SUBMITTED]: "bg-primary/10 text-primary border-primary/20",
   [BookingStatus.JOB_REJECTED]: "bg-red-50 text-red-700 border-red-200",
   [BookingStatus.COMPLETED]:
     "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -294,7 +294,7 @@ export function BookingList() {
                           <td className="px-8 py-5 align-middle">
                             <Badge
                               variant="outline"
-                              className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}>
+                              className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border whitespace-nowrap"}`}>
                               {STATUS_LABELS[status] ?? status}
                             </Badge>
                           </td>

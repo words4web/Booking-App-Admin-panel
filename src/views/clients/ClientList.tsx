@@ -210,7 +210,7 @@ export function ClientList() {
                               Reg: {client.legalDetails.registrationNumber}
                             </span>
                             {client.legalDetails.vatRegistered && (
-                              <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider">
+                              <span className="text-[9px] text-primary font-bold uppercase tracking-wider">
                                 VAT: {client.legalDetails.vatNumber}
                               </span>
                             )}

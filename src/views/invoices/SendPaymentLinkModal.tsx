@@ -101,7 +101,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
                 placeholder="client@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-10 pl-3 pr-10 rounded-lg border-slate-200 bg-white focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500 transition-all text-slate-900"
+                className="h-10 pl-3 pr-10 rounded-lg border-slate-200 bg-white focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-900"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <Mail className="h-4 w-4" />
@@ -122,7 +122,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
                 placeholder="+44 7700 900000"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                className="h-10 pl-3 pr-10 rounded-lg border-slate-200 bg-white focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500 transition-all text-slate-900"
+                className="h-10 pl-3 pr-10 rounded-lg border-slate-200 bg-white focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-900"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <Phone className="h-4 w-4" />
@@ -144,7 +144,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
                 placeholder="https://pay.stripe.com/..."
                 value={paymentUrl}
                 onChange={(e) => setPaymentUrl(e.target.value)}
-                className="h-10 pl-3 pr-10 rounded-lg border-slate-200 bg-white focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500 transition-all text-slate-900"
+                className="h-10 pl-3 pr-10 rounded-lg border-slate-200 bg-white focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-900"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <Link2 className="h-4 w-4" />
@@ -163,7 +163,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
             <Button
               onClick={handleSend}
               disabled={sendPaymentLinkMutation.isPending || !isFormValid()}
-              className="flex-1 h-10 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-sm transition-all active:scale-[0.98]">
+              className="flex-1 h-10 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-sm transition-all active:scale-[0.98]">
               {sendPaymentLinkMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

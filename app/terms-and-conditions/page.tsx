@@ -1,12 +1,12 @@
 "use client";
 
-import { Shield, Lock, Info } from "lucide-react";
+import { FileText, Lock, Info } from "lucide-react";
 import { useCMSDetailQuery } from "@/src/services/cmsManager/useCMSQueries";
 import { HtmlRenderer } from "@/src/components/common/HtmlRenderer";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 
-export default function PrivacyPolicyPage() {
-  const { data: cmsData, isLoading } = useCMSDetailQuery("privacy-policy");
+export default function TermsAndConditionsPage() {
+  const { data: cmsData, isLoading } = useCMSDetailQuery("terms-and-conditions");
 
   if (isLoading) return <CommonLoader />;
 
@@ -17,14 +17,14 @@ export default function PrivacyPolicyPage() {
         {/* Header Section */}
         <header className="text-center space-y-6 pb-8">
           <div className="inline-flex items-center justify-center p-4 bg-white rounded-2xl shadow-sm border border-slate-200 mb-2">
-            <Shield size={40} className="text-primary" />
+            <FileText size={40} className="text-primary" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900">
-            {cmsData?.title || "Privacy Policy"}
+            {cmsData?.title || "Terms & Conditions"}
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Your trust is our priority. This policy outlines how we handle your
-            data with transparency and care.
+            Please read these terms carefully before using our services. 
+            They define the legal agreement between you and RKB Kent Concrete Ltd.
           </p>
         </header>
 
@@ -36,26 +36,26 @@ export default function PrivacyPolicyPage() {
                 <Info size={24} className="text-primary" />
               </div>
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                Policy Details
+                Terms Details
               </h2>
             </div>
             
             <HtmlRenderer html={cmsData?.content || ""} />
           </div>
 
-          {/* Security Banner */}
+          {/* Legal Banner */}
           <div className="bg-slate-900 rounded-[3rem] p-10 sm:p-14 text-white shadow-2xl relative overflow-hidden group">
             <div className="relative z-10 space-y-6 max-w-2xl">
               <h2 className="text-2xl font-black flex items-center gap-3 tracking-tight">
                 <Lock size={24} className="text-primary" />
-                Data Security Commitment
+                Legal Compliance
               </h2>
               <p className="text-slate-400 leading-relaxed text-lg">
-                We employ industry-leading encryption and security protocols to ensure your data 
-                is protected at every stage of your logistics journey.
+                Our terms are designed to provide a fair and transparent framework 
+                for all users, ensuring a safe and reliable logistics environment for everyone.
               </p>
               <div className="inline-block px-6 py-3 bg-primary/20 border border-primary/30 rounded-2xl text-primary font-black text-xs uppercase tracking-widest">
-                ENCRYPTED IN TRANSIT via TLS/HTTPS
+                LAST UPDATED: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
               </div>
             </div>
             {/* Background Accent */}
@@ -65,9 +65,9 @@ export default function PrivacyPolicyPage() {
           {/* Footer Card */}
           <footer className="bg-primary/5 rounded-[3rem] p-10 text-center border border-primary/10 flex flex-col items-center space-y-6">
             <div className="space-y-2">
-              <h3 className="text-xl font-black text-primary tracking-tight">Have Questions?</h3>
+              <h3 className="text-xl font-black text-primary tracking-tight">Questions?</h3>
               <p className="text-slate-500 font-medium">
-                Our support team is here to help with any privacy concerns.
+                If you have any questions regarding our terms, please feel free to contact us.
               </p>
             </div>
             <a 
