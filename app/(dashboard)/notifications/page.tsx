@@ -82,7 +82,7 @@ export default function NotificationsPage() {
               className={`p-4 sm:p-6 rounded-2xl border transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md ${
                 notification.isRead
                   ? "bg-white border-slate-100"
-                  : "bg-blue-50/50 border-blue-200 hover:bg-blue-50"
+                  : "bg-primary/5 border-primary/20 hover:bg-primary/10"
               }`}>
               <div className="flex gap-4 sm:gap-5">
                 <div

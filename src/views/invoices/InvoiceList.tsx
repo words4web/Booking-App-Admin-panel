@@ -75,7 +75,8 @@ export function InvoiceList() {
     null,
   );
   const [emailModal, setEmailModal] = useState<Invoice | null>(null);
-  const [sendPaymentLinkModal, setSendPaymentLinkModal] = useState<Invoice | null>(null);
+  const [sendPaymentLinkModal, setSendPaymentLinkModal] =
+    useState<Invoice | null>(null);
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -241,7 +242,7 @@ export function InvoiceList() {
                           </td>
                           <td className="px-8 py-5 align-middle">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black whitespace-nowrap tracking-wider border ${
                                 inv.isPaid
                                   ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                                   : "bg-amber-50 text-amber-600 border-amber-100"
@@ -268,12 +269,13 @@ export function InvoiceList() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 rounded-full hover:bg-slate-100"
-                                >
+                                  className="h-8 w-8 rounded-full hover:bg-slate-100">
                                   <MoreVertical className="h-4 w-4 text-slate-600" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-56 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                              <DropdownMenuContent
+                                align="end"
+                                className="w-56 rounded-xl border-border bg-white p-1.5 shadow-xl">
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
                                   onClick={() => setPdfInvoice(inv)}>
@@ -283,7 +285,9 @@ export function InvoiceList() {
 
                                 <DropdownMenuItem
                                   className={`flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 ${
-                                    inv.isPaid ? "text-emerald-600 focus:text-emerald-700" : "text-amber-600 focus:text-amber-700"
+                                    inv.isPaid
+                                      ? "text-emerald-600 focus:text-emerald-700"
+                                      : "text-amber-600 focus:text-amber-700"
                                   }`}
                                   onClick={() => setToggleStatusDialog(inv)}>
                                   {inv.isPaid ? (
@@ -300,16 +304,16 @@ export function InvoiceList() {
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
-                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-blue-600"
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
                                   onClick={() => setEmailModal(inv)}>
-                                  <Mail className="h-4 w-4 text-blue-500" />
+                                  <Mail className="h-4 w-4 text-primary" />
                                   Send via Email
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
-                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-indigo-600"
+                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
                                   onClick={() => setSendPaymentLinkModal(inv)}>
-                                  <Link2 className="h-4 w-4 text-indigo-500" />
+                                  <Link2 className="h-4 w-4 text-primary" />
                                   Send Payment Link
                                 </DropdownMenuItem>
 

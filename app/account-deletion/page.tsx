@@ -38,7 +38,7 @@ export default function AccountDeletionPage() {
                 Send an email to{" "}
                 <a
                   href="mailto:info@appdivine.rkbkentconcrete.co.uk"
-                  className="text-blue-600 font-bold hover:underline">
+                  className="text-primary font-bold hover:underline">
                   info@appdivine.rkbkentconcrete.co.uk
                 </a>{" "}
                 from your registered email address with the subject{" "}
@@ -50,8 +50,8 @@ export default function AccountDeletionPage() {
           {/* Section: What's deleted */}
           <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-slate-100">
             <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-blue-50 rounded-xl">
-                <Info size={24} className="text-blue-600" />
+              <div className="p-3 bg-primary/10 rounded-xl">
+                <Info size={24} className="text-primary" />
               </div>
               <h2 className="text-2xl font-bold text-slate-800">
                 2. What data will be deleted?
@@ -65,14 +65,14 @@ export default function AccountDeletionPage() {
                   <li className="flex gap-3 text-slate-500 text-sm italic">
                     <ArrowRight
                       size={16}
-                      className="text-blue-400 mt-0.5 flex-shrink-0"
+                      className="text-primary/60 mt-0.5 flex-shrink-0"
                     />
                     Full name, email and phone number
                   </li>
                   <li className="flex gap-3 text-slate-500 text-sm italic">
                     <ArrowRight
                       size={16}
-                      className="text-blue-400 mt-0.5 flex-shrink-0"
+                      className="text-primary/60 mt-0.5 flex-shrink-0"
                     />
                     Government ID details (NI Number)
                   </li>
@@ -84,14 +84,14 @@ export default function AccountDeletionPage() {
                   <li className="flex gap-3 text-slate-500 text-sm italic">
                     <ArrowRight
                       size={16}
-                      className="text-blue-400 mt-0.5 flex-shrink-0"
+                      className="text-primary/60 mt-0.5 flex-shrink-0"
                     />
                     Profile photo, license & passport scans
                   </li>
                   <li className="flex gap-3 text-slate-500 text-sm italic">
                     <ArrowRight
                       size={16}
-                      className="text-blue-400 mt-0.5 flex-shrink-0"
+                      className="text-primary/60 mt-0.5 flex-shrink-0"
                     />
                     App preferences and notification IDs
                   </li>
@@ -126,7 +126,7 @@ export default function AccountDeletionPage() {
               <div className="flex gap-6">
                 <a
                   href="/privacy-policy"
-                  className="text-sm font-bold text-blue-400 hover:text-blue-300">
+                  className="text-sm font-bold text-primary hover:text-primary/80">
                   Privacy Policy
                 </a>
                 <span className="text-slate-700">|</span>
