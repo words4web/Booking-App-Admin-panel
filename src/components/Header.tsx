@@ -65,7 +65,7 @@ export function Header({
                   <h1 className="text-lg sm:text-xl font-black tracking-tight text-foreground leading-none group-hover:text-primary transition-colors line-clamp-1">
                     {companyName}
                   </h1>
-                  <span className="hidden sm:inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 whitespace-nowrap">
+                  <span className="hidden sm:inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20 whitespace-nowrap">
                     Company Admin
                   </span>
                 </div>

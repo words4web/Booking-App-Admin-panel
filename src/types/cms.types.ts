@@ -1,13 +1,8 @@
-export interface ICMSSection {
-  title: string;
-  content: string;
-}
-
 export interface ICMSContent {
   _id: string;
   slug: string;
   title: string;
-  sections: ICMSSection[];
+  content: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -15,5 +10,5 @@ export interface ICMSContent {
 export interface IUpsertCMSRequest {
   slug: string;
   title: string;
-  sections: ICMSSection[];
+  content: string;
 }

@@ -19,15 +19,15 @@ const STATUS_CONFIG: Record<
   { bg: string; text: string; dot: string; label: string }
 > = {
   [BookingStatus.SCHEDULED]: {
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    dot: "bg-blue-500",
+    bg: "bg-primary/10",
+    text: "text-primary",
+    dot: "bg-primary",
     label: "Scheduled",
   },
   [BookingStatus.ACCEPTED]: {
-    bg: "bg-indigo-50",
-    text: "text-indigo-700",
-    dot: "bg-indigo-500",
+    bg: "bg-primary/10",
+    text: "text-primary",
+    dot: "bg-primary",
     label: "Accepted",
   },
   [BookingStatus.JOB_STARTED]: {

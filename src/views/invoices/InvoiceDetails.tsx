@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 import {
   ArrowLeft,
   Download,
@@ -35,7 +36,7 @@ import { InvoicePDFModal } from "./InvoicePDFModal";
 
 const STATUS_CLASSES: Record<InvoiceStatus, string> = {
   [InvoiceStatus.DRAFT]: "bg-muted text-muted-foreground border-border",
-  [InvoiceStatus.SENT]: "bg-blue-50 text-blue-700 border-blue-200",
+  [InvoiceStatus.SENT]: "bg-primary/10 text-primary border-primary/20",
   [InvoiceStatus.PAID]: "bg-emerald-50 text-emerald-700 border-emerald-200",
   [InvoiceStatus.OVERDUE]: "bg-red-50 text-red-700 border-red-200",
 };
@@ -100,9 +101,7 @@ export function InvoiceDetails() {
     if (invoice) {
       setEditStatus(invoice.status as InvoiceStatus);
       setEditDueDate(
-        invoice.dueDate
-          ? new Date(invoice.dueDate).toISOString().split("T")[0]
-          : "",
+        invoice.dueDate ? dayjs(invoice.dueDate).format("YYYY-MM-DD") : "",
       );
       setEditNotes(invoice.notes ?? "");
       setEditPaymentLink(invoice.paymentLink ?? "");
@@ -137,9 +136,7 @@ export function InvoiceDetails() {
     if (invoice) {
       setEditStatus(invoice.status as InvoiceStatus);
       setEditDueDate(
-        invoice.dueDate
-          ? new Date(invoice.dueDate).toISOString().split("T")[0]
-          : "",
+        invoice.dueDate ? dayjs(invoice.dueDate).format("YYYY-MM-DD") : "",
       );
       setEditNotes(invoice.notes ?? "");
       setEditPaymentLink(invoice.paymentLink ?? "");
@@ -366,7 +363,7 @@ export function InvoiceDetails() {
               ) : (
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-2 h-2 rounded-full ${STATUS_CLASSES[invoice.status as InvoiceStatus]?.includes("emerald") ? "bg-emerald-500" : "bg-blue-500"}`}
+                    className={`w-2 h-2 rounded-full ${STATUS_CLASSES[invoice.status as InvoiceStatus]?.includes("emerald") ? "bg-emerald-500" : "bg-primary"}`}
                   />
                   <p className="text-sm font-black text-slate-900">
                     {invoice.status}
@@ -598,41 +595,58 @@ export function InvoiceDetails() {
               <div className="bg-slate-50 rounded-3xl p-6 sm:p-8 space-y-4">
                 {/* Product Total (computed roughly as subtotal - waiting - night - extra) */}
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-bold text-slate-500">Product Total</span>
+                  <span className="font-bold text-slate-500">
+                    Product Total
+                  </span>
                   <span className="font-black text-slate-900">
-                    £{Number(
-                        (invoice.subtotal || 0) -
+                    £
+                    {Number(
+                      (invoice.subtotal || 0) -
                         (invoice.waitingTotal || 0) -
-                        (invoice.isNightShift ? invoice.nightShiftAmount || 0 : 0) -
-                        (invoice.extraCharges || []).reduce((sum, c) => sum + (c.amount || 0), 0)
-                      ).toFixed(2)}
+                        (invoice.isNightShift
+                          ? invoice.nightShiftAmount || 0
+                          : 0) -
+                        (invoice.extraCharges || []).reduce(
+                          (sum, c) => sum + (c.amount || 0),
+                          0,
+                        ),
+                    ).toFixed(2)}
                   </span>
                 </div>
                 {(invoice.waitingTotal ?? 0) > 0 && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className="font-bold text-slate-500">Waiting Time ({invoice.waitingMinutes} mins)</span>
+                    <span className="font-bold text-slate-500">
+                      Waiting Time ({invoice.waitingMinutes} mins)
+                    </span>
                     <span className="font-black text-slate-900">
                       £{Number(invoice.waitingTotal || 0).toFixed(2)}
                     </span>
                   </div>
                 )}
-                {invoice.isNightShift && (invoice.nightShiftAmount ?? 0) > 0 && (
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="font-bold text-slate-500">Night Shift</span>
-                    <span className="font-black text-slate-900">
-                      £{Number(invoice.nightShiftAmount || 0).toFixed(2)}
-                    </span>
-                  </div>
-                )}
+                {invoice.isNightShift &&
+                  (invoice.nightShiftAmount ?? 0) > 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-bold text-slate-500">
+                        Night Shift
+                      </span>
+                      <span className="font-black text-slate-900">
+                        £{Number(invoice.nightShiftAmount || 0).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                 {(invoice.extraCharges || []).map((charge, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-sm">
-                    <span className="font-bold text-slate-500">{charge.label}</span>
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center text-sm">
+                    <span className="font-bold text-slate-500">
+                      {charge.label}
+                    </span>
                     <span className="font-black text-slate-900">
                       £{Number(charge.amount || 0).toFixed(2)}
                     </span>
                   </div>
                 ))}
-                
+
                 <div className="pt-4 border-t-2 border-slate-200 flex justify-between items-center text-sm">
                   <span className="font-black text-slate-900">Subtotal</span>
                   <span className="font-black text-slate-900">

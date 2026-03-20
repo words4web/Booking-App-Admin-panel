@@ -172,7 +172,7 @@ export function CompanyList() {
                                 {company.vatNumber}
                               </span>
                               <span
-                                className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-blue-600" : "text-slate-500"}`}>
+                                className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-primary" : "text-slate-500"}`}>
                                 {company.vatRegistered
                                   ? "Registered"
                                   : "Not Registered"}
@@ -236,7 +236,7 @@ export function CompanyList() {
                       className="w-full max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                       {/* Hero Section */}
                       <Card className="relative overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.08)] bg-white rounded-[2.5rem]">
-                        <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-primary via-blue-500 to-emerald-400" />
+                        <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-primary via-primary/80 to-emerald-400" />
                         <CardContent className="p-8 sm:p-12">
                           <div className="flex flex-col md:flex-row gap-8 items-start justify-between">
                             <div className="flex-1 space-y-4">
@@ -261,7 +261,7 @@ export function CompanyList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-blue-500/10 flex items-center justify-center text-primary shadow-inner border border-white">
+                            <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-primary shadow-inner border border-white">
                               <Building2 className="h-12 w-12 sm:h-16 sm:w-16" />
                             </div>
                           </div>
@@ -313,7 +313,7 @@ export function CompanyList() {
                           </CardHeader>
                           <CardContent className="p-8 space-y-6">
                             <div className="flex items-center gap-4">
-                              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                                 <Landmark className="h-5 w-5" />
                               </div>
                               <div className="space-y-0.5">

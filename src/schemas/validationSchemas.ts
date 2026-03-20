@@ -223,13 +223,8 @@ export const VehicleSchema = z.object({
 });
 
 // ─── CMS ──────────────────────────────────────────────────────────────────────
-export const CMSSectionSchema = z.object({
-  title: z.string().min(1, "Section title is required"),
-  content: z.string().min(1, "Section content is required"),
-});
-
 export const CMSSchema = z.object({
-  slug: z.string().min(1, "Slug is required"),
-  title: z.string().min(1, "Page title is required"),
-  sections: z.array(CMSSectionSchema).min(1, "At least one section is required"),
+  slug: z.string().min(1, 'Slug is required'),
+  title: z.string().min(1, 'Page title is required'),
+  content: z.string().min(1, 'Page content is required'),
 });

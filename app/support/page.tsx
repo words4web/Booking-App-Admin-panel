@@ -18,7 +18,7 @@ export default function SupportPage() {
         {/* Header Section */}
         <header className="text-center space-y-6 pb-8">
           <div className="inline-flex items-center justify-center p-4 bg-white rounded-2xl shadow-sm border border-slate-200 mb-2">
-            <HeadphonesIcon size={40} className="text-blue-600" />
+            <HeadphonesIcon size={40} className="text-primary" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900">
             App Support
@@ -34,8 +34,8 @@ export default function SupportPage() {
           {/* Support Email - Primary Contact */}
           <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-slate-100 transition-all hover:shadow-md">
             <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-blue-50 rounded-xl">
-                <Mail size={24} className="text-blue-600" />
+              <div className="p-3 bg-primary/10 rounded-xl">
+                <Mail size={24} className="text-primary" />
               </div>
               <h2 className="text-2xl font-bold text-slate-800">
                 Email Support
@@ -47,7 +47,7 @@ export default function SupportPage() {
             </p>
             <a
               href="mailto:info@appdivine.rkbkentconcrete.co.uk"
-              className="inline-flex items-center gap-3 text-xl font-bold text-blue-600 hover:text-blue-700 transition-colors group">
+              className="inline-flex items-center gap-3 text-xl font-bold text-primary hover:text-primary/90 transition-colors group">
               info@appdivine.rkbkentconcrete.co.uk
               <ArrowRight
                 size={20}
@@ -60,8 +60,8 @@ export default function SupportPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Response Time */}
             <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-              <div className="p-3 bg-indigo-50 w-fit rounded-xl mb-6">
-                <Clock size={24} className="text-indigo-600" />
+              <div className="p-3 bg-primary/5 w-fit rounded-xl mb-6">
+                <Clock size={24} className="text-primary" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
                 Response Expectation
@@ -98,7 +98,7 @@ export default function SupportPage() {
           <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
             <div className="relative z-10 space-y-6">
               <h2 className="text-2xl font-bold flex items-center gap-3">
-                <ShieldCheck size={24} className="text-blue-400" />
+                <ShieldCheck size={24} className="text-primary/60" />
                 Commitment to Quality
               </h2>
               <p className="text-slate-300 leading-relaxed">
@@ -106,12 +106,12 @@ export default function SupportPage() {
                 users. If you encounter any bugs or have suggestions for
                 improvement, please don't hesitate to contact us.
               </p>
-              <div className="inline-block px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 font-bold text-sm">
+              <div className="inline-block px-4 py-2 bg-primary/20 border border-primary/30 rounded-lg text-primary-foreground font-bold text-sm">
                 APP STORE COMPLIANT SUPPORT
               </div>
             </div>
             {/* Background Accent */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
           </div>
 
           {/* Links Card */}
@@ -119,7 +119,7 @@ export default function SupportPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-                  <MessageCircle className="text-blue-500" size={24} />
+                  <MessageCircle className="text-primary" size={24} />
                   Privacy & Data
                 </h2>
                 <p className="text-slate-500">
@@ -142,7 +142,7 @@ export default function SupportPage() {
           </div>
 
           {/* Footer Card */}
-          <footer className="bg-blue-50 rounded-3xl p-8 text-center border border-blue-100 flex flex-col items-center space-y-4">
+          <footer className="bg-primary/5 rounded-3xl p-8 text-center border border-primary/10 flex flex-col items-center space-y-4">
             <div className="flex gap-6">
               <span className="text-sm font-semibold text-slate-400 cursor-default">
                 Support Portal

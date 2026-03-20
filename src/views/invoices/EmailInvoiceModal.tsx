@@ -52,7 +52,7 @@ const EmailInvoiceModal: React.FC<EmailInvoiceModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:max-w-[480px] p-0 overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-slate-50/95 backdrop-blur-xl z-[100] rounded-3xl">
-        <DialogHeader className="p-8 pb-4 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative">
+        <DialogHeader className="p-8 pb-4 bg-gradient-to-br from-primary to-slate-900 text-white relative">
           <div className="absolute top-0 right-0 p-8 opacity-10">
             <Mail className="h-24 w-24 -mr-8 -mt-8 rotate-12" />
           </div>
@@ -62,7 +62,7 @@ const EmailInvoiceModal: React.FC<EmailInvoiceModalProps> = ({
             </div>
             Send Invoice
           </DialogTitle>
-          <p className="text-blue-100 text-sm font-medium mt-2 leading-relaxed opacity-90">
+          <p className="text-white/80 text-sm font-medium mt-2 leading-relaxed opacity-90">
             Invoice #{invoiceNumber} will be delivered to the client.
           </p>
         </DialogHeader>
@@ -81,7 +81,7 @@ const EmailInvoiceModal: React.FC<EmailInvoiceModalProps> = ({
                 placeholder="client@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-14 pl-4 pr-12 rounded-2xl border-slate-200 bg-white shadow-inner focus-visible:ring-blue-500/20 focus-visible:border-blue-500 transition-all text-slate-900 font-medium placeholder:text-slate-400 group-hover:border-slate-300"
+                className="h-14 pl-4 pr-12 rounded-2xl border-slate-200 bg-white shadow-inner focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-900 font-medium placeholder:text-slate-400 group-hover:border-slate-300"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
                 <Mail className="h-5 w-5" />
@@ -103,7 +103,7 @@ const EmailInvoiceModal: React.FC<EmailInvoiceModalProps> = ({
             <Button
               onClick={handleSend}
               disabled={sendEmailMutation.isPending || !email}
-              className="flex-[2] h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black shadow-lg shadow-blue-500/30 transition-all active:scale-95 order-1 sm:order-2">
+              className="flex-[2] h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black shadow-lg shadow-primary/30 transition-all active:scale-95 order-1 sm:order-2">
               {sendEmailMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />

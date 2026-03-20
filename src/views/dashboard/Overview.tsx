@@ -25,7 +25,7 @@ export function Overview() {
       description: "Comprehensive schedule and timeline view",
       icon: Layout,
       href: ROUTES_PATH.CALENDAR,
-      color: "bg-blue-600",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
@@ -33,7 +33,7 @@ export function Overview() {
       description: "Registered companies and business profiles",
       icon: Store,
       href: ROUTES_PATH.COMPANIES.BASE,
-      color: "bg-slate-900",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
@@ -41,7 +41,7 @@ export function Overview() {
       description: "Business clients and key contacts",
       icon: Contact2,
       href: ROUTES_PATH.CLIENTS.BASE,
-      color: "bg-blue-500",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
@@ -49,7 +49,7 @@ export function Overview() {
       description: "Service products and concrete mix pricing",
       icon: Tags,
       href: ROUTES_PATH.PRODUCTS.BASE,
-      color: "bg-indigo-600",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
@@ -57,7 +57,7 @@ export function Overview() {
       description: "Live booking operations and status tracking",
       icon: ClipboardCheck,
       href: ROUTES_PATH.BOOKINGS.BASE,
-      color: "bg-blue-700",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
@@ -65,7 +65,7 @@ export function Overview() {
       description: "Driver records and assignment monitoring",
       icon: UserSquare2,
       href: ROUTES_PATH.DRIVERS.BASE,
-      color: "bg-black",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN],
     },
     {
@@ -73,7 +73,7 @@ export function Overview() {
       description: "Fleet management and maintenance status",
       icon: Construction,
       href: ROUTES_PATH.VEHICLES.BASE,
-      color: "bg-gray-800",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN],
     },
     {
@@ -81,7 +81,7 @@ export function Overview() {
       description: "Generate and manage invoices",
       icon: CreditCard,
       href: ROUTES_PATH.INVOICES.BASE,
-      color: "bg-blue-800",
+      color: "bg-primary",
       roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
   ];
@@ -123,7 +123,7 @@ export function Overview() {
 
             return (
               <Link key={idx} href={action.href} className="group">
-                <Card className="relative overflow-hidden h-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-700 hover:shadow-[0_20px_50px_rgba(37,99,235,0.1)] hover:-translate-y-3 bg-white/80 backdrop-blur-xl group-hover:ring-2 group-hover:ring-primary/20">
+                <Card className="relative overflow-hidden h-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-700 hover:shadow-[0_20px_50px_rgba(60,10,80,0.1)] hover:-translate-y-3 bg-white/80 backdrop-blur-xl group-hover:ring-2 group-hover:ring-primary/20">
                   {/* Glassmorphism gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
@@ -134,7 +134,7 @@ export function Overview() {
 
                   <CardContent className="p-12 flex items-center gap-10 relative z-10">
                     <div
-                      className={`p-7 rounded-[2.5rem] ${iconBg} text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] group-hover:shadow-[0_25px_50px_-12px_rgba(37,99,235,0.4)] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 flex-shrink-0`}>
+                      className={`p-7 rounded-[2.5rem] ${iconBg} text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] group-hover:shadow-[0_25px_50px_-12px_rgba(60,10,80,0.4)] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 flex-shrink-0`}>
                       <Icon className="h-14 w-14 stroke-[1.5]" />
                     </div>
                     <div className="flex-1 space-y-3 text-left">

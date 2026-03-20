@@ -118,7 +118,7 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
       {/* Drop-off Address */}
       <div className="space-y-6">
         <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700 text-xs shadow-sm">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs shadow-sm">
             B
           </span>
           Drop-off Address
