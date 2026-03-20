@@ -33,7 +33,6 @@ const formats = [
   "underline",
   "strike",
   "list",
-  "bullet",
   "link",
   "color",
   "background",

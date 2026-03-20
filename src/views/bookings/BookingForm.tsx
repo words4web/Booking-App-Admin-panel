@@ -69,9 +69,7 @@ export function BookingForm({
           ? initialData.clientId
           : initialData?.clientId?._id || "",
       serviceType: initialData?.serviceType || ServiceType.RMC,
-      scheduledDateTime: initialData?.scheduledDateTime
-        ? new Date(initialData.scheduledDateTime).toISOString().slice(0, 16)
-        : "",
+      scheduledDateTime: initialData?.scheduledDateTime || "",
       pickupLocation: {
         addressLine1: initialData?.pickupLocation?.addressLine1 || "",
         addressLine2: initialData?.pickupLocation?.addressLine2 || "",
