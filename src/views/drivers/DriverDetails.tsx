@@ -184,6 +184,22 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
               className="mt-0 focus-visible:outline-none">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentViewer
+                  title="Passport Image"
+                  imageUrl={driver?.passport?.passportImage?.url || null}
+                  isVerified={
+                    driver?.passport?.passportImage?.isVerified || false
+                  }
+                  reason={driver?.passport?.passportImage?.reason || null}
+                  onVerify={(verified, reason) =>
+                    handleVerifyDocument(
+                      "passport.passportImage",
+                      verified,
+                      reason,
+                    )
+                  }
+                />
+                {/*
+                <DocumentViewer
                   title="Bio Data Page"
                   imageUrl={driver?.passport?.bioDataPage?.url || null}
                   isVerified={
@@ -213,6 +229,7 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                     )
                   }
                 />
+                */}
               </div>
             </TabsContent>
           </CardContent>
