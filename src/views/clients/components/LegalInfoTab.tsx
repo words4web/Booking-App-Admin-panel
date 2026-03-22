@@ -48,9 +48,11 @@ export function LegalInfoTab({
               {isSuperAdmin && <span className="text-destructive">*</span>}
             </Label>
             <Select
-              onValueChange={(value) => formik.setFieldValue("companyId", value)}
+              onValueChange={(value) =>
+                formik.setFieldValue("companyId", value)
+              }
               value={formik.values.companyId}
-              disabled={mode === "edit"}>
+              disabled={mode === "edit" && !isSuperAdmin}>
               <SelectTrigger
                 className={`w-full h-12 rounded-xl border-border/80 bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm ${getFieldError("companyId") ? "border-destructive" : ""}`}>
                 <div className="flex items-center gap-3 w-full">
@@ -216,9 +218,7 @@ export function LegalInfoTab({
                 htmlFor="vatExempt"
                 className={cn(
                   "text-sm font-bold select-none transition-colors cursor-pointer",
-                  formik.values.vatExempt
-                    ? "text-amber-700"
-                    : "text-slate-900",
+                  formik.values.vatExempt ? "text-amber-700" : "text-slate-900",
                 )}>
                 VAT Exempt
               </Label>

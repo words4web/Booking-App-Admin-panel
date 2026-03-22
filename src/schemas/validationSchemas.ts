@@ -77,17 +77,22 @@ export const ExtraChargeSchema = z.object({
   amount: z.coerce.number().min(0, "Amount cannot be negative"),
 });
 
-export const ProductSchema = z.object({
-  companyId: z.string().optional(),
-  name: z.string().min(1, "Product name is required").max(255),
-  description: z.string().min(1, "Description is required"),
-  unitType: z.nativeEnum(UnitType, { required_error: "Unit type is required" }),
-  basePrice: z.coerce.number().min(0, "Base price cannot be negative"),
-  baseCharge: z.coerce.number().min(0).default(0),
-  hourlyRate: z.coerce.number().min(0).default(0),
-  extraCharges: z.array(ExtraChargeSchema).default([]),
-  vatApplicable: z.boolean().default(true),
-});
+export const getProductSchema = (isSuperAdmin: boolean) =>
+  z.object({
+    companyId: isSuperAdmin
+      ? z.string().min(1, "Company selection is required")
+      : z.string().optional(),
+    name: z.string().min(1, "Product name is required").max(255),
+    description: z.string().min(1, "Description is required"),
+    unitType: z.nativeEnum(UnitType, { required_error: "Unit type is required" }),
+    basePrice: z.coerce.number().min(0, "Base price cannot be negative"),
+    baseCharge: z.coerce.number().min(0).default(0),
+    hourlyRate: z.coerce.number().min(0).default(0),
+    extraCharges: z.array(ExtraChargeSchema).default([]),
+    vatApplicable: z.boolean().default(true),
+  });
+
+export const ProductSchema = getProductSchema(false);
 
 // ─── Booking ──────────────────────────────────────────────────────────────────
 export const BookingProductSchema = z.object({
