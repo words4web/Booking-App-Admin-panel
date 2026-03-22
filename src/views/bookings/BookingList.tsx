@@ -11,11 +11,11 @@ import {
   FileText,
   Loader2,
   MoreVertical,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import {
   useBookingsQuery,
@@ -27,7 +27,9 @@ import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
-import { Filter } from "lucide-react";
+import { Filter, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/src/hooks/useDebounce";
 import {
   Select,
   SelectContent,
@@ -95,6 +97,8 @@ export function BookingList() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [loadingInvoiceId, setLoadingInvoiceId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const router = useRouter();
 
@@ -106,6 +110,7 @@ export function BookingList() {
     limit: PAGINATION_LIMIT,
     companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
     status: (selectedStatus === "all" ? undefined : selectedStatus) as any,
+    search: debouncedSearchTerm || undefined,
   });
 
   // Fetch companies for filter (Super Admin only)
@@ -140,7 +145,7 @@ export function BookingList() {
     }
   };
 
-  if (isLoading) return <CommonLoader />;
+  // Removed global loader to let inline loader work
 
   return (
     <div className="space-y-8 pb-12">
@@ -157,6 +162,23 @@ export function BookingList() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative w-full sm:w-[250px] group">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search bookings..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+                className="h-12 pl-10 pr-10 rounded-xl border-border/80 bg-white focus:bg-white transition-all shadow-sm group-hover:border-primary/50"
+              />
+              <div
+                title="Search by Booking ID, Client Name, or Client Email"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 cursor-help text-slate-400 hover:text-primary transition-colors">
+                <Info className="h-4 w-4" />
+              </div>
+            </div>
             {isSuperAdmin && (
               <div className="w-[200px]">
                 <Select
@@ -238,7 +260,14 @@ export function BookingList() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {bookings?.length === 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="mt-4 text-sm font-medium text-muted-foreground">
+                Loading bookings...
+              </p>
+            </div>
+          ) : bookings?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-muted-foreground text-sm font-medium">
                 No bookings found.
@@ -272,7 +301,12 @@ export function BookingList() {
                       return (
                         <tr
                           key={booking?._id}
-                          className="transition-all hover:bg-slate-50 cursor-default">
+                          onClick={() =>
+                            router.push(
+                              ROUTES_PATH.BOOKINGS.EDIT(booking?._id || ""),
+                            )
+                          }
+                          className="transition-all hover:bg-slate-50 cursor-pointer">
                           <td className="px-8 py-5 align-middle">
                             <span className="font-bold text-foreground">
                               {booking?.bookingId}
@@ -302,57 +336,62 @@ export function BookingList() {
                             {getDriverName(booking?.assignedDriverId)}
                           </td>
                           <td className="px-8 py-5 align-middle text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-full hover:bg-slate-100">
-                                  <MoreVertical className="h-4 w-4 text-slate-600" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent
-                                align="end"
-                                className="w-48 rounded-xl border-border bg-white p-1.5 shadow-xl">
-                                <DropdownMenuItem
-                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                  onClick={() =>
-                                    handleInvoiceClick(booking?._id || "")
-                                  }
-                                  disabled={loadingInvoiceId === booking?._id}>
-                                  {loadingInvoiceId === booking?._id ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                  ) : (
-                                    <FileText className="h-4 w-4 text-slate-500" />
-                                  )}
-                                  Invoice
-                                </DropdownMenuItem>
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-full hover:bg-slate-100">
+                                    <MoreVertical className="h-4 w-4 text-slate-600" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="w-48 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                                  <DropdownMenuItem
+                                    className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                    onClick={() =>
+                                      handleInvoiceClick(booking?._id || "")
+                                    }
+                                    disabled={
+                                      loadingInvoiceId === booking?._id
+                                    }>
+                                    {loadingInvoiceId === booking?._id ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <FileText className="h-4 w-4 text-slate-500" />
+                                    )}
+                                    Invoice
+                                  </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                  asChild>
-                                  <Link
-                                    href={ROUTES_PATH.BOOKINGS.EDIT(
-                                      booking?._id || "",
-                                    )}>
+                                  <DropdownMenuItem
+                                    className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
+                                    onClick={() =>
+                                      router.push(
+                                        ROUTES_PATH.BOOKINGS.EDIT(
+                                          booking?._id || "",
+                                        ),
+                                      )
+                                    }>
                                     <Pencil className="h-4 w-4 text-slate-500" />
                                     Edit Booking
-                                  </Link>
-                                </DropdownMenuItem>
+                                  </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                  className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
-                                  onClick={() =>
-                                    setDeleteDialog({
-                                      id: booking?._id,
-                                      bookingId: booking?.bookingId,
-                                    })
-                                  }>
-                                  <Trash2 className="h-4 w-4" />
-                                  Delete Booking
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                  <DropdownMenuItem
+                                    className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
+                                    onClick={() =>
+                                      setDeleteDialog({
+                                        id: booking?._id,
+                                        bookingId: booking?.bookingId,
+                                      })
+                                    }>
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete Booking
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </td>
                         </tr>
                       );

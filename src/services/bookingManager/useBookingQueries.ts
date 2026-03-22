@@ -96,3 +96,17 @@ export const useReviewJobMutation = (id: string) => {
     },
   });
 };
+
+export const useDeleteJobPhotoMutation = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (key: string) => BookingService.deletePhoto(id, key),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["booking", id] });
+      toast.success("Photo deleted successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to delete photo");
+    },
+  });
+};

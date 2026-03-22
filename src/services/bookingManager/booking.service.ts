@@ -80,4 +80,10 @@ export const BookingService = {
     );
     return response.data.data.booking;
   },
+  deletePhoto: async (id: string, key: string) => {
+    const response = await api.delete<BookingResponse>(
+      API_ENDPOINTS.BOOKINGS.DELETE_PHOTO(id, key),
+    );
+    return response.data.data.booking;
+  },
 };

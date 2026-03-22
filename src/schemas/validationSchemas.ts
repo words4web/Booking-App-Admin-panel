@@ -10,7 +10,7 @@ export const AddressSchema = z.object({
   city: z.string().min(1, "City is required"),
   county: z.string().optional(),
   postcode: z.string().min(1, "Postcode is required"),
-  country: z.string().default("United Kingdom"),
+  // country: z.string().default("United Kingdom"),
 });
 
 export const OptionalAddressSchema = z.object({
@@ -19,7 +19,7 @@ export const OptionalAddressSchema = z.object({
   city: z.string().optional(),
   county: z.string().optional(),
   postcode: z.string().optional(),
-  country: z.string().default("United Kingdom"),
+  // country: z.string().default("United Kingdom"),
 });
 
 // ─── Company ──────────────────────────────────────────────────────────────────
@@ -84,7 +84,9 @@ export const getProductSchema = (isSuperAdmin: boolean) =>
       : z.string().optional(),
     name: z.string().min(1, "Product name is required").max(255),
     description: z.string().min(1, "Description is required"),
-    unitType: z.nativeEnum(UnitType, { required_error: "Unit type is required" }),
+    unitType: z.nativeEnum(UnitType, {
+      required_error: "Unit type is required",
+    }),
     basePrice: z.coerce.number().min(0, "Base price cannot be negative"),
     baseCharge: z.coerce.number().min(0).default(0),
     hourlyRate: z.coerce.number().min(0).default(0),
@@ -117,8 +119,8 @@ export const BookingSchema = z
     pickupLocation: AddressSchema,
     dropLocation: OptionalAddressSchema,
     scheduledDateTime: z.string().min(1, "Scheduled date and time is required"),
-    assignedDriverId: z.string().min(1, "Driver assignment is required"),
-    vehicleId: z.string().min(1, "Vehicle assignment is required"),
+    assignedDriverId: z.string().optional(),
+    vehicleId: z.string().optional(),
     products: z
       .array(BookingProductSchema)
       .min(1, "At least one product is required"),

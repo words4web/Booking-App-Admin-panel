@@ -132,7 +132,7 @@ export function AddressInfoTab({
           </p>
         </div>
 
-        <div className="space-y-1.5">
+        {/* <div className="space-y-1.5">
           <Label
             htmlFor="address.country"
             className="text-xs font-semibold text-slate-600">
@@ -152,7 +152,7 @@ export function AddressInfoTab({
           <p className="text-[11px] text-slate-500 font-medium mt-1">
             e.g., United Kingdom
           </p>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex justify-between gap-3 pt-4 border-t border-slate-100">
