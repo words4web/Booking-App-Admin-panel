@@ -46,11 +46,11 @@ export const CompanySchema = z
   });
 
 // ─── Client ───────────────────────────────────────────────────────────────────
-export const ClientSchema = z
-  .object({
+export const getClientSchema = (isSuperAdmin: boolean) =>
+  z.object({
     contactInfo: z.object({
-      firstName: z.string().min(1, "First name is required"),
-      lastName: z.string().min(1, "Last name is required"),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
       email: z.string().email("Invalid email address"),
       phone: z.string().min(1, "Phone number is required"),
     }),
@@ -63,21 +63,13 @@ export const ClientSchema = z
       // nationalInsuranceNumber: z.string().optional(),
     }),
     address: AddressSchema,
-    vatExempt: z.boolean().default(false),
-    companyId: z.string().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (
-      data.legalDetails.vatRegistered &&
-      !data.legalDetails.vatNumber?.trim()
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "VAT number is required",
-        path: ["legalDetails", "vatNumber"],
-      });
-    }
+    vatExempt: z.boolean().default(true),
+    companyId: isSuperAdmin
+      ? z.string().min(1, "Company selection is required")
+      : z.string().optional(),
   });
+
+export const ClientSchema = getClientSchema(false);
 
 // ─── Product ──────────────────────────────────────────────────────────────────
 export const ExtraChargeSchema = z.object({
@@ -162,47 +154,51 @@ export const InvoiceLineSchema = z.object({
   vatPercent: z.coerce.number().min(0).max(100).default(20),
 });
 
-export const InvoiceSchema = z.object({
-  companyId: z.string().optional(),
-  clientId: z.string().min(1, "Client is required"),
-  bookingId: z.string().min(1, "Booking reference is required"),
-  invoiceDate: z.string().optional(),
-  dueDate: z.string().optional(),
-  transactionType: z.nativeEnum(TransactionType).default(TransactionType.SALES),
-  lineItems: z
-    .array(InvoiceLineSchema)
-    .min(1, "At least one line item is required"),
-  billingName: z.string().optional(),
-  billingAddress: z.string().optional(),
-  companyAddress: z.string().optional(),
-  waitingMinutes: z.coerce.number().optional(),
-  waitingTotal: z.coerce.number().optional(),
-  isNightShift: z.boolean().optional(),
-  nightShiftAmount: z.coerce.number().optional(),
-  extraCharges: z
-    .array(
-      z.object({
-        label: z.string().min(1, "Charge label is required"),
-        amount: z.coerce.number().min(0, "Amount cannot be negative"),
-      })
-    )
-    .optional(),
-  notes: z.string().optional(),
-  paymentLink: z.string().optional(),
-  terms: z.string().optional(),
-  logoFile: z.string().optional(),
-}).refine(
-  (data) => {
-    if (!data.dueDate) return true;
-    const invDate = new Date(data.invoiceDate || new Date());
-    const dDate = new Date(data.dueDate);
-    return dDate >= invDate;
-  },
-  {
-    message: "Due date cannot be before the invoice date",
-    path: ["dueDate"],
-  }
-);
+export const InvoiceSchema = z
+  .object({
+    companyId: z.string().optional(),
+    clientId: z.string().min(1, "Client is required"),
+    bookingId: z.string().min(1, "Booking reference is required"),
+    invoiceDate: z.string().optional(),
+    dueDate: z.string().optional(),
+    transactionType: z
+      .nativeEnum(TransactionType)
+      .default(TransactionType.SALES),
+    lineItems: z
+      .array(InvoiceLineSchema)
+      .min(1, "At least one line item is required"),
+    billingName: z.string().optional(),
+    billingAddress: z.string().optional(),
+    companyAddress: z.string().optional(),
+    waitingMinutes: z.coerce.number().optional(),
+    waitingTotal: z.coerce.number().optional(),
+    isNightShift: z.boolean().optional(),
+    nightShiftAmount: z.coerce.number().optional(),
+    extraCharges: z
+      .array(
+        z.object({
+          label: z.string().min(1, "Charge label is required"),
+          amount: z.coerce.number().min(0, "Amount cannot be negative"),
+        }),
+      )
+      .optional(),
+    notes: z.string().optional(),
+    paymentLink: z.string().optional(),
+    terms: z.string().optional(),
+    logoFile: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (!data.dueDate) return true;
+      const invDate = new Date(data.invoiceDate || new Date());
+      const dDate = new Date(data.dueDate);
+      return dDate >= invDate;
+    },
+    {
+      message: "Due date cannot be before the invoice date",
+      path: ["dueDate"],
+    },
+  );
 
 // ─── Other ────────────────────────────────────────────────────────────────────
 export const DriverSchema = z.object({
@@ -224,7 +220,7 @@ export const VehicleSchema = z.object({
 
 // ─── CMS ──────────────────────────────────────────────────────────────────────
 export const CMSSchema = z.object({
-  slug: z.string().min(1, 'Slug is required'),
-  title: z.string().min(1, 'Page title is required'),
-  content: z.string().min(1, 'Page content is required'),
+  slug: z.string().min(1, "Slug is required"),
+  title: z.string().min(1, "Page title is required"),
+  content: z.string().min(1, "Page content is required"),
 });

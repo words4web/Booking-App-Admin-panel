@@ -90,8 +90,9 @@ export function DetailsTab({
                   clients.map((client) => (
                     <SelectItem key={client._id} value={client._id}>
                       {client.legalDetails.legalName} (
-                      {client.contactInfo.firstName}{" "}
-                      {client.contactInfo.lastName})
+                      {`${client.contactInfo.firstName || ""} ${client.contactInfo.lastName || ""}`.trim() ||
+                        "Valued Customer"}
+                      )
                     </SelectItem>
                   ))
                 ) : (

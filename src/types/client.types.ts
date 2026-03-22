@@ -9,8 +9,8 @@ export interface Client {
       }
     | string;
   contactInfo: {
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     phone: string;
   };
@@ -38,8 +38,8 @@ export interface Client {
 export interface ClientFormData {
   companyId?: string;
   contactInfo: {
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     phone: string;
   };

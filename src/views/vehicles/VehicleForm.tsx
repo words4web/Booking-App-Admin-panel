@@ -13,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Save, RotateCcw } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import { CreateVehicleRequest, Vehicle } from "@/src/types/vehicle.types";
 
 interface VehicleFormProps {
@@ -72,8 +72,7 @@ export function VehicleForm({
             <div className="space-y-1.5">
               <Label
                 htmlFor="vehicleName"
-                className="text-xs font-semibold text-slate-600"
-              >
+                className="text-xs font-semibold text-slate-600">
                 Vehicle Name
               </Label>
               <Input
@@ -97,8 +96,7 @@ export function VehicleForm({
             <div className="space-y-1.5">
               <Label
                 htmlFor="vehicleNumber"
-                className="text-xs font-semibold text-slate-600"
-              >
+                className="text-xs font-semibold text-slate-600">
                 Vehicle Number
               </Label>
               <Input
@@ -121,20 +119,9 @@ export function VehicleForm({
 
             <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
               <Button
-                type="button"
-                variant="ghost"
-                onClick={() => formik.resetForm()}
-                disabled={isPending}
-                className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-              <Button
                 type="submit"
                 disabled={formik.isSubmitting || !formik.isValid || isPending}
-                className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2"
-              >
+                className="h-11 px-8 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md shadow-primary/10 transition-all gap-2">
                 {isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />

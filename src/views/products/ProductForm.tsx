@@ -21,7 +21,6 @@ import {
   Save,
   Loader2,
   Building2,
-  RotateCcw,
   Package,
   Info,
   Plus,
@@ -420,16 +419,6 @@ export function ProductForm({
               </div>
 
               <div className="flex justify-between items-center pt-8 border-t border-slate-100">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => formik.resetForm()}
-                  disabled={isPending}
-                  className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
-                  <RotateCcw className="h-4 w-4" />
-                  {mode === "create" ? "Clear" : "Reset"}
-                </Button>
-
                 <Button
                   type="submit"
                   disabled={

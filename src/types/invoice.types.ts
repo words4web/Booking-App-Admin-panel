@@ -52,8 +52,8 @@ export interface Invoice {
     | {
         _id: string;
         contactInfo: {
-          firstName: string;
-          lastName: string;
+          firstName?: string;
+          lastName?: string;
           email: string;
           phone: string;
         };

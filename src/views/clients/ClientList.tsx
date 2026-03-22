@@ -64,7 +64,10 @@ export function ClientList() {
   const handleDeleteClick = (client: Client) => {
     setSelectedClient({
       id: client._id,
-      name: `${client.contactInfo.firstName} ${client.contactInfo.lastName}`,
+      name:
+        `${client.contactInfo.firstName || ""} ${client.contactInfo.lastName || ""}`.trim() ||
+        client.legalDetails.legalName ||
+        "Valued Customer",
     });
     setDeleteDialogOpen(true);
   };
@@ -190,8 +193,8 @@ export function ClientList() {
                         <td className="px-8 py-5 align-middle">
                           <div className="flex flex-col">
                             <span className="font-bold text-foreground">
-                              {client.contactInfo.firstName}{" "}
-                              {client.contactInfo.lastName}
+                              {`${client.contactInfo.firstName || ""} ${client.contactInfo.lastName || ""}`.trim() ||
+                                "Valued Customer"}
                             </span>
                             <span className="text-[10px] text-muted-foreground lowercase">
                               {client.contactInfo.email}
@@ -240,17 +243,18 @@ export function ClientList() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-full hover:bg-slate-100"
-                              >
+                                className="h-8 w-8 rounded-full hover:bg-slate-100">
                                 <MoreVertical className="h-4 w-4 text-slate-600" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
                               <DropdownMenuItem
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                asChild
-                              >
-                                <Link href={ROUTES_PATH.CLIENTS.EDIT(client._id)}>
+                                asChild>
+                                <Link
+                                  href={ROUTES_PATH.CLIENTS.EDIT(client._id)}>
                                   <Pencil className="h-4 w-4 text-slate-500" />
                                   Edit Client
                                 </Link>
@@ -258,8 +262,7 @@ export function ClientList() {
 
                               <DropdownMenuItem
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
-                                onClick={() => handleDeleteClick(client)}
-                              >
+                                onClick={() => handleDeleteClick(client)}>
                                 <Trash2 className="h-4 w-4" />
                                 Delete Client
                               </DropdownMenuItem>
