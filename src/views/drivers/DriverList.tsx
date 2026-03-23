@@ -5,6 +5,7 @@ import {
   AlertCircle,
   MoreVertical,
   Trash2,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -59,8 +60,25 @@ export function DriverList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Drivers</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
+            Driver <span className="text-primary">Partners</span>
+          </h1>
+          <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
+            Manage your network of professional drivers
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            asChild
+            className="w-full sm:w-auto px-6 h-12 sm:h-auto rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
+            <Link href={ROUTES_PATH.DRIVERS.NEW}>
+              <Plus className="h-5 w-5" />
+              Add Driver
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -72,19 +90,19 @@ export function DriverList() {
             <table className="w-full caption-bottom text-sm">
               <thead className="[&_tr]:border-b">
                 <tr className="border-b transition-colors hover:bg-muted/50">
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                  <th className="h-12 px-2 md:px-4 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                     Name
                   </th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                  <th className="h-12 px-2 md:px-4 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
                     Email
                   </th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                  <th className="h-12 px-2 md:px-4 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                     Phone
                   </th>
-                  <th className="h-12 px-4 text-center align-middle font-medium text-muted-foreground">
+                  <th className="h-12 px-2 md:px-4 text-center align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                     Verified
                   </th>
-                  <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                  <th className="h-12 px-2 md:px-4 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 border-l border-border/10">
                     Actions
                   </th>
                 </tr>
@@ -104,27 +122,29 @@ export function DriverList() {
                       key={driver._id}
                       onClick={() => router.push(ROUTES_PATH.DRIVERS.VIEW(driver._id))}
                       className="border-b transition-colors hover:bg-muted/50 cursor-pointer">
-                      <td className="p-4 align-middle font-medium">
+                      <td className="p-2 md:p-4 align-middle font-bold text-foreground whitespace-nowrap">
                         {driver.fullName}
                       </td>
-                      <td className="p-4 align-middle">{driver.email}</td>
-                      <td className="p-4 align-middle">
+                      <td className="p-2 md:p-4 align-middle hidden md:table-cell whitespace-nowrap">
+                        {driver.email}
+                      </td>
+                      <td className="p-2 md:p-4 align-middle whitespace-nowrap">
                         {driver.mobileNumber}
                       </td>
-                      <td className="p-4 align-middle text-center">
+                      <td className="p-2 md:p-4 align-middle text-center">
                         {driver.isDocumentsVerified ? (
-                          <div className="flex justify-center items-center text-green-600">
-                            <CheckCircle className="h-5 w-5 mr-1" />
-                            <span className="text-xs">Verified</span>
+                          <div className="flex justify-center items-center text-emerald-600">
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Verified</span>
                           </div>
                         ) : (
                           <div className="flex justify-center items-center text-amber-600">
-                            <AlertCircle className="h-5 w-5 mr-1" />
-                            <span className="text-xs">Pending</span>
+                            <AlertCircle className="h-4 w-4 mr-1" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Pending</span>
                           </div>
                         )}
                       </td>
-                      <td className="p-4 align-middle text-right" onClick={(e) => e.stopPropagation()}>
+                      <td className="p-2 md:p-4 align-middle text-right border-l border-border/10" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button

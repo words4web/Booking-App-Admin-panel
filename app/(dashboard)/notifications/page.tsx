@@ -46,13 +46,13 @@ export default function NotificationsPage() {
     | undefined;
 
   return (
-    <div className="container mx-auto py-4 sm:py-8 px-4 max-w-4xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+    <div className="container mx-auto py-2 sm:py-8 px-2 sm:px-4 max-w-4xl tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
             Notifications
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">
+          <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest leading-none">
             Stay updated with the latest activities.
           </p>
         </div>
@@ -88,7 +88,7 @@ export default function NotificationsPage() {
             <div
               key={notification?._id}
               onClick={() => handleNotificationClick(notification)}
-              className={`p-4 sm:p-6 rounded-2xl border transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md ${
+              className={`p-3 sm:p-6 rounded-2xl border transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md ${
                 notification?.isRead
                   ? "bg-white border-slate-100"
                   : "bg-primary/5 border-primary/20 hover:bg-primary/10"

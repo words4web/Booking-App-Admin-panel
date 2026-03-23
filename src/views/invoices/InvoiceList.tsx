@@ -3,6 +3,7 @@
 import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   FileText,
@@ -14,10 +15,14 @@ import {
   Mail,
   Link2,
   MoreVertical,
+  Search,
+  Info,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/src/hooks/useDebounce";
+import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import {
   useInvoicesQuery,
@@ -78,14 +83,18 @@ export function InvoiceList() {
   const [emailModal, setEmailModal] = useState<Invoice | null>(null);
   const [sendPaymentLinkModal, setSendPaymentLinkModal] =
     useState<Invoice | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const { user } = useAuth();
+  const router = useRouter();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
 
   const { data, isLoading } = useInvoicesQuery({
     page,
     limit: PAGINATION_LIMIT,
     companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
+    search: debouncedSearchTerm || undefined,
   });
 
   const { data: companiesData } = useAllCompaniesQuery(1, 100);
@@ -97,50 +106,62 @@ export function InvoiceList() {
   const invoices = data?.invoices ?? [];
   const pagination = data?.pagination;
 
-  if (isLoading) return <CommonLoader />;
-
   return (
     <div className="space-y-8 pb-12">
       {/* Page Header */}
       <div className="flex flex-col gap-6 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter text-foreground">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
               Invoice <span className="text-primary">Management</span>
             </h1>
-            <p className="text-muted-foreground font-medium text-sm mt-1 uppercase tracking-widest">
+            <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
               {pagination
                 ? `${pagination.total} invoice${pagination.total !== 1 ? "s" : ""} total`
                 : "Manage your invoices"}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center flex-1 sm:justify-end">
+            <div className="relative w-full sm:max-w-xs group">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search invoices..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.preventDefault();
+                }}
+                className="h-12 pl-10 pr-10 rounded-xl border-border/80 bg-white focus:bg-white transition-all shadow-sm group-hover:border-primary/50 text-sm"
+              />
+              <div
+                title="Search by Invoice # or Client Legal Name"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 cursor-help text-slate-400 hover:text-primary transition-colors">
+                <Info className="h-4 w-4" />
+              </div>
+            </div>
+
             {isSuperAdmin && (
-              <div className="w-[200px]">
+              <div className="w-full sm:w-[180px]">
                 <Select
                   value={selectedCompanyId}
                   onValueChange={(val) => {
                     setSelectedCompanyId(val);
                     setPage(1);
                   }}>
-                  <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                  <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm">
                     <div className="flex items-center gap-2">
                       <Filter className="h-4 w-4 text-primary" />
-                      <SelectValue placeholder="Filter by Company" />
+                      <SelectValue placeholder="Company" />
                     </div>
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100] min-w-[220px]">
-                    <SelectItem
-                      value="all"
-                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
-                      All Companies
-                    </SelectItem>
+                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
+                    <SelectItem value="all">All Companies</SelectItem>
                     {companies?.map((company) => (
-                      <SelectItem
-                        key={company._id}
-                        value={company._id}
-                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                      <SelectItem key={company._id} value={company._id}>
                         {company.name}
                       </SelectItem>
                     ))}
@@ -150,7 +171,7 @@ export function InvoiceList() {
             )}
             <Button
               asChild
-              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
+              className="w-full sm:w-auto px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
               <Link href={ROUTES_PATH.INVOICES.NEW}>
                 <Plus className="h-5 w-5" />
                 Create Invoice
@@ -168,7 +189,9 @@ export function InvoiceList() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {invoices.length === 0 ? (
+          {isLoading ? (
+            <CommonLoader fullScreen={false} message="Loading invoices..." />
+          ) : invoices.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <FileText className="h-12 w-12 text-muted-foreground/30 mb-3" />
               <p className="text-muted-foreground text-sm font-medium">
@@ -186,69 +209,72 @@ export function InvoiceList() {
                 <table className="w-full text-sm font-medium">
                   <thead>
                     <tr className="bg-muted/10 border-b border-border/50">
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Invoice #
                       </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Client
                       </th>
                       {isSuperAdmin && (
-                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
                           Company
                         </th>
                       )}
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden sm:table-cell">
                         Date
                       </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
                         Due Date
                       </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Status
                       </th>
-                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Amount
                       </th>
-                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/30">
-                    {invoices.map((inv) => {
+                    {invoices?.map((inv) => {
                       return (
                         <tr
-                          key={inv._id}
-                          className="transition-all hover:bg-slate-50 cursor-default">
-                          <td className="px-8 py-5 align-middle">
-                            <span className="font-bold text-foreground">
-                              {inv.invoiceNumber}
+                          key={inv?._id}
+                          className="transition-all hover:bg-slate-50 cursor-pointer group/row"
+                          onClick={() =>
+                            router.push(ROUTES_PATH.INVOICES.EDIT(inv?._id))
+                          }>
+                          <td className="px-4 md:px-8 py-5 align-middle">
+                            <span className="font-bold text-foreground whitespace-nowrap">
+                              {inv?.invoiceNumber}
                             </span>
                           </td>
-                          <td className="px-8 py-5 align-middle text-muted-foreground">
-                            {getClientName(inv.clientId)}
+                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground whitespace-nowrap">
+                            {getClientName(inv?.clientId)}
                           </td>
                           {isSuperAdmin && (
-                            <td className="px-8 py-5 align-middle text-muted-foreground">
+                            <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden lg:table-cell whitespace-nowrap">
                               {typeof inv?.companyId === "object"
-                                ? (inv.companyId as { name: string }).name
+                                ? (inv?.companyId as { name: string })?.name
                                 : "—"}
                             </td>
                           )}
-                          <td className="px-8 py-5 align-middle text-muted-foreground">
-                            {formatDate(inv.invoiceDate)}
+                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden sm:table-cell whitespace-nowrap">
+                            {formatDate(inv?.invoiceDate)}
                           </td>
-                          <td className="px-8 py-5 align-middle text-muted-foreground">
-                            {inv.dueDate ? formatDate(inv.dueDate) : "—"}
+                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden md:table-cell whitespace-nowrap">
+                            {inv?.dueDate ? formatDate(inv?.dueDate) : "—"}
                           </td>
-                          <td className="px-8 py-5 align-middle">
+                          <td className="px-4 md:px-8 py-5 align-middle">
                             <span
                               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black whitespace-nowrap tracking-wider border ${
-                                inv.isPaid
+                                inv?.isPaid
                                   ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                                   : "bg-amber-50 text-amber-600 border-amber-100"
                               }`}>
-                              {inv.isPaid ? (
+                              {inv?.isPaid ? (
                                 <>
                                   <CheckCircle className="h-3 w-3" />
                                   Paid
@@ -256,17 +282,19 @@ export function InvoiceList() {
                               ) : (
                                 <>
                                   <AlertCircle className="h-3 w-3" />
-                                  Pending Payment
+                                  Pending
                                 </>
                               )}
                             </span>
                           </td>
-                          <td className="px-8 py-5 align-middle text-right font-bold text-foreground">
-                            £{Number(inv.totalAmount || 0).toFixed(2)}
+                          <td className="px-4 md:px-8 py-5 align-middle text-right font-bold text-foreground whitespace-nowrap">
+                            £{Number(inv?.totalAmount || 0)?.toFixed(2)}
                           </td>
-                          <td className="px-8 py-5 align-middle text-right">
+                          <td className="px-4 md:px-8 py-5 align-middle text-right border-l border-border/10!">
                             <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
+                              <DropdownMenuTrigger
+                                asChild
+                                onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -279,19 +307,25 @@ export function InvoiceList() {
                                 className="w-56 rounded-xl border-border bg-white p-1.5 shadow-xl">
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                  onClick={() => setPdfInvoice(inv)}>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPdfInvoice(inv);
+                                  }}>
                                   <FileText className="h-4 w-4 text-slate-500" />
                                   View PDF
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
                                   className={`flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 ${
-                                    inv.isPaid
+                                    inv?.isPaid
                                       ? "text-emerald-600 focus:text-emerald-700"
                                       : "text-amber-600 focus:text-amber-700"
                                   }`}
-                                  onClick={() => setToggleStatusDialog(inv)}>
-                                  {inv.isPaid ? (
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setToggleStatusDialog(inv);
+                                  }}>
+                                  {inv?.isPaid ? (
                                     <>
                                       <CheckCircle className="h-4 w-4" />
                                       Mark as Pending
@@ -306,14 +340,20 @@ export function InvoiceList() {
 
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                  onClick={() => setEmailModal(inv)}>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEmailModal(inv);
+                                  }}>
                                   <Mail className="h-4 w-4 text-primary" />
                                   Send via Email
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                  onClick={() => setSendPaymentLinkModal(inv)}>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSendPaymentLinkModal(inv);
+                                  }}>
                                   <Link2 className="h-4 w-4 text-primary" />
                                   Send Payment Link
                                 </DropdownMenuItem>
@@ -322,8 +362,9 @@ export function InvoiceList() {
 
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                  asChild>
-                                  <Link href={`/invoices/${inv._id}/edit`}>
+                                  asChild
+                                  onClick={(e) => e.stopPropagation()}>
+                                  <Link href={`/invoices/${inv?._id}/edit`}>
                                     <Pencil className="h-4 w-4 text-slate-500" />
                                     Edit Invoice
                                   </Link>
@@ -331,12 +372,13 @@ export function InvoiceList() {
 
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setDeleteDialog({
-                                      id: inv._id,
-                                      number: inv.invoiceNumber,
-                                    })
-                                  }>
+                                      id: inv?._id,
+                                      number: inv?.invoiceNumber,
+                                    });
+                                  }}>
                                   <Trash2 className="h-4 w-4" />
                                   Delete Invoice
                                 </DropdownMenuItem>

@@ -86,30 +86,30 @@ export function InvoicePDFModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-5xl h-[95vh] flex flex-col p-0 rounded-2xl bg-white border-none shadow-2xl z-[100] overflow-hidden">
-        <DialogHeader className="flex flex-row items-center justify-between px-8 py-4 border-b bg-slate-50 flex-none shrink-0 z-[110]">
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] sm:w-[95vw] max-w-5xl h-[100vh] sm:h-[95vh] flex flex-col p-0 rounded-none sm:rounded-2xl bg-white border-none shadow-2xl z-[100] overflow-hidden">
+        <DialogHeader className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 sm:px-8 sm:py-4 border-b bg-slate-50 flex-none shrink-0 z-[110] gap-3">
           <DialogTitle className="text-xl font-black tracking-tight flex items-center gap-3">
             <div className="w-2.5 h-8 bg-slate-900 rounded-full" />
             Invoice Preview
           </DialogTitle>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={handlePrint}
               disabled={isLoading || !pdfUrl}
-              className="h-10 rounded-xl font-semibold px-5 border hover:bg-slate-50 transition-all text-sm text-slate-700">
-              <Printer className="h-4 w-4 mr-2 text-slate-400" />
-              Print
+              className="h-10 flex-1 sm:flex-none rounded-xl font-semibold px-3 sm:px-5 border hover:bg-slate-50 transition-all text-sm text-slate-700">
+              <Printer className="h-4 w-4 mr-0 sm:mr-2 text-slate-400" />
+              <span className="hidden xs:inline">Print</span>
             </Button>
             <Button
               variant="default"
               size="sm"
               onClick={handleDownload}
               disabled={isLoading || !pdfUrl}
-              className="h-10 rounded-xl font-semibold px-5 bg-slate-900 text-white hover:bg-slate-800 shadow-lg text-sm transition-all">
-              <Download className="h-4 w-4 mr-2" />
-              Download PDF
+              className="h-10 flex-1 sm:flex-none rounded-xl font-semibold px-3 sm:px-5 bg-slate-900 text-white hover:bg-slate-800 shadow-lg text-sm transition-all">
+              <Download className="h-4 w-4 mr-0 sm:mr-2" />
+              <span className="hidden xs:inline">Download PDF</span>
             </Button>
             <Button
               variant="ghost"

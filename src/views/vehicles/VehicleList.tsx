@@ -18,6 +18,7 @@ import {
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function VehicleList() {
@@ -34,6 +35,7 @@ export function VehicleList() {
     id: string;
     name: string;
   } | null>(null);
+  const router = useRouter();
 
   if (isLoading) {
     return <CommonLoader fullScreen={false} message="Loading vehicles..." />;
@@ -49,11 +51,18 @@ export function VehicleList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Vehicles</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
+            Vehicle <span className="text-primary">Fleet</span>
+          </h1>
+          <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
+            Manage your transport fleet and details
+          </p>
+        </div>
         <Button
           asChild
-          className="rounded-2xl px-6 py-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 gap-2">
+          className="w-full sm:w-auto px-6 h-12 sm:h-auto rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
           <Link href={ROUTES_PATH.VEHICLES.NEW}>
             <Plus className="h-5 w-5" />
             Add Vehicle
@@ -80,13 +89,13 @@ export function VehicleList() {
             <table className="w-full caption-bottom text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
-                  <th className="h-14 px-8 text-left align-middle font-bold text-slate-600 uppercase tracking-wider text-[11px]">
+                  <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-slate-600 uppercase tracking-wider text-[11px]">
                     Vehicle Name
                   </th>
-                  <th className="h-14 px-8 text-left align-middle font-bold text-slate-600 uppercase tracking-wider text-[11px]">
+                  <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-slate-600 uppercase tracking-wider text-[11px]">
                     Vehicle Number
                   </th>
-                  <th className="h-14 px-8 text-right align-middle font-bold text-slate-600 uppercase tracking-wider text-[11px]">
+                  <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-slate-600 uppercase tracking-wider text-[11px] border-l border-border/10">
                     Actions
                   </th>
                 </tr>
@@ -107,37 +116,43 @@ export function VehicleList() {
                     </td>
                   </tr>
                 ) : (
-                  vehicles.map((vehicle) => (
+                  vehicles?.map((vehicle) => (
                     <tr
-                      key={vehicle._id}
-                      className="border-b border-slate-50 transition-all hover:bg-primary/5 group">
-                      <td className="px-8 py-5 align-middle">
-                        <span className="font-bold text-slate-700 block text-base group-hover:text-primary transition-colors">
-                          {vehicle.vehicleName}
+                      key={vehicle?._id}
+                      className="border-b border-slate-50 transition-all hover:bg-primary/5 cursor-pointer group"
+                      onClick={() =>
+                        router.push(ROUTES_PATH.VEHICLES.EDIT(vehicle?._id))
+                      }>
+                      <td className="px-4 md:px-8 py-5 align-middle">
+                        <span className="font-bold text-slate-700 block text-base group-hover:text-primary transition-colors whitespace-nowrap">
+                          {vehicle?.vehicleName}
                         </span>
                       </td>
-                      <td className="px-8 py-5 align-middle">
-                        <span className="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                          {vehicle.vehicleNumber}
+                      <td className="px-4 md:px-8 py-5 align-middle">
+                        <span className="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs group-hover:bg-primary/10 group-hover:text-primary transition-all whitespace-nowrap">
+                          {vehicle?.vehicleNumber}
                         </span>
                       </td>
-                      <td className="px-8 py-5 align-middle text-right">
+                      <td
+                        className="px-4 md:px-8 py-5 align-middle text-right border-l border-border/10"
+                        onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 rounded-full hover:bg-slate-100"
-                            >
+                              className="h-8 w-8 rounded-full hover:bg-slate-100">
                               <MoreVertical className="h-4 w-4 text-slate-600" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
                             <DropdownMenuItem
                               className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                              asChild
-                            >
-                              <Link href={ROUTES_PATH.VEHICLES.EDIT(vehicle._id)}>
+                              asChild>
+                              <Link
+                                href={ROUTES_PATH.VEHICLES.EDIT(vehicle._id)}>
                                 <Pencil className="h-4 w-4 text-slate-500" />
                                 Edit Vehicle
                               </Link>
@@ -147,11 +162,10 @@ export function VehicleList() {
                               className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
                               onClick={() =>
                                 setVehicleToDelete({
-                                  id: vehicle._id,
-                                  name: vehicle.vehicleName,
+                                  id: vehicle?._id,
+                                  name: vehicle?.vehicleName,
                                 })
-                              }
-                            >
+                              }>
                               <Trash2 className="h-4 w-4" />
                               Delete Vehicle
                             </DropdownMenuItem>

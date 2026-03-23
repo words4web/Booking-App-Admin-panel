@@ -20,7 +20,7 @@ export function Header({
   const { data: unreadCount } = useUnreadCountQuery();
 
   return (
-    <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 flex-shrink-0 h-[84px] sticky top-0">
+    <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 flex-shrink-0 h-16 md:h-20 sticky top-0">
       <div className="flex items-center justify-between px-4 sm:px-8 h-full gap-2">
         <div className="flex items-center gap-3 sm:gap-6">
           {/* Mobile Menu Button */}
@@ -49,12 +49,12 @@ export function Header({
             href={ROUTES_PATH.DASHBOARD}
             className="flex items-center group">
             {/* <div className="relative h-12 w-28 sm:w-32 bg-white rounded-xl flex items-center justify-center shadow-sm overflow-hidden p-1 transition-transform group-hover:scale-105"> */}
-            <div className="relative h-24 w-24">
+            <div className="relative h-16 w-16 hidden sm:block">
               <Image
                 src="/divineLogo.png"
                 alt="DivineGo Logo"
                 fill
-                sizes="96px"
+                sizes="(max-width: 640px) 0px, 64px"
                 className="object-contain"
                 priority
               />
@@ -84,10 +84,10 @@ export function Header({
         <div className="flex items-center gap-4">
           {/* Notifications Link */}
           <Link href={ROUTES_PATH.NOTIFICATIONS} className="relative group">
-            <div className="h-12 w-12 rounded-2xl border border-border/50 flex items-center justify-center hover:bg-primary/5 hover:border-primary/20 transition-all group-hover:scale-110">
-              <Bell className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl border border-border/50 flex items-center justify-center hover:bg-primary/5 hover:border-primary/20 transition-all group-hover:scale-105">
+              <Bell className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground group-hover:text-primary transition-colors" />
               {unreadCount !== undefined && unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-black text-primary-foreground ring-4 ring-background">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground ring-2 md:ring-4 ring-background">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -99,9 +99,9 @@ export function Header({
             <Button
               variant="ghost"
               size="icon"
-              className="h-12 w-12 rounded-2xl border border-border/50 hover:bg-primary/5 hover:border-primary/20 transition-all text-muted-foreground hover:text-primary"
+              className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl border border-border/50 hover:bg-primary/5 hover:border-primary/20 transition-all text-muted-foreground hover:text-primary"
               title="Settings">
-              <Settings className="h-6 w-6" />
+              <Settings className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
           </Link>
         </div>

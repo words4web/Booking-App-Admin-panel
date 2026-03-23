@@ -23,8 +23,8 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
   totals,
 }) => {
   return (
-    <div className="flex justify-end">
-      <div className="w-full max-w-sm space-y-3">
+    <div className="flex sm:justify-end">
+      <div className="w-full sm:max-w-md lg:max-w-sm space-y-4">
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Product Total</span>
           <span className="font-semibold text-gray-900">
@@ -191,26 +191,28 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
           ))}
         </div>
 
-        <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
-          <span className="text-gray-500 font-bold text-xs uppercase">
+        <div className="flex justify-between items-center text-[13px] sm:text-sm pt-3 border-t border-slate-200">
+          <span className="text-slate-400 font-bold uppercase tracking-wider">
             Subtotal
           </span>
-          <span className="font-bold text-gray-900">
+          <span className="font-bold text-slate-900">
             £{Number(totals.subtotal || 0).toFixed(2)}
           </span>
         </div>
 
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">VAT (20%)</span>
-          <span className="font-semibold text-gray-900">
+        <div className="flex justify-between items-center text-[13px] sm:text-sm">
+          <span className="text-slate-400 font-bold uppercase tracking-wider">
+            VAT (20%)
+          </span>
+          <span className="font-semibold text-slate-900">
             £{Number(totals.totalVat || 0).toFixed(2)}
           </span>
         </div>
-        <div className="border-t border-gray-300 pt-2 flex justify-between">
-          <span className="text-sm font-bold text-gray-900">
-            Total Including VAT
+        <div className="border-t-2 border-slate-900 pt-3 flex justify-between items-center">
+          <span className="text-sm sm:text-base font-black text-slate-900 uppercase tracking-tighter">
+            Total Payable
           </span>
-          <span className="text-lg font-bold text-gray-900">
+          <span className="text-xl sm:text-2xl font-black text-primary">
             £{Number(totals.totalAmount || 0).toFixed(2)}
           </span>
         </div>

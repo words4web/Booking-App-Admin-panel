@@ -128,9 +128,9 @@ export function ProductsTab({
         {formik.values.products?.map((product, index) => (
           <div
             key={index}
-            className="group relative bg-slate-50/50 hover:bg-white border border-slate-200 p-6 rounded-2xl transition-all hover:shadow-lg hover:shadow-slate-200/50">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-              <div className="md:col-span-4 space-y-1.5">
+            className="group relative bg-slate-50/30 hover:bg-white border border-slate-200 p-4 sm:p-6 rounded-2xl transition-all hover:shadow-lg hover:shadow-slate-200/50">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 items-end">
+              <div className="col-span-2 md:col-span-4 space-y-1.5 mb-2 sm:mb-0">
                 <div className="flex items-center justify-between">
                   <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                     Item Name
@@ -140,18 +140,18 @@ export function ProductsTab({
                     variant="ghost"
                     size="icon"
                     onClick={() => removeProduct(index)}
-                    className="h-8 w-8 rounded-lg text-destructive hover:bg-destructive/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    className="h-8 w-8 rounded-lg text-destructive hover:bg-destructive/5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
                 <Input
                   disabled
                   {...formik.getFieldProps(`products.${index}.name`)}
-                  className="h-14 text-lg rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-bold"
+                  className="h-12 sm:h-14 text-base sm:text-lg rounded-xl border-slate-200 bg-white shadow-sm font-bold"
                 />
               </div>
 
-              <div className="md:col-span-1 space-y-1.5">
+              <div className="col-span-1 space-y-1.5">
                 <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                   Qty
                 </Label>
@@ -168,19 +168,14 @@ export function ProductsTab({
                     );
                   }}
                   className={cn(
-                    "h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm text-center font-bold",
+                    "h-12 sm:h-14 text-sm sm:text-md rounded-xl border-slate-200 bg-white text-center font-bold",
                     getFieldError(`products.${index}.quantity`) &&
                       "border-destructive",
                   )}
                 />
-                {getFieldError(`products.${index}.quantity`) && (
-                  <p className="text-[10px] text-destructive font-bold text-center mt-1">
-                    {getFieldError(`products.${index}.quantity`)}
-                  </p>
-                )}
               </div>
 
-              <div className="md:col-span-1 space-y-1.5">
+              <div className="col-span-1 space-y-1.5">
                 <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                   Base Price (£)
                 </Label>
@@ -197,19 +192,14 @@ export function ProductsTab({
                     );
                   }}
                   className={cn(
-                    "h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium",
+                    "h-12 sm:h-14 text-sm sm:text-md rounded-xl border-slate-200 bg-white font-medium",
                     getFieldError(`products.${index}.rate`) &&
                       "border-destructive",
                   )}
                 />
-                {getFieldError(`products.${index}.rate`) && (
-                  <p className="text-[10px] text-destructive font-bold mt-1">
-                    {getFieldError(`products.${index}.rate`)}
-                  </p>
-                )}
               </div>
 
-              <div className="md:col-span-1 space-y-1.5">
+              <div className="col-span-1 space-y-1.5">
                 <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                   Base Chg (£)
                 </Label>
@@ -225,11 +215,11 @@ export function ProductsTab({
                       val === "" ? "" : Number(val),
                     );
                   }}
-                  className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
+                  className="h-12 sm:h-14 text-sm sm:text-md rounded-xl border-slate-200 bg-white font-medium"
                 />
               </div>
 
-              <div className="md:col-span-1 space-y-1.5">
+              <div className="col-span-1 space-y-1.5">
                 <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                   Hourly Rate (£)
                 </Label>
@@ -245,13 +235,12 @@ export function ProductsTab({
                       val === "" ? "" : Number(val),
                     );
                   }}
-                  className="h-14 text-md rounded-xl border-slate-200 bg-white focus:bg-white transition-all shadow-sm font-medium"
+                  className="h-12 sm:h-14 text-sm sm:text-md rounded-xl border-slate-200 bg-white font-medium"
                 />
               </div>
             </div>
 
-            {/* Additional info row */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-dashed border-slate-200">
+            <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 pt-4 sm:pt-6 border-t border-dashed border-slate-200">
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                   <Clock className="h-3 w-3" /> Waiting Time Policy

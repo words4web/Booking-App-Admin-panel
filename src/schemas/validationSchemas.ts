@@ -115,6 +115,7 @@ export const BookingSchema = z
       .array(BookingProductSchema)
       .min(1, "At least one product is required"),
     jobDetails: z.string().optional(),
+    endTime: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.serviceType !== ServiceType.HAULAGE) {

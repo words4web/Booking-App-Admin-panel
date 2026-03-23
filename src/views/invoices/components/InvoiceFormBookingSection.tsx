@@ -61,16 +61,16 @@ export const InvoiceFormBookingSection: React.FC<
 }) => {
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <div>
-          <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-            Date
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+            Invoice Date
           </Label>
           <DateTimePicker
             value={formik.values.invoiceDate}
             onChange={(iso: string) => formik.setFieldValue("invoiceDate", iso)}
             className={cn(
-              "h-10 rounded-lg border-gray-300 bg-white text-sm",
+              "h-11 sm:h-10 rounded-lg border-gray-300 bg-white text-sm",
               getFieldError("invoiceDate") && "border-destructive",
             )}
           />
@@ -81,8 +81,8 @@ export const InvoiceFormBookingSection: React.FC<
           )}
         </div>
         <div>
-          <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-            Selected Booking
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+            Select Booking
           </Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -91,7 +91,7 @@ export const InvoiceFormBookingSection: React.FC<
                 role="combobox"
                 aria-expanded={open}
                 className={cn(
-                  "h-10 w-full justify-between rounded-lg border-gray-300 bg-white text-sm font-normal overflow-hidden",
+                  "h-11 sm:h-10 w-full justify-between rounded-lg border-gray-300 bg-white text-sm font-normal overflow-hidden",
                   getFieldError("bookingId") && "border-destructive",
                 )}>
                 <span className="truncate">
@@ -111,7 +111,7 @@ export const InvoiceFormBookingSection: React.FC<
               align="start">
               <Command shouldFilter={false}>
                 <CommandInput
-                  placeholder="Search booking ID or client..."
+                  placeholder="Search booking..."
                   value={searchTerm}
                   onValueChange={setSearchTerm}
                 />
@@ -154,13 +154,13 @@ export const InvoiceFormBookingSection: React.FC<
           )}
         </div>
         <div>
-          <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-            Transaction Type
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+            Type
           </Label>
           <Select
             value={formik.values.transactionType}
             onValueChange={(v) => formik.setFieldValue("transactionType", v)}>
-            <SelectTrigger className="h-10 rounded-lg border-gray-300 bg-white text-sm w-full">
+            <SelectTrigger className="h-11 sm:h-10 rounded-lg border-gray-300 bg-white text-sm w-full">
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
             <SelectContent className="rounded-lg bg-white border border-gray-200 shadow-lg w-[--radix-select-trigger-width]">
@@ -172,25 +172,25 @@ export const InvoiceFormBookingSection: React.FC<
           </Select>
         </div>
         <div>
-          <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-            Invoice Number
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+            Invoice #
           </Label>
           <Input
             value={
               formik.values.bookingId
                 ? `#${previewInvoiceData.invoiceNumber}`
-                : "PENDING SELECTION"
+                : "PENDING"
             }
             disabled
-            className="h-10 rounded-lg border-gray-200 bg-gray-50 text-gray-500 font-bold text-sm"
+            className="h-11 sm:h-10 rounded-lg border-gray-200 bg-gray-50 text-gray-700 font-bold text-sm"
           />
         </div>
       </div>
 
-      {/* Due Date */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Due Date Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <div>
-          <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
             Due Date
           </Label>
           <DateTimePicker
@@ -198,7 +198,7 @@ export const InvoiceFormBookingSection: React.FC<
             onChange={(iso: string) => formik.setFieldValue("dueDate", iso)}
             minDate={formik.values.invoiceDate}
             className={cn(
-              "h-10 rounded-lg border-gray-300 bg-white text-sm",
+              "h-11 sm:h-10 rounded-lg border-gray-300 bg-white text-sm",
               getFieldError("dueDate") && "border-destructive",
             )}
           />
