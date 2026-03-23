@@ -43,9 +43,8 @@ function getBookingLabel(b: Booking): string {
     typeof c === "string"
       ? c
       : (c?.legalDetails?.legalName ??
-        (c?.contactInfo
-          ? `${c.contactInfo.firstName} ${c.contactInfo.lastName}`
-          : "Client"));
+        (`${c?.contactInfo?.firstName || ""} ${c?.contactInfo?.lastName || ""}`.trim() ||
+          "Client"));
   const dt = b.scheduledDateTime
     ? new Date(b.scheduledDateTime).toLocaleDateString("en-GB")
     : "No Date";
@@ -72,7 +71,7 @@ function computeTotals(
   lines: InvoiceLineFormData[],
   waitingTotal: number = 0,
   nightShiftAmount: number = 0,
-  extraCharges: { label: string; amount: number }[] = []
+  extraCharges: { label: string; amount: number }[] = [],
 ): LineComputedTotals {
   let productTotal = 0;
   let totalVat = 0;
@@ -87,10 +86,11 @@ function computeTotals(
 
   const extraChargesSum = extraCharges.reduce(
     (acc, charge) => acc + (Number(charge.amount) || 0),
-    0
+    0,
   );
 
-  const subtotal = productTotal + waitingTotal + nightShiftAmount + extraChargesSum;
+  const subtotal =
+    productTotal + waitingTotal + nightShiftAmount + extraChargesSum;
   const totalAmount = subtotal + totalVat;
 
   return { productTotal, subtotal, totalVat, totalAmount };
@@ -262,7 +262,7 @@ export function InvoiceForm({
         formik.values.lineItems,
         formik.values.waitingTotal,
         formik.values.nightShiftAmount,
-        formik.values.extraCharges
+        formik.values.extraCharges,
       ),
     [
       formik.values.lineItems,

@@ -9,6 +9,9 @@ export interface Notification {
   isRead: boolean;
   createdAt: string;
   updatedAt: string;
+  metadata?: {
+    url?: string;
+  };
 }
 
 export interface AllNotificationsResponse {

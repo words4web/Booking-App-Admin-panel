@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, RotateCcw, Save, Mail, Loader2 } from "lucide-react";
+import { CreditCard, Save, Mail, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CompanyFormData } from "@/src/types/forms.types";
@@ -430,21 +430,6 @@ export function CompanyForm({
             </CardContent>
           </Tabs>
         </Card>
-
-        {/* Global Form Reset */}
-        {isSuperAdmin && activeTab === "identity" && (
-          <div className="flex items-center justify-end gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => formik.resetForm()}
-              disabled={isPending}
-              className="h-11 px-6 rounded-lg font-bold text-slate-500 hover:bg-slate-100 transition-all gap-2 text-xs uppercase tracking-wide">
-              <RotateCcw className="h-4 w-4" />
-              {mode === "create" ? "Clear Form" : "Reset Changes"}
-            </Button>
-          </div>
-        )}
       </form>
     </div>
   );

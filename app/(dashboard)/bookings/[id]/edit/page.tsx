@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { BookingForm } from "@/src/views/bookings/BookingForm";
 import { BookingFormData } from "@/src/types/booking.types";
 import {
@@ -13,6 +13,8 @@ import ROUTES_PATH from "@/lib/Route_Paths";
 export default function EditBookingPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") || "details";
 
   const { data: booking, isLoading } = useBookingDetailsQuery(id);
   const { mutate: updateBooking, isPending } = useUpdateBookingMutation(id);
@@ -38,6 +40,7 @@ export default function EditBookingPage() {
       initialData={booking}
       onSubmit={handleSubmit}
       isLoading={isPending}
+      initialTab={initialTab}
     />
   );
 }

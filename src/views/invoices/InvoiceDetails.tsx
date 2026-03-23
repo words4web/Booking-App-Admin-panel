@@ -44,8 +44,9 @@ const STATUS_CLASSES: Record<InvoiceStatus, string> = {
 function getClientName(clientId: Invoice["clientId"]): string {
   if (typeof clientId === "string") return clientId;
   return (
-    clientId.legalDetails?.legalName ??
-    `${clientId.contactInfo?.firstName ?? ""} ${clientId.contactInfo?.lastName ?? ""}`.trim()
+    (clientId.legalDetails?.legalName ??
+      `${clientId.contactInfo?.firstName ?? ""} ${clientId.contactInfo?.lastName ?? ""}`.trim()) ||
+    "Valued Customer"
   );
 }
 

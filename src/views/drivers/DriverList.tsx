@@ -24,10 +24,12 @@ import {
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useState } from "react";
 import ROUTES_PATH from "@/lib/Route_Paths";
+import { useRouter } from "next/navigation";
 
 export function DriverList() {
   const [page, setPage] = useState(1);
   const [deleteDriverId, setDeleteDriverId] = useState<string | null>(null);
+  const router = useRouter();
 
   const { data, isLoading, error } = useAllDriversQuery(page, PAGINATION_LIMIT);
   const { mutateAsync: deleteDriver, isPending: isDeleting } =
@@ -100,7 +102,8 @@ export function DriverList() {
                   drivers.map((driver) => (
                     <tr
                       key={driver._id}
-                      className="border-b transition-colors hover:bg-muted/50">
+                      onClick={() => router.push(ROUTES_PATH.DRIVERS.VIEW(driver._id))}
+                      className="border-b transition-colors hover:bg-muted/50 cursor-pointer">
                       <td className="p-4 align-middle font-medium">
                         {driver.fullName}
                       </td>
@@ -121,7 +124,7 @@ export function DriverList() {
                           </div>
                         )}
                       </td>
-                      <td className="p-4 align-middle text-right">
+                      <td className="p-4 align-middle text-right" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
