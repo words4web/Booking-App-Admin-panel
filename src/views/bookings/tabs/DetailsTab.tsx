@@ -263,20 +263,36 @@ export function DetailsTab({
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-slate-700">
-            Scheduled Date & Time
-          </Label>
-          <DateTimePicker
-            value={formik.values.scheduledDateTime}
-            onChange={(iso) => formik.setFieldValue("scheduledDateTime", iso)}
-            minDate={new Date().toISOString()}
-          />
-          {getFieldError("scheduledDateTime") && (
-            <p className="text-xs text-destructive font-medium">
-              {getFieldError("scheduledDateTime")}
-            </p>
-          )}
+        <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="space-y-2">
+            <Label className="text-sm font-bold text-slate-700">
+              Scheduled Time
+            </Label>
+            <DateTimePicker
+              value={formik.values.scheduledDateTime}
+              onChange={(iso) => formik.setFieldValue("scheduledDateTime", iso)}
+            />
+            {getFieldError("scheduledDateTime") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("scheduledDateTime")}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-bold text-slate-700">
+              Completion Time
+            </Label>
+            <DateTimePicker
+              value={formik.values.endTime || ""}
+              onChange={(iso) => formik.setFieldValue("endTime", iso)}
+            />
+            {getFieldError("endTime") && (
+              <p className="text-xs text-destructive font-medium">
+                {getFieldError("endTime")}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 

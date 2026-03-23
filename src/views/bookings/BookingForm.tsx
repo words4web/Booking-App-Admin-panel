@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { useFormik } from "formik";
@@ -11,7 +11,8 @@ import {
   IBookingProduct,
   Booking,
 } from "@/src/types/booking.types";
-import { ServiceType } from "@/src/enums/booking.enum";
+import { BookingStatus, ServiceType } from "@/src/enums/booking.enum";
+import dayjs from "dayjs";
 import { useAllProductsQuery } from "@/src/services/productManager/useProductQueries";
 import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
 import { useVehiclesQuery } from "@/src/services/vehicleManager/useVehicleQueries";
@@ -28,7 +29,6 @@ import { LocationsTab } from "./tabs/LocationsTab";
 import { ProductsTab } from "./tabs/ProductsTab";
 import { AssignmentTab } from "./tabs/AssignmentTab";
 import { CompletionReviewTab } from "./tabs/CompletionReviewTab";
-import { BookingStatus } from "@/src/enums/booking.enum";
 import { ClipboardCheck, ArrowLeft, ArrowRight } from "lucide-react";
 
 const tabClassName =
@@ -69,6 +69,7 @@ export function BookingForm({
           : initialData?.clientId?._id || "",
       serviceType: initialData?.serviceType || ServiceType.RMC,
       scheduledDateTime: initialData?.scheduledDateTime || "",
+      endTime: initialData?.endTime || "",
       pickupLocation: {
         addressLine1:
           initialData?.pickupLocation?.addressLine1 ||
@@ -114,6 +115,7 @@ export function BookingForm({
           : initialData?.vehicleId?._id || "",
       jobDetails: initialData?.jobDetails || "",
     },
+    enableReinitialize: true,
     validationSchema: toFormikValidationSchema(BookingSchema),
     onSubmit: (values) => {
       const sanitized = {
@@ -126,7 +128,16 @@ export function BookingForm({
     },
   });
 
-  // Clients are now fetched asynchronously inside DetailsTab
+  useEffect(() => {
+    if (!initialData) {
+      if (!formik.values.scheduledDateTime) {
+        formik.setFieldValue("scheduledDateTime", dayjs().toISOString());
+      }
+      if (!formik.values.endTime) {
+        formik.setFieldValue("endTime", dayjs().add(2.5, "hour").toISOString());
+      }
+    }
+  }, [initialData]);
 
   const { data: productsData } = useAllProductsQuery({ getAll: true });
   const { data: driversData } = useAllDriversQuery(1, 200);
@@ -185,7 +196,6 @@ export function BookingForm({
 
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      // If there are errors, we might want to switch to the first tab with errors
       if (
         errors.companyId ||
         errors.clientId ||
@@ -339,17 +349,7 @@ export function BookingForm({
           </Button>
 
           <div className="flex gap-4 items-center">
-            {currentIndex < TABS.length - 1 && (
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="rounded-xl px-8 h-11 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
-                Next Step <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
-
-            {(activeTab === "driver" ||
-              (activeTab === "products" && !TABS.includes("driver"))) && (
+            {activeTab !== "review" && (
               <Button
                 type="button"
                 onClick={handleConfirmClick}
@@ -360,6 +360,15 @@ export function BookingForm({
                   : initialData
                     ? "Save"
                     : "Create Booking"}
+              </Button>
+            )}
+
+            {currentIndex < TABS.length - 1 && (
+              <Button
+                type="button"
+                onClick={handleNext}
+                className="rounded-xl px-8 h-11 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
+                Next Step <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             )}
           </div>
