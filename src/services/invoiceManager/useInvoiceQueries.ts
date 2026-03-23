@@ -110,11 +110,10 @@ export const useSendPaymentLinkMutation = () => {
       email: string;
       phoneNumber?: string;
       paymentUrl: string;
-    }) => InvoiceService.sendPaymentLink(id, { email, phoneNumber, paymentUrl }),
+    }) =>
+      InvoiceService.sendPaymentLink(id, { email, phoneNumber, paymentUrl }),
     onSuccess: () => {
-      toast.success(
-        "Payment link is being sent.",
-      );
+      toast.success("Payment link is being sent.");
     },
     onError: (error: any) => {
       toast.error(

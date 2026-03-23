@@ -37,14 +37,16 @@ interface BookingFormProps {
   initialData?: Booking;
   onSubmit: (values: BookingFormData) => void;
   isLoading?: boolean;
+  initialTab?: string;
 }
 
 export function BookingForm({
   initialData,
   onSubmit,
   isLoading,
+  initialTab = "details",
 }: BookingFormProps) {
-  const [activeTab, setActiveTab] = useState("details");
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const router = useRouter();
 

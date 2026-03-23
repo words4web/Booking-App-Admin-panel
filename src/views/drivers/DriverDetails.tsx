@@ -198,38 +198,6 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                     )
                   }
                 />
-                {/*
-                <DocumentViewer
-                  title="Bio Data Page"
-                  imageUrl={driver?.passport?.bioDataPage?.url || null}
-                  isVerified={
-                    driver?.passport?.bioDataPage?.isVerified || false
-                  }
-                  reason={driver?.passport?.bioDataPage?.reason || null}
-                  onVerify={(verified, reason) =>
-                    handleVerifyDocument(
-                      "passport.bioDataPage",
-                      verified,
-                      reason,
-                    )
-                  }
-                />
-                <DocumentViewer
-                  title="Signature Page"
-                  imageUrl={driver?.passport?.signaturePage?.url || null}
-                  isVerified={
-                    driver?.passport?.signaturePage?.isVerified || false
-                  }
-                  reason={driver?.passport?.signaturePage?.reason || null}
-                  onVerify={(verified, reason) =>
-                    handleVerifyDocument(
-                      "passport.signaturePage",
-                      verified,
-                      reason,
-                    )
-                  }
-                />
-                */}
               </div>
             </TabsContent>
           </CardContent>

@@ -23,27 +23,17 @@ export const OptionalAddressSchema = z.object({
 });
 
 // ─── Company ──────────────────────────────────────────────────────────────────
-export const CompanySchema = z
-  .object({
-    name: z.string().min(1, "Company name is required").max(255),
-    registrationNumber: z.string().min(1, "Registration number is required"),
-    vatNumber: z.string().optional(),
-    vatRegistered: z.boolean().default(false),
-    invoicePrefix: z.string().min(1, "Invoice prefix is required"),
-    bankAccountNumber: z.string().optional(),
-    bankCode: z.string().optional(),
-    bankName: z.string().optional(),
-    adminEmail: z.string().email("Valid email is required"),
-  })
-  .superRefine((data, ctx) => {
-    if (data.vatRegistered && !data.vatNumber?.trim()) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "VAT number is required",
-        path: ["vatNumber"],
-      });
-    }
-  });
+export const CompanySchema = z.object({
+  name: z.string().min(1, "Company name is required").max(255),
+  registrationNumber: z.string().min(1, "Registration number is required"),
+  vatNumber: z.string().optional(),
+  vatRegistered: z.boolean().default(false),
+  invoicePrefix: z.string().min(1, "Invoice prefix is required"),
+  bankAccountNumber: z.string().optional(),
+  bankCode: z.string().optional(),
+  bankName: z.string().optional(),
+  adminEmail: z.string().email("Valid email is required"),
+});
 
 // ─── Client ───────────────────────────────────────────────────────────────────
 export const getClientSchema = (isSuperAdmin: boolean) =>
