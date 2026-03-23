@@ -51,11 +51,35 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
           </div>
 
           {/* Line fields - all on one row on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+            {/* Detail (Description) */}
+            <div className="col-span-2 order-1 lg:order-5">
+              <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+                Item Description
+              </Label>
+              <Input
+                placeholder="Description"
+                value={line.description}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setLineField(idx, "description", e.target.value)
+                }
+                className={cn(
+                  "h-10 sm:h-11 rounded-lg border-gray-300 text-sm bg-white font-medium",
+                  getFieldError(`lineItems.${idx}.description`) &&
+                    "border-destructive",
+                )}
+              />
+              {getFieldError(`lineItems.${idx}.description`) && (
+                <p className="text-[10px] text-destructive font-bold mt-1">
+                  {getFieldError(`lineItems.${idx}.description`)}
+                </p>
+              )}
+            </div>
+
             {/* Ex-VAT (Unit Price) */}
-            <div>
-              <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                Ex-VAT (£)
+            <div className="col-span-1 order-2 lg:order-1">
+              <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+                Price (£)
               </Label>
               <Input
                 type="number"
@@ -66,22 +90,17 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
                   setLineField(idx, "unitPrice", Number(e.target.value))
                 }
                 className={cn(
-                  "h-9 rounded-md border-gray-300 text-sm bg-white",
+                  "h-10 sm:h-11 rounded-lg border-gray-300 text-sm bg-white font-medium",
                   getFieldError(`lineItems.${idx}.unitPrice`) &&
                     "border-destructive",
                 )}
               />
-              {getFieldError(`lineItems.${idx}.unitPrice`) && (
-                <p className="text-[10px] text-destructive font-medium mt-1">
-                  {getFieldError(`lineItems.${idx}.unitPrice`)}
-                </p>
-              )}
             </div>
 
-            {/* VAT Rate - editable as percentage */}
-            <div>
-              <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                VAT Rate (%)
+            {/* VAT Rate */}
+            <div className="col-span-1 order-3 lg:order-2">
+              <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+                VAT (%)
               </Label>
               <Input
                 type="number"
@@ -98,31 +117,26 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
                 }
                 placeholder="20"
                 className={cn(
-                  "h-9 rounded-md border-gray-300 text-sm bg-white",
+                  "h-10 sm:h-11 rounded-lg border-gray-300 text-sm bg-white font-medium",
                   getFieldError(`lineItems.${idx}.vatPercent`) &&
                     "border-destructive",
                 )}
               />
-              {getFieldError(`lineItems.${idx}.vatPercent`) && (
-                <p className="text-[10px] text-destructive font-medium mt-1">
-                  {getFieldError(`lineItems.${idx}.vatPercent`)}
-                </p>
-              )}
             </div>
 
-            {/* VAT Amount (auto-calculated, read-only) */}
-            <div>
-              <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+            {/* VAT Amount */}
+            <div className="col-span-1 order-5 lg:order-3">
+              <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 VAT (£)
               </Label>
-              <div className="h-9 flex items-center px-3 text-sm text-gray-600 bg-gray-100 rounded-md border border-gray-200">
+              <div className="h-10 sm:h-11 flex items-center px-3 text-sm text-slate-500 bg-slate-50/50 rounded-lg border border-slate-200 font-bold">
                 {Number(getVatAmt(line) || 0).toFixed(2)}
               </div>
             </div>
 
             {/* Quantity */}
-            <div>
-              <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
+            <div className="col-span-1 order-4 lg:order-4">
+              <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 Quantity
               </Label>
               <Input
@@ -134,40 +148,11 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
                   setLineField(idx, "quantity", Number(e.target.value))
                 }
                 className={cn(
-                  "h-9 rounded-md border-gray-300 text-sm bg-white",
+                  "h-10 sm:h-11 rounded-lg border-gray-300 text-sm bg-white font-bold text-center",
                   getFieldError(`lineItems.${idx}.quantity`) &&
                     "border-destructive",
                 )}
               />
-              {getFieldError(`lineItems.${idx}.quantity`) && (
-                <p className="text-[10px] text-destructive font-medium mt-1">
-                  {getFieldError(`lineItems.${idx}.quantity`)}
-                </p>
-              )}
-            </div>
-
-            {/* Detail (Description) */}
-            <div className="col-span-2">
-              <Label className="text-[11px] font-medium text-gray-500 mb-1 block">
-                Detail
-              </Label>
-              <Input
-                placeholder="Description"
-                value={line.description}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setLineField(idx, "description", e.target.value)
-                }
-                className={cn(
-                  "h-9 rounded-md border-gray-300 text-sm bg-white",
-                  getFieldError(`lineItems.${idx}.description`) &&
-                    "border-destructive",
-                )}
-              />
-              {getFieldError(`lineItems.${idx}.description`) && (
-                <p className="text-[10px] text-destructive font-medium mt-1">
-                  {getFieldError(`lineItems.${idx}.description`)}
-                </p>
-              )}
             </div>
           </div>
         </div>

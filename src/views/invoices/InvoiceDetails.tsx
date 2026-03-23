@@ -213,27 +213,27 @@ export function InvoiceDetails() {
   return (
     <div className="space-y-6 pb-12 overflow-x-hidden">
       {/* Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 print:hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => router.push(ROUTES_PATH.INVOICES.BASE)}
-            className="rounded-xl h-9 gap-2 font-bold text-muted-foreground">
+            className="rounded-xl h-9 w-fit gap-2 font-bold text-muted-foreground hover:bg-slate-100">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
           <div>
-            <h1 className="text-4xl font-black tracking-tighter text-foreground">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
               Invoice{" "}
               <span className="text-primary">#{invoice.invoiceNumber}</span>
             </h1>
             <div className="flex items-center gap-3 mt-1">
-              <span className="text-muted-foreground font-medium text-sm">
+              <span className="text-muted-foreground font-medium text-[10px] sm:text-sm uppercase tracking-widest">
                 {formatDate(invoice.invoiceDate)}
               </span>
               {isPaid && (
-                <span className="flex items-center gap-1 text-emerald-600 text-xs font-bold">
+                <span className="flex items-center gap-1 text-emerald-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
                   <CheckCircle2 className="h-3.5 w-3.5" /> Paid
                 </span>
               )}

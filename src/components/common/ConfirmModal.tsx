@@ -52,7 +52,7 @@ export function ConfirmModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[98vw] max-w-[740px] rounded-[3rem] px-10 py-8 border-none shadow-[0_40px_100px_-15px_rgba(0,0,0,0.1)] bg-white/95 backdrop-blur-xl">
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-[540px] rounded-2xl sm:rounded-[3rem] px-5 py-6 sm:px-10 sm:py-8 border-none shadow-[0_40px_100px_-15px_rgba(0,0,0,0.1)] bg-white/95 backdrop-blur-xl">
         <DialogHeader className="flex flex-col items-center text-center space-y-4">
           <div
             className={cn(
@@ -72,7 +72,7 @@ export function ConfirmModal({
           </div>
         </DialogHeader>
 
-        <DialogFooter className="mt-10 sm:justify-between gap-3 w-full">
+        <DialogFooter className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 w-full">
           <DialogClose asChild>
             <Button
               variant="ghost"

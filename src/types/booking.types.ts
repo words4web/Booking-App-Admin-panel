@@ -97,6 +97,7 @@ export interface BookingFormData {
   vehicleId?: string;
   products: IBookingProduct[];
   jobDetails?: string;
+  endTime?: string;
 }
 
 export interface BookingFilters {

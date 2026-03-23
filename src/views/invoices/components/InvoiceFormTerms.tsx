@@ -19,7 +19,7 @@ export const InvoiceFormTerms: React.FC<InvoiceFormTermsProps> = ({
           Terms & Conditions
         </Label>
         <textarea
-          className="w-full min-h-[100px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          className="w-full min-h-[120px] p-4 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
           placeholder="Add payment terms or conditions..."
           {...formik.getFieldProps("terms")}
         />
@@ -30,24 +30,24 @@ export const InvoiceFormTerms: React.FC<InvoiceFormTermsProps> = ({
         <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
           Address & Billing Details (Overrides)
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           <div className="space-y-4">
             <div>
-              <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
+              <Label className="text-[11px] font-bold text-slate-400 mb-1.5 block uppercase tracking-wider">
                 Bill To: Legal Name
               </Label>
               <Input
                 placeholder="Client Legal Name"
                 {...formik.getFieldProps("billingName")}
-                className="h-10 rounded-lg border-gray-300 bg-white text-sm"
+                className="h-11 rounded-lg border-gray-200 bg-white text-sm shadow-sm"
               />
             </div>
             <div>
-              <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
+              <Label className="text-[11px] font-bold text-slate-400 mb-1.5 block uppercase tracking-wider">
                 Bill To: Full Address
               </Label>
               <textarea
-                className="w-full min-h-[80px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full min-h-[100px] p-4 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                 placeholder="Enter full billing address..."
                 {...formik.getFieldProps("billingAddress")}
               />
@@ -55,11 +55,11 @@ export const InvoiceFormTerms: React.FC<InvoiceFormTermsProps> = ({
           </div>
           <div className="space-y-4">
             <div>
-              <Label className="text-xs font-semibold text-slate-500 mb-1.5 block">
+              <Label className="text-[11px] font-bold text-slate-400 mb-1.5 block uppercase tracking-wider">
                 From: Company Address
               </Label>
               <textarea
-                className="w-full min-h-[120px] p-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full min-h-[160px] p-4 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                 placeholder="Enter full company address..."
                 {...formik.getFieldProps("companyAddress")}
               />

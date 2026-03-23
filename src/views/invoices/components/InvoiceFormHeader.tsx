@@ -20,15 +20,15 @@ export const InvoiceFormHeader: React.FC<InvoiceFormHeaderProps> = ({
   availableLogos,
 }) => {
   return (
-    <div className="mb-6 flex gap-6 items-start">
-      <div className="flex-1">
+    <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+      <div className="flex-1 w-full">
         <Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
           Invoice Logo
         </Label>
         <Select
           value={formik.values.logoFile || "RKB-CCONCRETE-LTD-LOGO.png"}
           onValueChange={(v) => formik.setFieldValue("logoFile", v)}>
-          <SelectTrigger className="w-full h-10 rounded-lg border-gray-300 bg-white text-sm">
+          <SelectTrigger className="w-full h-11 sm:h-10 rounded-lg border-gray-300 bg-white text-sm">
             <SelectValue placeholder="Select logo" />
           </SelectTrigger>
           <SelectContent className="w-[--radix-select-trigger-width] bg-white border border-gray-200">
@@ -43,7 +43,7 @@ export const InvoiceFormHeader: React.FC<InvoiceFormHeaderProps> = ({
         </Select>
       </div>
       {/* Logo Preview */}
-      <div className="w-48 h-20 bg-gray-50 border border-gray-200 rounded-lg hidden sm:flex items-center justify-center p-2 overflow-hidden">
+      <div className="w-full sm:w-48 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center p-2 overflow-hidden shadow-inner order-first sm:order-last">
         {formik.values.logoFile ? (
           <img
             src={`/${formik.values.logoFile}`}

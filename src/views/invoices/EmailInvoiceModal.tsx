@@ -51,10 +51,10 @@ const EmailInvoiceModal: React.FC<EmailInvoiceModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:max-w-[480px] p-0 overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-slate-50/95 backdrop-blur-xl z-[100] rounded-3xl">
-        <DialogHeader className="p-8 pb-4 bg-gradient-to-br from-primary to-slate-900 text-white relative">
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <Mail className="h-24 w-24 -mr-8 -mt-8 rotate-12" />
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] sm:max-w-[480px] p-0 overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-slate-50/95 backdrop-blur-xl z-[100] rounded-2xl sm:rounded-3xl">
+        <DialogHeader className="p-5 sm:p-8 pb-4 bg-gradient-to-br from-primary to-slate-900 text-white relative">
+          <div className="absolute top-0 right-0 p-4 sm:p-8 opacity-10">
+            <Mail className="h-16 w-16 sm:h-24 sm:w-24 -mr-4 -mt-4 sm:-mr-8 sm:-mt-8 rotate-12" />
           </div>
           <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
@@ -67,7 +67,7 @@ const EmailInvoiceModal: React.FC<EmailInvoiceModalProps> = ({
           </p>
         </DialogHeader>
 
-        <div className="p-8 space-y-6">
+        <div className="p-5 sm:p-8 space-y-6">
           <div className="space-y-3">
             <Label
               htmlFor="email"

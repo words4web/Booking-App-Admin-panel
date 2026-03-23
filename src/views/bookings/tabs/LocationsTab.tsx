@@ -21,10 +21,10 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
   const [showDrop, setShowDrop] = useState(!isHaulage);
 
   return (
-    <div className="mt-0 space-y-12 animate-in fade-in duration-500">
+    <div className="mt-0 space-y-10 animate-in fade-in duration-500">
       {/* Pickup Address */}
-      <div className="space-y-6">
-        <h3 className="text-lg font-bold text-slate-900 flex items-center justify-between gap-2">
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold text-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-700 text-xs shadow-sm">
               A
@@ -36,19 +36,19 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
             variant="outline"
             size="sm"
             onClick={() => setShowPickup(!showPickup)}
-            className="rounded-xl h-8 text-xs font-bold">
+            className="rounded-xl h-8 text-xs font-bold w-full sm:w-auto">
             {showPickup ? "Minimize" : "Change Pickup Address"}
           </Button>
         </h3>
 
         {!showPickup ? (
-          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-            <p className="text-slate-700 font-medium">
+          <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200">
+            <p className="text-slate-700 font-medium text-sm sm:text-base">
               Rkb house, Gravesend, kent, DA12 2RU, United Kingdom
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/30 p-6 rounded-2xl border border-slate-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/30 p-4 sm:p-6 rounded-2xl border border-slate-100">
             <div className="md:col-span-2 space-y-1.5">
               <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                 Address Line 1
@@ -125,22 +125,21 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
                 </p>
               )}
             </div>
-            {/* Country field omitted */}
           </div>
         )}
       </div>
 
       {/* Drop-off Address */}
-      <div className="space-y-6">
-        <h3 className="text-lg font-bold text-slate-900 flex items-center justify-between gap-2">
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold text-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs shadow-sm">
               B
             </span>
             Drop-off Address
             {isHaulage && (
-              <span className="ml-2 text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
-                Optional for Haulage
+              <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                Optional
               </span>
             )}
           </div>
@@ -150,14 +149,14 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
               size="sm"
               type="button"
               onClick={() => setShowDrop(true)}
-              className="text-xs h-8">
+              className="text-xs h-8 w-full sm:w-auto">
               Add Drop-off Address
             </Button>
           )}
         </h3>
 
         {showDrop && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/30 p-6 rounded-2xl border border-slate-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/30 p-4 sm:p-6 rounded-2xl border border-slate-100">
             <div className="md:col-span-2 space-y-1.5">
               <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                 Address Line 1
@@ -238,7 +237,6 @@ export function LocationsTab({ formik, getFieldError }: LocationsTabProps) {
                 </p>
               )}
             </div>
-            {/* Country field omitted */}
           </div>
         )}
       </div>

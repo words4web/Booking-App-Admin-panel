@@ -47,13 +47,13 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="rounded-full hover:bg-slate-100">
+            className="rounded-full hover:bg-slate-100 shrink-0">
             <ArrowLeft className="h-5 w-5 text-slate-600" />
           </Button>
           <div>
@@ -68,11 +68,11 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
 
         <div className="flex items-center gap-3">
           {driver.isDocumentsVerified ? (
-            <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider">
+            <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider whitespace-nowrap">
               <CheckCircle className="w-4 h-4 mr-2" /> Fully Verified
             </Badge>
           ) : (
-            <Badge className="bg-amber-50 text-amber-600 border-amber-100 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider">
+            <Badge className="bg-amber-50 text-amber-600 border-amber-100 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider whitespace-nowrap">
               <AlertCircle className="w-4 h-4 mr-2" /> Pending Verification
             </Badge>
           )}

@@ -76,8 +76,8 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:max-w-[450px] p-0 overflow-hidden border border-slate-200 shadow-xl bg-white z-[100] rounded-xl">
-        <DialogHeader className="p-6 border-b border-slate-100 bg-slate-50/50">
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] sm:max-w-[450px] p-0 overflow-hidden border border-slate-200 shadow-xl bg-white z-[100] rounded-xl sm:rounded-2xl">
+        <DialogHeader className="p-5 sm:p-6 border-b border-slate-100 bg-slate-50/50">
           <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <Link2 className="h-5 w-5 text-slate-600" />
             Send Payment Link
@@ -87,7 +87,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
           </p>
         </DialogHeader>
 
-        <div className="p-6 space-y-4">
+        <div className="p-5 sm:p-6 space-y-4">
           <div className="space-y-2">
             <Label
               htmlFor="email"
@@ -152,18 +152,18 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
             </div>
           </div>
 
-          <div className="pt-2 flex gap-3">
+          <div className="pt-2 flex flex-col sm:flex-row gap-3">
             <Button
               variant="ghost"
               onClick={onClose}
               disabled={sendPaymentLinkMutation.isPending}
-              className="flex-1 h-10 rounded-lg text-slate-500 font-medium hover:bg-slate-100 transition-all">
+              className="flex-1 h-10 rounded-lg text-slate-500 font-medium hover:bg-slate-100 transition-all order-2 sm:order-1">
               Cancel
             </Button>
             <Button
               onClick={handleSend}
               disabled={sendPaymentLinkMutation.isPending || !isFormValid()}
-              className="flex-1 h-10 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-sm transition-all active:scale-[0.98]">
+              className="flex-1 h-10 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-sm transition-all active:scale-[0.98] order-1 sm:order-2">
               {sendPaymentLinkMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
