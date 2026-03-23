@@ -440,20 +440,60 @@ export function InvoiceForm({
   }, [formik.values, totals, availableBookings, getExVat, getVatAmt]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 px-4">
-      {/* Top Bar */}
-      <div className="max-w-full mx-auto mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-gray-50/50 py-6 px-0 md:px-8">
+      {/* Top Bar Header */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="flex flex-col gap-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.back()}
+                className="h-10 w-10 rounded-xl hover:bg-slate-100 transition-colors hidden sm:flex">
+                <ArrowLeft className="h-5 w-5 text-slate-600" />
+              </Button>
+              <div className="flex flex-col gap-1">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground leading-tight">
+                  {initialData ? "Edit" : "New"}{" "}
+                  <span className="text-primary">Invoice</span>
+                </h1>
+                <p className="text-muted-foreground font-medium text-[10px] sm:text-sm uppercase tracking-widest leading-none">
+                  {isEdit
+                    ? `Serial: ${previewInvoiceData.invoiceNumber}`
+                    : "Generate professional tax invoice"}
+                </p>
+              </div>
+            </div>
+
+            {/* <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => setPreviewOpen(true)}
+                className="flex-1 sm:flex-none h-12 px-6 rounded-2xl font-bold border-slate-200 hover:bg-slate-50 transition-all text-slate-700 shadow-sm">
+                Preview PDF
+              </Button>
+              <Button
+                type="button"
+                onClick={() => formik.handleSubmit()}
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="flex-1 sm:flex-none h-12 px-8 rounded-2xl font-black bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20 gap-2 transition-all active:scale-[0.98]">
+                <Save className="h-5 w-5" />
+                {createMutation.isPending || updateMutation.isPending ? "Saving..." : "Save Invoice"}
+              </Button>
+            </div> */}
+          </div>
+
+          {/* Mobile Back Link */}
           <Button
             variant="ghost"
-            size="icon"
             onClick={() => router.back()}
-            className="h-9 w-9 rounded-lg hover:bg-gray-200">
-            <ArrowLeft className="h-4 w-4" />
+            className="sm:hidden -mt-2 p-0 h-auto font-bold text-primary flex items-center gap-2 justify-start hover:bg-transparent">
+            <ArrowLeft className="h-4 w-4" /> Back to list
           </Button>
-          <h1 className="text-lg font-bold text-gray-900">
-            {isEdit ? "Edit Invoice" : "New Sale"}
-          </h1>
         </div>
       </div>
 

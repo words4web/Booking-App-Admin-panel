@@ -106,24 +106,24 @@ export function ProductList() {
     <div className="space-y-8 pb-12">
       <div className="flex flex-col gap-6 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter text-foreground text-nowrap">
-              Product <span className="text-primary">Management</span>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
+              Product <span className="text-primary">Catalog</span>
             </h1>
-            <p className="text-muted-foreground font-medium text-sm mt-1 uppercase tracking-widest">
-              Manage items and services for billing
+            <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
+              Manage concrete products and standardized rates
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 flex-1 md:justify-end">
-            <div className="flex flex-1 gap-2 sm:max-w-md">
-              <div className="relative flex-1 text-nowrap">
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 sm:justify-end">
+            <div className="flex flex-1 gap-2 sm:max-w-md w-full">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-12 pl-10 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  className="h-12 pl-10 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
                 />
               </div>
               <div className="relative leading-none group">
@@ -143,27 +143,20 @@ export function ProductList() {
               </div>
             </div>
             {isSuperAdmin && (
-              <div className="w-[200px]">
+              <div className="w-full sm:w-[200px]">
                 <Select
                   value={selectedCompanyId}
                   onValueChange={setSelectedCompanyId}>
                   <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                     <div className="flex items-center gap-2">
                       <Filter className="h-4 w-4 text-primary" />
-                      <SelectValue placeholder="Filter by Company" />
+                      <SelectValue placeholder="Filter" />
                     </div>
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100] min-w-[220px]">
-                    <SelectItem
-                      value="all"
-                      className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
-                      All Companies
-                    </SelectItem>
+                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
+                    <SelectItem value="all">All Companies</SelectItem>
                     {companies?.map((company) => (
-                      <SelectItem
-                        key={company._id}
-                        value={company._id}
-                        className="text-slate-700 font-semibold focus:bg-primary/10 focus:text-primary rounded-xl cursor-pointer py-3.5 px-4 mb-1 transition-colors">
+                      <SelectItem key={company._id} value={company._id}>
                         {company.name}
                       </SelectItem>
                     ))}
@@ -173,10 +166,10 @@ export function ProductList() {
             )}
             <Button
               asChild
-              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
+              className="w-full sm:w-auto px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
               <Link href={ROUTES_PATH.PRODUCTS.NEW}>
                 <Plus className="h-5 w-5" />
-                Add New Product
+                Add Product
               </Link>
             </Button>
           </div>
@@ -215,21 +208,21 @@ export function ProductList() {
                 <table className="w-full text-sm font-medium">
                   <thead>
                     <tr className="bg-muted/10 border-b border-border/50">
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Product Name
                       </th>
-                      <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
                         Description
                       </th>
-                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Base Price
                       </th>
                       {isSuperAdmin && (
-                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
                           Company
                         </th>
                       )}
-                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest">
+                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest border-l border-border/10!">
                         Actions
                       </th>
                     </tr>
@@ -242,31 +235,31 @@ export function ProductList() {
                           router.push(ROUTES_PATH.PRODUCTS.EDIT(product._id))
                         }
                         className="transition-all hover:bg-slate-50 cursor-pointer group">
-                        <td className="px-8 py-6 align-middle">
-                          <span className="font-bold text-foreground block">
+                        <td className="px-4 md:px-8 py-6 align-middle">
+                          <span className="font-bold text-foreground block whitespace-nowrap">
                             {product.name}
                           </span>
                         </td>
-                        <td className="px-8 py-6 align-middle">
+                        <td className="px-4 md:px-8 py-6 align-middle hidden md:table-cell">
                           <span className="text-xs text-muted-foreground line-clamp-1 max-w-[300px]">
                             {product.description}
                           </span>
                         </td>
-                        <td className="px-8 py-6 align-middle text-right">
+                        <td className="px-4 md:px-8 py-6 align-middle text-right whitespace-nowrap">
                           <span className="font-bold text-primary">
                             £{product.basePrice.toFixed(2)}
                           </span>
                         </td>
                         {isSuperAdmin && (
-                          <td className="px-8 py-6 align-middle">
-                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 border border-slate-200 uppercase tracking-tighter">
+                          <td className="px-4 md:px-8 py-6 align-middle hidden lg:table-cell">
+                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 border border-slate-200 uppercase tracking-tighter whitespace-nowrap">
                               {typeof product.companyId === "object"
                                 ? product.companyId.name
                                 : "N/A"}
                             </span>
                           </td>
                         )}
-                        <td className="px-8 py-6 align-middle text-right">
+                        <td className="px-4 md:px-8 py-6 align-middle text-right border-l border-border/10!">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Pencil,
@@ -48,6 +49,7 @@ export function CompanyList() {
   const companies = companiesData?.companies || [];
   const pagination = companiesData?.pagination;
   const deleteMutation = useDeleteCompanyMutation();
+  const router = useRouter();
 
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
 
@@ -80,24 +82,26 @@ export function CompanyList() {
     <div className="space-y-8 pb-12">
       <div className="flex flex-col gap-2 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter text-foreground">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
               Company <span className="text-primary">Profiles</span>
             </h1>
-            <p className="text-muted-foreground font-medium text-sm mt-1 uppercase tracking-widest">
+            <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
               Manage your network of transport companies
             </p>
           </div>
           {isSuperAdmin && (
-            <Button
-              asChild
-              className="h-12 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 gap-2">
-              <Link href={ROUTES_PATH.COMPANIES.NEW}>
-                <Plus className="h-5 w-5" />
-                Register New Company
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                asChild
+                className="w-full sm:w-auto px-6 h-12 sm:h-auto rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
+                <Link href={ROUTES_PATH.COMPANIES.NEW}>
+                  <Plus className="h-5 w-5" />
+                  Add Company
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -109,7 +113,7 @@ export function CompanyList() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {!filteredCompanies || filteredCompanies.length === 0 ? (
+          {!filteredCompanies || filteredCompanies?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-muted-foreground text-sm font-medium">
                 No companies registered yet.
@@ -129,79 +133,89 @@ export function CompanyList() {
                   <table className="w-full text-sm font-medium">
                     <thead>
                       <tr className="bg-muted/10 border-b border-border/50">
-                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                           Company Details
                         </th>
-                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
                           Reg Number
                         </th>
-                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
                           VAT Info
                         </th>
-                        <th className="h-14 px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden sm:table-cell">
                           Admin Email
                         </th>
                         {isSuperAdmin && (
-                          <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                          <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 border-l border-border/10!">
                             Actions
                           </th>
                         )}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/30">
-                      {filteredCompanies.map((company) => (
+                      {filteredCompanies?.map((company) => (
                         <tr
-                          key={company._id}
-                          className="transition-all hover:bg-slate-50 cursor-default">
-                          <td className="px-8 py-5 align-middle">
+                          key={company?._id}
+                          className="transition-all hover:bg-slate-50 cursor-pointer group"
+                          onClick={() =>
+                            router.push(
+                              ROUTES_PATH.COMPANIES.EDIT(company?._id),
+                            )
+                          }>
+                          <td className="px-4 md:px-8 py-5 align-middle">
                             <div className="flex flex-col">
-                              <span className="font-bold text-foreground">
-                                {company.name}
+                              <span className="font-bold text-foreground whitespace-nowrap group-hover:text-primary transition-colors">
+                                {company?.name}
                               </span>
                               <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-                                {company.invoicePrefix}
+                                {company?.invoicePrefix}
                               </span>
                             </div>
                           </td>
-                          <td className="px-8 py-5 align-middle text-muted-foreground font-semibold">
-                            {company.registrationNumber}
+                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground font-semibold hidden md:table-cell whitespace-nowrap">
+                            {company?.registrationNumber}
                           </td>
-                          <td className="px-8 py-5 align-middle">
-                            <div className="flex flex-col gap-0.5">
+                          <td className="px-4 md:px-8 py-5 align-middle hidden lg:table-cell">
+                            <div className="flex flex-col gap-0.5 whitespace-nowrap">
                               <span className="text-foreground">
-                                {company.vatNumber}
+                                {company?.vatNumber}
                               </span>
                               <span
-                                className={`text-[9px] uppercase font-bold tracking-widest ${company.vatRegistered ? "text-primary" : "text-slate-500"}`}>
-                                {company.vatRegistered
+                                className={`text-[9px] uppercase font-bold tracking-widest ${company?.vatRegistered ? "text-primary" : "text-slate-500"}`}>
+                                {company?.vatRegistered
                                   ? "Registered"
                                   : "Not Registered"}
                               </span>
                             </div>
                           </td>
-                          <td className="px-8 py-5 align-middle">
-                            <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                              {company.adminEmail}
+                          <td className="px-4 md:px-8 py-5 align-middle hidden sm:table-cell">
+                            <code className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
+                              {company?.adminEmail}
                             </code>
                           </td>
                           {isSuperAdmin && (
-                            <td className="px-8 py-5 align-middle text-right">
+                            <td
+                              className="px-4 md:px-8 py-5 align-middle text-right border-l border-border/10!"
+                              onClick={(e) => e.stopPropagation()}>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 rounded-full hover:bg-slate-100"
-                                  >
+                                    className="h-8 w-8 rounded-full hover:bg-slate-100">
                                     <MoreVertical className="h-4 w-4 text-slate-600" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-44 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="w-44 rounded-xl border-border bg-white p-1.5 shadow-xl">
                                   <DropdownMenuItem
                                     className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                    asChild
-                                  >
-                                    <Link href={ROUTES_PATH.COMPANIES.EDIT(company._id)}>
+                                    asChild>
+                                    <Link
+                                      href={ROUTES_PATH.COMPANIES.EDIT(
+                                        company?._id,
+                                      )}>
                                       <Pencil className="h-4 w-4 text-slate-500" />
                                       Edit Company
                                     </Link>
@@ -211,11 +225,10 @@ export function CompanyList() {
                                     className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
                                     onClick={() =>
                                       handleDeleteClick({
-                                        id: company._id,
-                                        name: company.name,
+                                        id: company?._id,
+                                        name: company?.name,
                                       })
-                                    }
-                                  >
+                                    }>
                                     <Trash2 className="h-4 w-4" />
                                     Delete Company
                                   </DropdownMenuItem>
@@ -230,9 +243,9 @@ export function CompanyList() {
                 </div>
               ) : (
                 <div className="p-4 sm:p-12 bg-slate-50/30 flex flex-col items-center">
-                  {filteredCompanies.map((company) => (
+                  {filteredCompanies?.map((company) => (
                     <div
-                      key={company._id}
+                      key={company?._id}
                       className="w-full max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                       {/* Hero Section */}
                       <Card className="relative overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.08)] bg-white rounded-[2.5rem]">
@@ -244,19 +257,19 @@ export function CompanyList() {
                                 Company Profile
                               </div>
                               <h2 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                                {company.name}
+                                {company?.name}
                               </h2>
                               <div className="flex flex-wrap gap-4 items-center text-slate-500 font-bold">
                                 <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl">
                                   <Hash className="h-4 w-4 text-primary" />
                                   <span className="text-sm">
-                                    Prefix: {company.invoicePrefix}
+                                    Prefix: {company?.invoicePrefix}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl">
                                   <Mail className="h-4 w-4 text-primary" />
                                   <span className="text-sm">
-                                    {company.adminEmail}
+                                    {company?.adminEmail}
                                   </span>
                                 </div>
                               </div>
@@ -282,7 +295,7 @@ export function CompanyList() {
                                 Registration Number
                               </p>
                               <p className="text-lg font-bold text-slate-800">
-                                {company.registrationNumber}
+                                {company?.registrationNumber}
                               </p>
                             </div>
                             <div className="space-y-1.5 pt-4 border-t border-slate-50">
@@ -291,11 +304,11 @@ export function CompanyList() {
                               </p>
                               <div className="flex items-center justify-between">
                                 <p className="text-lg font-bold text-slate-800">
-                                  {company.vatNumber}
+                                  {company?.vatNumber}
                                 </p>
                                 <span
-                                  className={`text-[10px] uppercase font-black tracking-widest px-4 py-1.5 rounded-full ${company.vatRegistered ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
-                                  {company.vatRegistered
+                                  className={`text-[10px] uppercase font-black tracking-widest px-4 py-1.5 rounded-full ${company?.vatRegistered ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                                  {company?.vatRegistered
                                     ? "Registered"
                                     : "Not Registered"}
                                 </span>
@@ -321,7 +334,7 @@ export function CompanyList() {
                                   Bank Name
                                 </p>
                                 <p className="font-bold text-slate-800">
-                                  {company.bankName || "Not Provided"}
+                                  {company?.bankName || "Not Provided"}
                                 </p>
                               </div>
                             </div>
@@ -334,7 +347,7 @@ export function CompanyList() {
                                   Account Number
                                 </p>
                                 <p className="font-bold text-slate-800 tracking-[0.1em]">
-                                  {company.bankAccountNumber ||
+                                  {company?.bankAccountNumber ||
                                     "•••• •••• ••••"}
                                 </p>
                               </div>
@@ -348,7 +361,7 @@ export function CompanyList() {
                                   Sort Code / Swift / BIC
                                 </p>
                                 <p className="font-bold text-slate-800 uppercase">
-                                  {company.bankCode || "Not Provided"}
+                                  {company?.bankCode || "Not Provided"}
                                 </p>
                               </div>
                             </div>

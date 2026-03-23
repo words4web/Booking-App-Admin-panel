@@ -96,7 +96,7 @@ export function Overview() {
     <div className="space-y-12 pb-12">
       <div className="flex flex-col gap-2 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <h1 className="text-5xl font-black tracking-tighter lg:text-6xl text-foreground">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-foreground">
           DivineGo <span className="text-primary">Dashboard</span>
         </h1>
         {/* <p className="text-xl text-muted-foreground font-medium max-w-2xl">
@@ -114,7 +114,7 @@ export function Overview() {
           <div className="h-px flex-1 bg-primary/10" />
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-2">
           {quickActions.map((action, idx) => {
             const Icon = action.icon;
             // Use a slightly lighter version of the provided color for the icon background if it's primary
@@ -132,21 +132,21 @@ export function Overview() {
                     className={`absolute -bottom-10 -right-10 w-40 h-40 rounded-full ${action.color} opacity-[0.02] group-hover:opacity-[0.08] group-hover:scale-150 transition-all duration-1000 blur-2xl`}
                   />
 
-                  <CardContent className="p-12 flex items-center gap-10 relative z-10">
+                  <CardContent className="p-5 sm:p-8 md:p-10 lg:p-12 flex items-center gap-4 sm:gap-6 md:gap-10 relative z-10">
                     <div
-                      className={`p-7 rounded-[2.5rem] ${iconBg} text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] group-hover:shadow-[0_25px_50px_-12px_rgba(60,10,80,0.4)] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 flex-shrink-0`}>
-                      <Icon className="h-14 w-14 stroke-[1.5]" />
+                      className={`p-4 sm:p-5 md:p-7 rounded-2xl sm:rounded-3xl md:rounded-[2.5rem] ${iconBg} text-white shadow-[0_10px_20px_-5px_rgba(0,0,0,0.3)] md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] group-hover:shadow-[0_25px_50px_-12px_rgba(60,10,80,0.4)] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 flex-shrink-0`}>
+                      <Icon className="h-6 w-6 sm:h-10 sm:w-10 md:h-14 md:w-14 stroke-[1.5]" />
                     </div>
-                    <div className="flex-1 space-y-3 text-left">
+                    <div className="flex-1 space-y-1 sm:space-y-3 text-left min-w-0">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-extrabold text-3xl tracking-tight text-foreground group-hover:text-primary transition-colors duration-500">
+                        <h3 className="font-extrabold text-xl sm:text-2xl md:text-3xl tracking-tight text-foreground group-hover:text-primary transition-colors duration-500 truncate">
                           {action.title}
                         </h3>
-                        <div className="p-2 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-all -translate-x-6 group-hover:translate-x-0 duration-700">
-                          <ArrowRight className="h-7 w-7 text-primary" />
+                        <div className="p-1.5 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0 duration-700 hidden sm:block">
+                          <ArrowRight className="h-5 w-5 sm:h-7 sm:w-7 text-primary" />
                         </div>
                       </div>
-                      <p className="text-muted-foreground text-base font-medium leading-relaxed group-hover:text-foreground/70 transition-colors duration-500">
+                      <p className="text-muted-foreground text-xs sm:text-sm md:text-base font-medium leading-relaxed group-hover:text-foreground/70 transition-colors duration-500 line-clamp-2">
                         {action.description}
                       </p>
                     </div>
