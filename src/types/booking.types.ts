@@ -54,8 +54,8 @@ export interface Booking {
   clientId: {
     _id: string;
     contactInfo?: {
-      firstName: string;
-      lastName: string;
+      firstName?: string;
+      lastName?: string;
       email: string;
       phone: string;
     };

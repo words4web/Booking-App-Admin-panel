@@ -19,8 +19,7 @@ export interface Driver {
     backImage: DocumentType;
   };
   passport: {
-    bioDataPage: DocumentType;
-    signaturePage: DocumentType;
+    passportImage: DocumentType;
   };
   isDeleted?: boolean;
   deletedAt?: string | null;

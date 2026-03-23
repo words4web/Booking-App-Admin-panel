@@ -12,7 +12,6 @@ import {
   Booking,
 } from "@/src/types/booking.types";
 import { ServiceType } from "@/src/enums/booking.enum";
-import { useAllClientsQuery } from "@/src/services/clientManager/useClientQueries";
 import { useAllProductsQuery } from "@/src/services/productManager/useProductQueries";
 import { useAllDriversQuery } from "@/src/services/driverManager/useDriverQueries";
 import { useVehiclesQuery } from "@/src/services/vehicleManager/useVehicleQueries";
@@ -21,7 +20,7 @@ import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQu
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Package, Truck } from "lucide-react";
+import { Calendar, Car, MapPin, Package } from "lucide-react";
 
 // Import tab components
 import { DetailsTab } from "./tabs/DetailsTab";
@@ -30,24 +29,24 @@ import { ProductsTab } from "./tabs/ProductsTab";
 import { AssignmentTab } from "./tabs/AssignmentTab";
 import { CompletionReviewTab } from "./tabs/CompletionReviewTab";
 import { BookingStatus } from "@/src/enums/booking.enum";
-import { ClipboardCheck, Loader2 } from "lucide-react";
-import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
+import { ClipboardCheck, ArrowLeft, ArrowRight } from "lucide-react";
 
 const tabClassName =
-  "rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm";
+  "flex-1 rounded-xl font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:bg-primary/10 transition-colors text-sm md:text-base py-2.5";
 interface BookingFormProps {
   initialData?: Booking;
   onSubmit: (values: BookingFormData) => void;
   isLoading?: boolean;
+  initialTab?: string;
 }
 
 export function BookingForm({
   initialData,
   onSubmit,
   isLoading,
+  initialTab = "details",
 }: BookingFormProps) {
-  const [activeTab, setActiveTab] = useState("details");
-  const [isInvoiceLoading, setIsInvoiceLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const router = useRouter();
 
@@ -71,11 +70,18 @@ export function BookingForm({
       serviceType: initialData?.serviceType || ServiceType.RMC,
       scheduledDateTime: initialData?.scheduledDateTime || "",
       pickupLocation: {
-        addressLine1: initialData?.pickupLocation?.addressLine1 || "",
+        addressLine1:
+          initialData?.pickupLocation?.addressLine1 ||
+          (!initialData ? "Rkb house" : ""),
         addressLine2: initialData?.pickupLocation?.addressLine2 || "",
-        city: initialData?.pickupLocation?.city || "",
-        county: initialData?.pickupLocation?.county || "",
-        postcode: initialData?.pickupLocation?.postcode || "",
+        city:
+          initialData?.pickupLocation?.city ||
+          (!initialData ? "Gravesend" : ""),
+        county:
+          initialData?.pickupLocation?.county || (!initialData ? "kent" : ""),
+        postcode:
+          initialData?.pickupLocation?.postcode ||
+          (!initialData ? "DA12 2RU" : ""),
         country: initialData?.pickupLocation?.country || "United Kingdom",
       },
       dropLocation: {
@@ -110,15 +116,17 @@ export function BookingForm({
     },
     validationSchema: toFormikValidationSchema(BookingSchema),
     onSubmit: (values) => {
-      onSubmit(values);
+      const sanitized = {
+        ...values,
+        assignedDriverId: values.assignedDriverId || null,
+        vehicleId: values.vehicleId || null,
+      };
+      // @ts-ignore Let Formik pass sanitized values.
+      onSubmit(sanitized);
     },
   });
 
-  // Client filtering based on company
-  const { data: filteredClientsData } = useAllClientsQuery({
-    companyId: formik.values.companyId,
-  });
-  const filteredClients = filteredClientsData?.clients || [];
+  // Clients are now fetched asynchronously inside DetailsTab
 
   const { data: productsData } = useAllProductsQuery({ getAll: true });
   const { data: driversData } = useAllDriversQuery(1, 200);
@@ -230,30 +238,39 @@ export function BookingForm({
     formik.setFieldValue("products", newProducts);
   };
 
-  const handleInvoiceClick = async () => {
-    if (!initialData?._id) return;
+  const scheduledDate = formik.values.scheduledDateTime
+    ? new Date(formik.values.scheduledDateTime).getTime()
+    : 0;
+  const now = new Date().getTime();
+  const timeDiffHours = scheduledDate
+    ? (scheduledDate - now) / (1000 * 60 * 60)
+    : 0;
+  const isWithin24Hours = scheduledDate ? timeDiffHours <= 24 : false;
 
-    try {
-      setIsInvoiceLoading(true);
-      const invoicesResponse = await InvoiceService.getAll({
-        bookingId: initialData._id,
-      });
+  const TABS = ["details", "locations", "products"];
+  if (isWithin24Hours) {
+    TABS.push("driver");
+  }
 
-      if (invoicesResponse.invoices && invoicesResponse.invoices.length > 0) {
-        // Invoice exists, go to edit
-        router.push(
-          ROUTES_PATH.INVOICES.EDIT(invoicesResponse.invoices[0]._id),
-        );
-      } else {
-        // No invoice, go to create
-        router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(initialData._id));
-      }
-    } catch (error) {
-      console.error("Failed to check existing invoices:", error);
-      // Fallback to new
-      router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(initialData._id));
-    } finally {
-      setIsInvoiceLoading(false);
+  if (
+    initialData?.status === BookingStatus.JOB_SUBMITTED ||
+    initialData?.status === BookingStatus.JOB_REJECTED ||
+    initialData?.status === BookingStatus.COMPLETED
+  ) {
+    TABS.push("review");
+  }
+
+  const currentIndex = TABS.indexOf(activeTab);
+
+  const handleNext = () => {
+    if (currentIndex < TABS.length - 1) {
+      setActiveTab(TABS[currentIndex + 1]);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentIndex > 0) {
+      setActiveTab(TABS[currentIndex - 1]);
     }
   };
 
@@ -261,7 +278,7 @@ export function BookingForm({
     <form
       onSubmit={formik.handleSubmit}
       className="space-y-6 max-w-5xl mx-auto pb-20">
-      <div className="flex items-center justify-between bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+      <div className="flex items-center justify-between bg-white p-6 py-2 rounded-2xl border border-slate-200 shadow-sm mb-2!">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
             {initialData ? "Edit Booking" : "Create New Booking"}
@@ -270,60 +287,24 @@ export function BookingForm({
             Setup job details, locations, and pricing.
           </p>
         </div>
-        <div className="flex gap-3">
-          {initialData && (
-            <Button
-              type="button"
-              onClick={handleInvoiceClick}
-              disabled={isInvoiceLoading}
-              className="rounded-xl px-6 h-11 font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 gap-2">
-              {isInvoiceLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <ClipboardCheck className="h-5 w-5" />
-              )}
-              {isInvoiceLoading ? "Checking..." : "Create Invoice"}
-            </Button>
-          )}
-          {!initialData ||
-          initialData?.status === BookingStatus.SCHEDULED ||
-          initialData?.status === BookingStatus.ACCEPTED ? (
-            <>
-              <Button
-                type="button"
-                variant="outline"
-                className="rounded-xl px-6 h-11 font-bold"
-                onClick={() => window.history.back()}>
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleConfirmClick}
-                disabled={isLoading}
-                className="rounded-xl px-8 h-11 font-bold shadow-lg shadow-primary/20">
-                {isLoading
-                  ? "Saving..."
-                  : initialData
-                    ? "Update Booking"
-                    : "Confirm Booking"}
-              </Button>
-            </>
-          ) : (
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-xl px-6 h-11 font-bold"
-              onClick={() => window.history.back()}>
-              Back
-            </Button>
-          )}
-        </div>
+        <Button
+          type="button"
+          onClick={() => router.push(ROUTES_PATH.BOOKINGS.BASE)}
+          variant="outline"
+          className="rounded-xl px-6 h-11 font-bold">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to List
+        </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="overflow-x-auto whitespace-nowrap scrollbar-hide mb-8">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full"
+        style={{ marginTop: "2px" }}>
+        <div className="overflow-x-auto whitespace-nowrap scrollbar-hide mb-2!">
           <TabsList
-            className={`inline-flex min-w-max w-full sm:w-auto h-14 p-1 bg-slate-100 rounded-2xl`}>
+            className={`flex min-w-max w-full h-16 p-1.5 bg-slate-100 rounded-2xl pointer-events-none`}>
             <TabsTrigger value="details" className={tabClassName}>
               <Calendar className="h-4 w-4 mr-2" /> Details
             </TabsTrigger>
@@ -333,9 +314,11 @@ export function BookingForm({
             <TabsTrigger value="products" className={tabClassName}>
               <Package className="h-4 w-4 mr-2" /> Products
             </TabsTrigger>
-            <TabsTrigger value="driver" className={tabClassName}>
-              <Truck className="h-4 w-4 mr-2" /> Assignment
-            </TabsTrigger>
+            {TABS.includes("driver") && (
+              <TabsTrigger value="driver" className={tabClassName}>
+                <Car className="h-4 w-4 mr-2" /> Assignment
+              </TabsTrigger>
+            )}
             {(initialData?.status === BookingStatus.JOB_SUBMITTED ||
               initialData?.status === BookingStatus.JOB_REJECTED ||
               initialData?.status === BookingStatus.COMPLETED) && (
@@ -346,12 +329,48 @@ export function BookingForm({
           </TabsList>
         </div>
 
+        <div className="flex justify-between items-center bg-white p-6 py-3 rounded-2xl border-2 border-slate-100 mt-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleBack}
+            className={`rounded-xl px-6 h-11 font-bold text-primary hover:text-primary/90 hover:bg-primary/10 transition-colors ${currentIndex === 0 ? "invisible" : ""}`}>
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back
+          </Button>
+
+          <div className="flex gap-4 items-center">
+            {currentIndex < TABS.length - 1 && (
+              <Button
+                type="button"
+                onClick={handleNext}
+                className="rounded-xl px-8 h-11 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
+                Next Step <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+
+            {(activeTab === "driver" ||
+              (activeTab === "products" && !TABS.includes("driver"))) && (
+              <Button
+                type="button"
+                onClick={handleConfirmClick}
+                disabled={isLoading}
+                className="rounded-xl px-8 h-11 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
+                {isLoading
+                  ? "Saving..."
+                  : initialData
+                    ? "Save"
+                    : "Create Booking"}
+              </Button>
+            )}
+          </div>
+        </div>
+
         <Card className="border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden">
           <CardContent className="p-8">
             {activeTab === "details" && (
               <DetailsTab
                 formik={formik}
-                clients={filteredClients}
+                initialClient={initialData?.clientId}
                 getFieldError={getFieldError}
                 companies={companies}
                 userRole={user?.role}
@@ -370,7 +389,7 @@ export function BookingForm({
                 getFieldError={getFieldError}
               />
             )}
-            {activeTab === "driver" && (
+            {activeTab === "driver" && TABS.includes("driver") && (
               <AssignmentTab
                 formik={formik}
                 drivers={drivers}

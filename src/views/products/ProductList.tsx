@@ -1,7 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Pencil, Trash2, Filter, Package, MoreVertical } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Filter,
+  Package,
+  MoreVertical,
+  Search,
+  Info,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { Button } from "@/components/ui/button";
@@ -39,14 +50,26 @@ export function ProductList() {
   } | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const router = useRouter();
 
   const { user } = useAuth();
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Fetch products with optional company filter
   const { data: productsData, isLoading: isProductsLoading } =
     useAllProductsQuery({
       companyId: selectedCompanyId === "all" ? undefined : selectedCompanyId,
+      search: debouncedSearch,
       page,
       limit: PAGINATION_LIMIT,
     });
@@ -79,10 +102,6 @@ export function ProductList() {
     }
   };
 
-  if (isProductsLoading) {
-    return <CommonLoader />;
-  }
-
   return (
     <div className="space-y-8 pb-12">
       <div className="flex flex-col gap-6 relative">
@@ -96,7 +115,33 @@ export function ProductList() {
               Manage items and services for billing
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1 md:justify-end">
+            <div className="flex flex-1 gap-2 sm:max-w-md">
+              <div className="relative flex-1 text-nowrap">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-12 pl-10 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
+              <div className="relative leading-none group">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-xl bg-white border-border shadow-sm hover:bg-slate-50 transition-all text-muted-foreground hover:text-primary">
+                  <Info className="h-5 w-5" />
+                </Button>
+                <div className="absolute right-0 top-full mt-3 w-64 p-4 bg-white border border-border shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-2xl z-[100] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                  <p className="text-xs font-semibold text-slate-800 leading-relaxed whitespace-normal text-wrap">
+                    Search your products using their{" "}
+                    <span className="text-primary">Name</span>.
+                  </p>
+                  <div className="absolute -top-1.5 right-5 w-3 h-3 bg-white border-t border-l border-border rotate-45" />
+                </div>
+              </div>
+            </div>
             {isSuperAdmin && (
               <div className="w-[200px]">
                 <Select
@@ -144,7 +189,12 @@ export function ProductList() {
             Product Inventory
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 relative">
+          {isProductsLoading && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[2px] rounded-b-2xl transition-all duration-300">
+              <CommonLoader fullScreen={false} message="Updating Results..." />
+            </div>
+          )}
           {!products || products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
@@ -179,7 +229,7 @@ export function ProductList() {
                           Company
                         </th>
                       )}
-                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-8 text-right align-middle font-bold text-xs uppercase tracking-widest">
                         Actions
                       </th>
                     </tr>
@@ -188,7 +238,10 @@ export function ProductList() {
                     {products.map((product: Product) => (
                       <tr
                         key={product._id}
-                        className="transition-all hover:bg-slate-50 cursor-default">
+                        onClick={() =>
+                          router.push(ROUTES_PATH.PRODUCTS.EDIT(product._id))
+                        }
+                        className="transition-all hover:bg-slate-50 cursor-pointer group">
                         <td className="px-8 py-6 align-middle">
                           <span className="font-bold text-foreground block">
                             {product.name}
@@ -219,17 +272,19 @@ export function ProductList() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-full hover:bg-slate-100"
-                              >
+                                onClick={(e) => e.stopPropagation()}
+                                className="h-8 w-8 rounded-full hover:bg-slate-200">
                                 <MoreVertical className="h-4 w-4 text-slate-600" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-40 rounded-xl border-border bg-white p-1.5 shadow-xl">
                               <DropdownMenuItem
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
-                                asChild
-                              >
-                                <Link href={ROUTES_PATH.PRODUCTS.EDIT(product._id)}>
+                                asChild>
+                                <Link
+                                  href={ROUTES_PATH.PRODUCTS.EDIT(product._id)}>
                                   <Pencil className="h-4 w-4 text-slate-500" />
                                   Edit Product
                                 </Link>
@@ -237,8 +292,7 @@ export function ProductList() {
 
                               <DropdownMenuItem
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
-                                onClick={() => handleDeleteClick(product)}
-                              >
+                                onClick={() => handleDeleteClick(product)}>
                                 <Trash2 className="h-4 w-4" />
                                 Delete Product
                               </DropdownMenuItem>

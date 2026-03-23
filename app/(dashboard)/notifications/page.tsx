@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useNotificationsQuery,
   useMarkAllReadMutation,
@@ -24,6 +25,16 @@ export default function NotificationsPage() {
   const { data, isLoading } = useNotificationsQuery(page);
   const markAllRead = useMarkAllReadMutation();
   const markRead = useMarkReadMutation();
+  const router = useRouter();
+
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification?.isRead) {
+      markRead.mutate(notification?._id);
+    }
+    if (notification?.metadata?.url) {
+      router.push(notification.metadata.url);
+    }
+  };
 
   if (isLoading) {
     return <CommonLoader message="Loading notifications..." />;
@@ -45,7 +56,7 @@ export default function NotificationsPage() {
             Stay updated with the latest activities.
           </p>
         </div>
-        {notifications.some((n) => !n.isRead) && (
+        {notifications?.some((n) => !n?.isRead) && (
           <Button
             onClick={() => markAllRead.mutate()}
             disabled={markAllRead.isPending}
@@ -59,7 +70,7 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      {notifications.length === 0 ? (
+      {notifications?.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-16 border border-dashed rounded-2xl bg-slate-50 shadow-sm border-slate-200">
           <div className="h-20 w-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 shadow-inner pointer-events-none">
             <BellOff className="h-10 w-10 text-slate-300" />
@@ -73,21 +84,19 @@ export default function NotificationsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {notifications.map((notification) => (
+          {notifications?.map((notification) => (
             <div
-              key={notification._id}
-              onClick={() =>
-                !notification.isRead && markRead.mutate(notification._id)
-              }
+              key={notification?._id}
+              onClick={() => handleNotificationClick(notification)}
               className={`p-4 sm:p-6 rounded-2xl border transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md ${
-                notification.isRead
+                notification?.isRead
                   ? "bg-white border-slate-100"
                   : "bg-primary/5 border-primary/20 hover:bg-primary/10"
               }`}>
               <div className="flex gap-4 sm:gap-5">
                 <div
                   className={`mt-1 h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner ${
-                    notification.isRead
+                    notification?.isRead
                       ? "bg-slate-100 text-slate-400"
                       : "bg-primary text-primary-foreground shadow-primary/20"
                   }`}>
@@ -97,29 +106,29 @@ export default function NotificationsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1.5 sm:mb-2 gap-1.5 sm:gap-2">
                     <h3
                       className={`text-base sm:text-lg font-bold tracking-tight transition-colors leading-tight ${
-                        notification.isRead
+                        notification?.isRead
                           ? "text-slate-700"
                           : "text-slate-900"
                       }`}>
-                      {notification.title}
+                      {notification?.title}
                     </h3>
-                    <span className="text-[10px] sm:text-xs font-bold whitespace-nowrap bg-slate-100 px-3 py-1 rounded-full w-fit text-red-600">
+                    <span className="text-[10px] sm:text-xs font-bold whitespace-nowrap bg-slate-100 px-3 py-1 rounded-full w-fit text-primary">
                       {format(
-                        new Date(notification.createdAt),
+                        new Date(notification?.createdAt),
                         "MMM d, h:mm a",
                       )}
                     </span>
                   </div>
                   <p
                     className={`text-sm leading-relaxed ${
-                      notification.isRead
+                      notification?.isRead
                         ? "text-slate-500"
                         : "text-slate-700 font-medium"
                     }`}>
-                    {notification.body}
+                    {notification?.body}
                   </p>
                 </div>
-                {!notification.isRead && (
+                {!notification?.isRead && (
                   <div className="h-3 w-3 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_10px_rgba(var(--primary),0.5)] border-2 border-white ring-2 ring-primary/20" />
                 )}
               </div>

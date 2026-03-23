@@ -16,10 +16,14 @@ export const clientKeys = {
   detail: (id: string) => [...clientKeys.details(), id] as const,
 };
 
-export function useAllClientsQuery(filters: ClientFilters = {}) {
+export function useAllClientsQuery(
+  filters: ClientFilters = {},
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: clientKeys.list(filters),
     queryFn: () => ClientService.getAll(filters),
+    ...options,
   });
 }
 
