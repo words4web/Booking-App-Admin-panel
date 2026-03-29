@@ -20,17 +20,10 @@ export default function NotificationListener() {
 
     const setupListener = async () => {
       unsubscribe = await listenToForegroundMessages((payload) => {
-        console.log("Full FCM Payload:", JSON.stringify(payload, null, 2));
-
-        // ALWAYS invalidate notifications list and unread count
-        console.log("Invalidating notification queries...");
         queryClient.invalidateQueries({ queryKey: notificationKeys.all });
 
-        // Context-aware invalidation
-        // FCM might put data in different places depending on how it's sent
         const data = payload.data || payload.additionalData || {};
         const type = data.type;
-        console.log("Extracted Type:", type);
 
         // List of booking related events
         const bookingEvents = [
@@ -44,9 +37,7 @@ export default function NotificationListener() {
         ];
 
         if (type && bookingEvents.includes(type)) {
-          console.log(`Event [${type}] received. Invalidating bookings...`);
           queryClient.invalidateQueries({ queryKey: ["bookings"] });
-          // Also invalidate specific booking if needed? Usually list is enough
         }
 
         // List of driver related events
@@ -54,14 +45,13 @@ export default function NotificationListener() {
           "driver_signup",
           "admin_new_driver",
           "driver_verified",
-          "driver_updated",
           "driver_document_approved",
           "driver_document_rejected",
           "admin_document_upload",
+          "admin_driver_account_deleted",
         ];
 
         if (type && driverEvents.includes(type)) {
-          console.log(`Event [${type}] received. Invalidating drivers...`);
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
         }
 
@@ -69,7 +59,6 @@ export default function NotificationListener() {
         const invoiceEvents = ["invoice_email_sent", "invoice_email_failed"];
 
         if (type && invoiceEvents.includes(type)) {
-          console.log(`Event [${type}] received. Invalidating invoices...`);
           queryClient.invalidateQueries({ queryKey: ["invoices"] });
         }
       });

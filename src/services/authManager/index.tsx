@@ -76,12 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const profileRes = await AuthService.getProfile();
           if (profileRes?.success && profileRes?.data.user) {
             setUser(profileRes.data.user);
+            setIsUserLoading(false);
             return;
           }
         }
       } catch (refreshErr) {
         // Refresh failed, probably no valid cookie
-        console.error("Session recovery failed:", refreshErr);
         removeLocalStorageItem(SESSION_ACTIVE);
       }
       setIsUserLoading(false);

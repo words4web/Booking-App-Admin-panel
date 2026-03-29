@@ -32,7 +32,6 @@ let failedQueue: any[] = [];
 
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
-    console.log("prom => ", prom);
     if (error) {
       prom.reject(error);
     } else {

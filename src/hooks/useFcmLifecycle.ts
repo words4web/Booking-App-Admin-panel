@@ -24,7 +24,6 @@ export const useFcmLifecycle = (user: any) => {
   const { mutate: removeDevice } = useRemoveDeviceMutation();
 
   useEffect(() => {
-    console.log("[FCM] User context active:", user?._id);
     if (!user) return;
 
     const performSync = async () => {
@@ -35,13 +34,9 @@ export const useFcmLifecycle = (user: any) => {
           // Clear token locally and on backend if permission is denied or reset
           const localToken = localStorage.getItem(FCM_TOKEN);
           if (localToken) {
-            console.log(
-              "[FCM] Permission not granted. Removing from backend...",
-            );
             removeDevice(localToken, {
               onSuccess: () => {
                 localStorage.removeItem(FCM_TOKEN);
-                console.log("[FCM] Local token cleared.");
               },
             });
           }
@@ -72,14 +67,11 @@ export const useFcmLifecycle = (user: any) => {
             {
               onSuccess: () => {
                 localStorage.setItem(FCM_TOKEN, currentToken);
-                console.log("[FCM] Token synced with backend.");
               },
             },
           );
         }
-      } catch (err) {
-        console.error("[FCM] Token sync failed:", err);
-      }
+      } catch (err) {}
     };
 
     // 1. Sync immediately on mount
@@ -97,18 +89,13 @@ export const useFcmLifecycle = (user: any) => {
     let permissionStatus: PermissionStatus | undefined;
     const handlePermissionChange = () => {
       if (Notification.permission === "granted") {
-        console.log("[FCM] Permission granted via settings. Syncing...");
         performSync();
       } else {
         const localToken = localStorage.getItem(FCM_TOKEN);
         if (localToken) {
-          console.log(
-            "[FCM] Permission denied/reset. Removing from backend...",
-          );
           removeDevice(localToken, {
             onSuccess: () => {
               localStorage.removeItem(FCM_TOKEN);
-              console.log("[FCM] Local token cleared.");
             },
           });
         }

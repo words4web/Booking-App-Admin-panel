@@ -137,7 +137,6 @@ export function BookingList() {
         router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(bookingId));
       }
     } catch (error) {
-      console.error("Failed to check existing invoices:", error);
       // Fallback to new
       router.push(ROUTES_PATH.INVOICES.NEW_WITH_BOOKING(bookingId));
     } finally {
@@ -276,12 +275,19 @@ export function BookingList() {
                       <th className={tableHeaderCss}>Booking ID</th>
                       <th className={tableHeaderCss}>Client</th>
                       {isSuperAdmin && (
-                        <th className={`${tableHeaderCss} hidden lg:table-cell`}>Company</th>
+                        <th
+                          className={`${tableHeaderCss} hidden lg:table-cell`}>
+                          Company
+                        </th>
                       )}
                       <th className={tableHeaderCss}>Scheduled</th>
                       <th className={tableHeaderCss}>Status</th>
-                      <th className={`${tableHeaderCss} hidden md:table-cell`}>Driver</th>
-                      <th className={`${tableHeaderCss} text-right`}>Actions</th>
+                      <th className={`${tableHeaderCss} hidden md:table-cell`}>
+                        Driver
+                      </th>
+                      <th className={`${tableHeaderCss} text-right`}>
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/30">

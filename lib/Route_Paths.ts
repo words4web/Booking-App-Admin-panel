@@ -51,6 +51,7 @@ const ROUTES_PATH = {
     VIEW: (vehicleId: string) => `/vehicles/${vehicleId}`,
   },
   CMS: "/cms",
+  ACCOUNT_DELETION_REQUESTS: "/account-deletion-requests",
 };
 
 export default ROUTES_PATH;
