@@ -2,7 +2,9 @@ import API_ENDPOINTS from "@/lib/Api_Endpoints";
 import api from "../../lib/axios";
 import {
   AllDriversResponse,
+  DeletedDriversResponse,
   DriverDetailsResponse,
+  ReviewDeletionResponse,
   VerifyDocumentResponse,
 } from "../../types/driver.types";
 import { ApiResponse } from "../../types/api.types";
@@ -45,6 +47,22 @@ export const DriverService = {
   },
   deleteDriver: async (id: string): Promise<ApiResponse<void>> => {
     const response = await api.delete(API_ENDPOINTS.DRIVERS.DELETE(id));
+    return response.data;
+  },
+
+  getDeletedByUsers: async (): Promise<ApiResponse<DeletedDriversResponse>> => {
+    const response = await api.get(API_ENDPOINTS.DRIVERS.GET_DELETED_BY_USERS);
+    return response.data;
+  },
+
+  reviewDeletion: async (
+    id: string,
+    status: "approved" | "rejected",
+  ): Promise<ApiResponse<ReviewDeletionResponse>> => {
+    const response = await api.patch(
+      API_ENDPOINTS.DRIVERS.REVIEW_DELETION(id),
+      { status },
+    );
     return response.data;
   },
 };

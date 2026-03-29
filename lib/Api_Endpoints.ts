@@ -9,10 +9,13 @@ const API_ENDPOINTS = {
   },
   DRIVERS: {
     GET_ALL_DRIVERS: `${Admin_Base}/drivers`,
+    GET_DELETED_BY_USERS: `${Admin_Base}/drivers/deleted-by-users`,
     GET_DRIVER_DETAILS: (driverId: string) =>
       `${Admin_Base}/drivers/${driverId}`,
     VERIFY_DOCUMENT: (driverId: string) =>
       `${Admin_Base}/drivers/${driverId}/verify-document`,
+    REVIEW_DELETION: (driverId: string) =>
+      `${Admin_Base}/drivers/${driverId}/review-deletion`,
     DELETE: (driverId: string) => `${Admin_Base}/drivers/${driverId}`,
   },
   COMPANIES: {
