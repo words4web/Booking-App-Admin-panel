@@ -8,6 +8,7 @@ export const driverKeys = {
   list: (page: number, limit: number) =>
     [...driverKeys.all, "list", { page, limit }] as const,
   detail: (id: string) => [...driverKeys.all, "detail", id] as const,
+  deletedByUsers: [...["drivers"], "deleted-by-users"] as const,
 };
 
 export function useAllDriversQuery(page = 1, limit = 10) {
@@ -67,6 +68,42 @@ export function useDeleteDriverMutation() {
       const message =
         error.response?.data?.message ||
         "Failed to delete driver. Please try again.";
+      toast.error(message);
+    },
+  });
+}
+
+export function useDeletedByUsersQuery() {
+  return useQuery({
+    queryKey: driverKeys.deletedByUsers,
+    queryFn: () => DriverService.getDeletedByUsers(),
+    select: (data) => data.data.drivers,
+  });
+}
+
+export function useReviewDeletionMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: "approved" | "rejected";
+    }) => DriverService.reviewDeletion(id, status),
+    onSuccess: (_data, variables) => {
+      const msg =
+        variables.status === "approved"
+          ? "Account deletion approved. Documents have been wiped."
+          : "Account deletion rejected. Driver account has been restored.";
+      toast.success(msg);
+      queryClient.invalidateQueries({ queryKey: driverKeys.deletedByUsers });
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      const message =
+        error.response?.data?.message ||
+        "Failed to process request. Please try again.";
       toast.error(message);
     },
   });

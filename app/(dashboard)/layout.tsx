@@ -27,8 +27,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleForbidden = () => setIsForbidden(true);
-    window.addEventListener("forbidden-error", (err) => {
-      console.log("addEventListener => ", err);
+    window.addEventListener("forbidden-error", () => {
       handleForbidden();
     });
     return () => window.removeEventListener("forbidden-error", handleForbidden);

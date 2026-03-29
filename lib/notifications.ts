@@ -9,7 +9,6 @@ export const requestNotificationPermission = async () => {
 
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
-    console.log("Notification permission denied");
     return null;
   }
 
@@ -27,7 +26,6 @@ export const requestNotificationPermission = async () => {
     });
     return token;
   } catch (error) {
-    console.error("Error getting notification token:", error);
     return null;
   }
 };
@@ -38,17 +36,10 @@ export const listenToForegroundMessages = async (
   const messaging = await getFirebaseMessaging();
   if (!messaging) return;
 
-  console.log("Setting up foreground message listener...");
-
   return onMessage(messaging, (payload) => {
-    console.log("FCM Payload Received in lib/notifications.ts:", payload);
-
     // Deduplicate notifications based on messageId
     const messageId = (payload as any).messageId;
     if (messageId && messageId === lastMessageId) {
-      console.log(
-        "Duplicate notification detected via messageId, skipping UI.",
-      );
       return;
     }
     if (messageId) {
@@ -71,7 +62,6 @@ export const listenToForegroundMessages = async (
 
     // 3. Execute callback
     if (callback) {
-      console.log("Executing NotificationListener callback...");
       callback(payload);
     }
   });

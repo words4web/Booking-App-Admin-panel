@@ -50,7 +50,6 @@ export function InvoicePDFModal({
         setPdfUrl(objectUrl);
       } catch (error) {
         if (!cancelled) {
-          console.error("Failed to fetch PDF preview:", error);
           toast.error("Failed to load invoice preview. Please try again.");
         }
       } finally {

@@ -22,6 +22,7 @@ export interface Driver {
     passportImage: DocumentType;
   };
   isDeleted?: boolean;
+  isDeletedByUser?: boolean;
   deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -42,6 +43,15 @@ export interface DriverDetailsResponse {
 }
 
 export interface VerifyDocumentResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface DeletedDriversResponse {
+  drivers: Driver[];
+}
+
+export interface ReviewDeletionResponse {
   success: boolean;
   message: string;
 }
