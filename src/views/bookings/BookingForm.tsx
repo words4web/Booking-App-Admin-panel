@@ -21,6 +21,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Car, MapPin, Package } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Import tab components
 import { DetailsTab } from "./tabs/DetailsTab";
@@ -28,7 +36,14 @@ import { LocationsTab } from "./tabs/LocationsTab";
 import { ProductsTab } from "./tabs/ProductsTab";
 import { AssignmentTab } from "./tabs/AssignmentTab";
 import { CompletionReviewTab } from "./tabs/CompletionReviewTab";
-import { ClipboardCheck, ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  ClipboardCheck,
+  ArrowLeft,
+  ArrowRight,
+  Save,
+  Send,
+  AlertTriangle,
+} from "lucide-react";
 
 const tabClassName =
   "flex-1 rounded-xl font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:bg-primary/10 transition-colors text-sm md:text-base py-2.5";
@@ -46,6 +61,7 @@ export function BookingForm({
   initialTab = "details",
 }: BookingFormProps) {
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -58,7 +74,7 @@ export function BookingForm({
     initialValues: {
       companyId:
         typeof initialData?.companyId === "string"
-          ? initialData.companyId
+          ? initialData?.companyId
           : (initialData?.companyId as { _id: string })?._id ||
             user?.companyId ||
             "",
@@ -95,14 +111,14 @@ export function BookingForm({
       products:
         initialData?.products?.map((p) => ({
           productId:
-            typeof p.productId === "string"
-              ? p.productId
-              : (p.productId as { _id: string })?._id || "",
-          name: p.name,
-          quantity: p.quantity,
-          rate: p.rate,
-          baseCharge: p.baseCharge,
-          hourlyRate: p.hourlyRate,
+            typeof p?.productId === "string"
+              ? p?.productId
+              : (p?.productId as { _id: string })?._id || "",
+          name: p?.name,
+          quantity: p?.quantity,
+          rate: p?.rate,
+          baseCharge: p?.baseCharge,
+          hourlyRate: p?.hourlyRate,
         })) || [],
       assignedDriverId:
         typeof initialData?.assignedDriverId === "string"
@@ -119,8 +135,8 @@ export function BookingForm({
     onSubmit: (values) => {
       const sanitized = {
         ...values,
-        assignedDriverId: values.assignedDriverId || null,
-        vehicleId: values.vehicleId || null,
+        assignedDriverId: values?.assignedDriverId || null,
+        vehicleId: values?.vehicleId || null,
       };
       // @ts-ignore Let Formik pass sanitized values.
       onSubmit(sanitized);
@@ -207,34 +223,35 @@ export function BookingForm({
       } else if (errors.products) {
         setActiveTab("products");
       }
+      formik.handleSubmit();
+    } else {
+      setIsConfirmModalOpen(true);
     }
-
-    formik.handleSubmit();
   };
 
   const addProduct = (productId: string) => {
-    const product = products.find((p) => p._id === productId);
+    const product = products.find((p) => p?._id === productId);
     if (!product) return;
 
     const existingProductIndex = formik.values.products.findIndex(
-      (p) => p.productId === productId,
+      (p) => p?.productId === productId,
     );
 
     if (existingProductIndex !== -1) {
       const updatedProducts = [...formik.values.products];
-      const currentQty = updatedProducts[existingProductIndex].quantity;
+      const currentQty = updatedProducts[existingProductIndex]?.quantity;
       updatedProducts[existingProductIndex].quantity =
         Number(currentQty || 0) + 1;
       formik.setFieldValue("products", updatedProducts);
     } else {
       const newProduct: IBookingProduct = {
-        productId: product._id,
-        name: product.name,
+        productId: product?._id,
+        name: product?.name,
         quantity: 1,
-        rate: product.basePrice,
-        baseCharge: product.baseCharge,
-        hourlyRate: product.hourlyRate,
-        extraCharges: product.extraCharges,
+        rate: product?.basePrice,
+        baseCharge: product?.baseCharge,
+        hourlyRate: product?.hourlyRate,
+        extraCharges: product?.extraCharges,
       };
 
       formik.setFieldValue("products", [...formik.values.products, newProduct]);
@@ -248,7 +265,7 @@ export function BookingForm({
   };
 
   const scheduledDate = formik.values.scheduledDateTime
-    ? new Date(formik.values.scheduledDateTime).getTime()
+    ? new Date(formik.values.scheduledDateTime)?.getTime()
     : 0;
   const now = new Date().getTime();
   const timeDiffHours = scheduledDate
@@ -350,11 +367,11 @@ export function BookingForm({
             type="button"
             variant="ghost"
             onClick={handleBack}
-            className={`rounded-xl px-6 h-11 font-bold text-primary hover:text-primary/90 hover:bg-primary/10 transition-colors w-full sm:w-auto ${currentIndex === 0 ? "invisible sm:hidden" : ""}`}>
+            className={`rounded-xl px-6 h-11 font-bold bg-primary hover:bg-primary/90 text-white hover:text-white transition-colors w-full sm:w-auto ${currentIndex === 0 ? "invisible sm:hidden" : ""} `}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
 
-          <div className="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto ml-auto">
             {activeTab !== "review" && (
               <Button
                 type="button"
@@ -418,6 +435,45 @@ export function BookingForm({
           </CardContent>
         </Card>
       </Tabs>
+
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-black tracking-tighter">
+              <AlertTriangle className="h-6 w-6 text-amber-500" />
+              Confirm {initialData ? "Changes" : "Booking"}
+            </DialogTitle>
+            <DialogDescription className="text-base font-medium text-muted-foreground pt-2">
+              Are you sure you want to{" "}
+              {initialData ? "save changes to this" : "create this new"}{" "}
+              booking? Please review the details before confirming.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex sm:justify-between gap-3 pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsConfirmModalOpen(false)}
+              className="rounded-xl h-11 font-bold border-slate-200 hover:bg-slate-50 flex-1">
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setIsConfirmModalOpen(false);
+                formik.handleSubmit();
+              }}
+              className="rounded-xl h-11 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 flex-1 gap-2">
+              {initialData ? (
+                <Save className="h-4 w-4" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              Confirm & {initialData ? "Save" : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
