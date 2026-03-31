@@ -77,51 +77,134 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.7);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.6);
+  }
 }
 
 /* Global Heading Scale Refinement */
 @layer base {
-  h1 { @apply text-2xl md:text-xl sm:text-lg font-bold; }
-  h2 { @apply text-xl md:text-lg sm:text-base font-bold; }
-  h3 { @apply text-lg md:text-base sm:text-sm font-bold; }
+  h1 {
+    @apply text-2xl md:text-xl sm:text-lg font-bold;
+  }
+  h2 {
+    @apply text-xl md:text-lg sm:text-base font-bold;
+  }
+  h3 {
+    @apply text-lg md:text-base sm:text-sm font-bold;
+  }
 }
 
 @layer utilities {
   /* After Mid Screen (Tablet) */
   @media (max-width: 1024px) {
-    .text-6xl { font-size: 3rem !important; line-height: 1 !important; }           /* 60px -> 48px */
-    .text-5xl { font-size: 2.5rem !important; line-height: 1 !important; }         /* 48px -> 40px */
-    .text-4xl { font-size: 1.875rem !important; line-height: 2.25rem !important; } /* 30px -> 24px */
-    .text-3xl { font-size: 1.5rem !important; line-height: 2rem !important; }      /* 24px -> 20px */
-    .text-2xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }   /* 20px -> 18px */
-    .text-xl  { font-size: 1.125rem !important; line-height: 1.75rem !important; }  /* 18px -> 16px */
-    
+    .text-6xl {
+      font-size: 3rem !important;
+      line-height: 1 !important;
+    } /* 60px -> 48px */
+    .text-5xl {
+      font-size: 2.5rem !important;
+      line-height: 1 !important;
+    } /* 48px -> 40px */
+    .text-4xl {
+      font-size: 1.875rem !important;
+      line-height: 2.25rem !important;
+    } /* 30px -> 24px */
+    .text-3xl {
+      font-size: 1.5rem !important;
+      line-height: 2rem !important;
+    } /* 24px -> 20px */
+    .text-2xl {
+      font-size: 1.25rem !important;
+      line-height: 1.75rem !important;
+    } /* 20px -> 18px */
+    .text-xl {
+      font-size: 1.125rem !important;
+      line-height: 1.75rem !important;
+    } /* 18px -> 16px */
+
     /* Button heights on Tablet */
-    .h-12 { height: 2.75rem !important; } /* 48px -> 44px */
-    .h-14 { height: 3rem !important; }    /* 56px -> 48px */
+    .h-12 {
+      height: 2.75rem !important;
+    } /* 48px -> 44px */
+    .h-14 {
+      height: 3rem !important;
+    } /* 56px -> 48px */
   }
 
   /* Mobile Screens */
   @media (max-width: 768px) {
-    .text-6xl { font-size: 2.5rem !important; line-height: 1 !important; }         /* 40px */
-    .text-5xl { font-size: 2.25rem !important; line-height: 1 !important; }        /* 36px */
-    .text-4xl { font-size: 1.5rem !important; line-height: 2rem !important; }      /* 24px */
-    .text-3xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }   /* 20px */
-    .text-2xl { font-size: 1.125rem !important; line-height: 1.5rem !important; }   /* 18px */
-    .text-xl  { font-size: 1rem !important; line-height: 1.5rem !important; }       /* 16px */
-    
+    .text-6xl {
+      font-size: 2.5rem !important;
+      line-height: 1 !important;
+    } /* 40px */
+    .text-5xl {
+      font-size: 2.25rem !important;
+      line-height: 1 !important;
+    } /* 36px */
+    .text-4xl {
+      font-size: 1.5rem !important;
+      line-height: 2rem !important;
+    } /* 24px */
+    .text-3xl {
+      font-size: 1.25rem !important;
+      line-height: 1.75rem !important;
+    } /* 20px */
+    .text-2xl {
+      font-size: 1.125rem !important;
+      line-height: 1.5rem !important;
+    } /* 18px */
+    .text-xl {
+      font-size: 1rem !important;
+      line-height: 1.5rem !important;
+    } /* 16px */
+
     /* Global Button Refinements for Mobile */
-    .h-12 { height: 2.5rem !important; }  /* 48px -> 40px (Standard mobile button) */
-    .h-11 { height: 2.25rem !important; } /* 44px -> 36px */
-    .h-14 { height: 2.75rem !important; } /* 56px -> 44px */
-    
+    .h-12 {
+      height: 2.5rem !important;
+    } /* 48px -> 40px (Standard mobile button) */
+    .h-11 {
+      height: 2.25rem !important;
+    } /* 44px -> 36px */
+    .h-14 {
+      height: 2.75rem !important;
+    } /* 56px -> 44px */
+
     /* Padding Reductions for Mobile */
-    .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; } /* 32px -> 16px */
-    .px-6 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; } /* 24px -> 12px */
-    .p-8  { padding: 1rem !important; } /* 32px -> 16px */
-    .p-6  { padding: 0.75rem !important; } /* 24px -> 12px */
-    
+    .px-8 {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    } /* 32px -> 16px */
+    .px-6 {
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    } /* 24px -> 12px */
+    .p-8 {
+      padding: 1rem !important;
+    } /* 32px -> 16px */
+    .p-6 {
+      padding: 0.75rem !important;
+    } /* 24px -> 12px */
+
     /* Shrink form labels a bit more for mobile spacing */
-    .text-sm { font-size: 0.8125rem !important; } /* ~13px */
+    .text-sm {
+      font-size: 0.8125rem !important;
+    } /* ~13px */
   }
 }
