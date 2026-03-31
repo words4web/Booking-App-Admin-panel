@@ -151,7 +151,7 @@ export function BookingList() {
       {/* Page Header */}
       <div className="flex flex-col gap-6 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
               Booking <span className="text-primary">Management</span>
@@ -160,8 +160,8 @@ export function BookingList() {
               Manage transport bookings
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center flex-1 sm:justify-end">
-            <div className="relative w-full sm:max-w-xs group">
+          <div className="flex flex-col lg:flex-row gap-3 lg:items-center flex-1 lg:justify-end">
+            <div className="relative w-full lg:max-w-xs group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search bookings..."
@@ -180,7 +180,7 @@ export function BookingList() {
             </div>
 
             {isSuperAdmin && (
-              <div className="w-full sm:w-40">
+              <div className="w-full lg:w-40">
                 <Select
                   value={selectedCompanyId}
                   onValueChange={(val) => {
@@ -205,7 +205,7 @@ export function BookingList() {
               </div>
             )}
 
-            <div className="w-full sm:w-40">
+            <div className="w-full lg:w-40">
               <Select
                 value={selectedStatus}
                 onValueChange={(val) => {
