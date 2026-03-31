@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import {
   Plus,
   FileText,
-  Pencil,
   Trash2,
   Filter,
   CheckCircle,
@@ -360,7 +359,7 @@ export function InvoiceList() {
 
                                 <DropdownMenuSeparator className="my-1 bg-border/50" />
 
-                                <DropdownMenuItem
+                                {/* <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}>
@@ -368,7 +367,7 @@ export function InvoiceList() {
                                     <Pencil className="h-4 w-4 text-slate-500" />
                                     Edit Invoice
                                   </Link>
-                                </DropdownMenuItem>
+                                </DropdownMenuItem> */}
 
                                 <DropdownMenuItem
                                   className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"

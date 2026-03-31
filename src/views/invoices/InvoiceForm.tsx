@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, AlertTriangle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { InvoiceSchema } from "@/src/schemas/validationSchemas";
@@ -35,6 +35,14 @@ import { InvoiceFormLineItems } from "./components/InvoiceFormLineItems";
 import { InvoiceFormTotals } from "./components/InvoiceFormTotals";
 import { InvoiceFormTerms } from "./components/InvoiceFormTerms";
 import { InvoicePDFModal } from "./InvoicePDFModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function getBookingLabel(b: Booking): string {
   if (!b || !b._id) return "Unknown Booking";
@@ -112,6 +120,7 @@ export function InvoiceForm({
   const bookingIdFromUrl = searchParams.get("bookingId");
 
   const [open, setOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -243,7 +252,12 @@ export function InvoiceForm({
         unitPrice: true,
       })),
     });
-    formik.handleSubmit();
+    const errors = await formik.validateForm();
+    if (Object.keys(errors)?.length === 0) {
+      setIsConfirmModalOpen(true);
+    } else {
+      formik.handleSubmit();
+    }
   };
 
   const getExVat = useCallback(
@@ -565,6 +579,45 @@ export function InvoiceForm({
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
       />
+
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-black tracking-tighter">
+              <AlertTriangle className="h-6 w-6 text-amber-500" />
+              Confirm {isEdit ? "Update" : "Save"}
+            </DialogTitle>
+            <DialogDescription className="text-base font-medium text-muted-foreground pt-2">
+              Are you sure you want to{" "}
+              {isEdit ? "update this" : "create this new"} invoice? Please
+              review the line items and totals before confirming.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex sm:justify-between gap-3 pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsConfirmModalOpen(false)}
+              className="rounded-xl h-11 font-bold border-slate-200 hover:bg-slate-50 flex-1">
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setIsConfirmModalOpen(false);
+                formik.handleSubmit();
+              }}
+              className="rounded-xl h-11 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 flex-1 gap-2">
+              {isEdit ? (
+                <Save className="h-4 w-4" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              Confirm & {isEdit ? "Update" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
