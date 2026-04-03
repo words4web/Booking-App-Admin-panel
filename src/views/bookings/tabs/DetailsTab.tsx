@@ -173,7 +173,7 @@ export function DetailsTab({
                     onValueChange={setSearchTerm}
                   />
                   <CommandList>
-                    {!debouncedSearchTerm && clients.length === 0 && (
+                    {!debouncedSearchTerm && clients?.length === 0 && (
                       <div className="p-4 text-sm text-slate-500 text-center">
                         Type to search for clients...
                       </div>
@@ -185,7 +185,7 @@ export function DetailsTab({
                     )}
                     {!isClientsLoading &&
                       debouncedSearchTerm &&
-                      clients.length === 0 && (
+                      clients?.length === 0 && (
                         <CommandEmpty>No clients found.</CommandEmpty>
                       )}
                     <CommandGroup>

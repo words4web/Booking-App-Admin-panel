@@ -65,13 +65,13 @@ const STATUS_CLASSES: Record<BookingStatus, string> = {
 };
 
 function getClientName(clientId: Booking["clientId"]): string {
-  return `${clientId.legalDetails?.legalName ?? ""}`.trim();
+  return `${clientId?.legalDetails?.legalName ?? ""}`.trim();
 }
 
 function getDriverName(driverId: Booking["assignedDriverId"]): string {
   if (!driverId) return "—";
   if (typeof driverId === "string") return driverId;
-  return driverId.fullName || "—";
+  return driverId?.fullName || "—";
 }
 
 function formatDateTime(dt: string) {
@@ -127,10 +127,13 @@ export function BookingList() {
       setLoadingInvoiceId(bookingId);
       const invoicesResponse = await InvoiceService.getAll({ bookingId });
 
-      if (invoicesResponse.invoices && invoicesResponse.invoices.length > 0) {
+      if (
+        invoicesResponse?.invoices &&
+        invoicesResponse?.invoices?.length > 0
+      ) {
         // Invoice exists, go to edit
         router.push(
-          ROUTES_PATH.INVOICES.EDIT(invoicesResponse.invoices[0]._id),
+          ROUTES_PATH.INVOICES.EDIT(invoicesResponse?.invoices[0]?._id),
         );
       } else {
         // No invoice, go to create
@@ -196,8 +199,8 @@ export function BookingList() {
                   <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
                     <SelectItem value="all">All Companies</SelectItem>
                     {companies?.map((company) => (
-                      <SelectItem key={company._id} value={company._id}>
-                        {company.name}
+                      <SelectItem key={company?._id} value={company?._id}>
+                        {company?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -220,7 +223,7 @@ export function BookingList() {
                 </SelectTrigger>
                 <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
                   <SelectItem value="all">All Statuses</SelectItem>
-                  {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                  {Object.entries(STATUS_LABELS)?.map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>
@@ -313,7 +316,7 @@ export function BookingList() {
                           {isSuperAdmin && (
                             <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden lg:table-cell">
                               {typeof booking?.companyId === "object"
-                                ? (booking.companyId as { name: string }).name
+                                ? (booking?.companyId as { name: string })?.name
                                 : "—"}
                             </td>
                           )}
@@ -396,10 +399,10 @@ export function BookingList() {
               </div>
 
               {/* Pagination */}
-              {pagination && pagination.pages > 1 && (
+              {pagination && pagination?.pages > 1 && (
                 <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
                   <p className="text-xs text-muted-foreground font-medium">
-                    Page {pagination.page} of {pagination.pages}
+                    Page {pagination?.page} of {pagination?.pages}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -414,7 +417,7 @@ export function BookingList() {
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((p) => p + 1)}
-                      disabled={page >= pagination.pages}
+                      disabled={page >= pagination?.pages}
                       className="rounded-lg h-8 text-xs font-bold">
                       Next
                     </Button>
@@ -435,7 +438,7 @@ export function BookingList() {
         cancelText="Cancel"
         onConfirm={() => {
           if (deleteDialog) {
-            deleteMutation.mutate(deleteDialog.id, {
+            deleteMutation.mutate(deleteDialog?.id, {
               onSuccess: () => setDeleteDialog(null),
             });
           }

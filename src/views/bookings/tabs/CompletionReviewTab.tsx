@@ -107,14 +107,14 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
                     key={index}
                     className="group relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-100 transition-all shadow-sm">
                     <img
-                      src={photo.url}
+                      src={photo?.url}
                       alt={`Completion ${index + 1}`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
 
                     <div className="absolute top-2 right-2 flex gap-2">
                       <a
-                        href={photo.url}
+                        href={photo?.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
@@ -127,7 +127,7 @@ export function CompletionReviewTab({ booking }: CompletionReviewTabProps) {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            setDeletePhotoKey(photo.key);
+                            setDeletePhotoKey(photo?.key);
                           }}
                           className="p-2 bg-white/90 backdrop-blur rounded-full text-red-600 shadow-lg hover:bg-red-600 hover:text-white transition-colors">
                           <Trash className="h-4 w-4" />
