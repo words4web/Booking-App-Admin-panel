@@ -67,7 +67,7 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          {driver.isDocumentsVerified ? (
+          {driver?.isDocumentsVerified ? (
             <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider whitespace-nowrap">
               <CheckCircle className="w-4 h-4 mr-2" /> Fully Verified
             </Badge>
@@ -83,12 +83,12 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
         <Tabs defaultValue="profile" className="w-full">
           <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-fit inline-flex min-w-min">
-              {DriverTabsData.map((data) => (
+              {DriverTabsData?.map((data) => (
                 <TabsTrigger
-                  key={data.id}
-                  value={data.id}
+                  key={data?.id}
+                  value={data?.id}
                   className="rounded-xl px-4 sm:px-6 py-2.5 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all data-[state=active]:bg-primary data-[state=active]:text-white">
-                  {data.label}
+                  {data?.label}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -104,9 +104,9 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                   <div className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-tr from-primary/20 to-emerald-400/20 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                     <div className="relative w-48 h-48 rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl bg-slate-50">
-                      {driver.profileImage ? (
+                      {driver?.profileImage ? (
                         <Image
-                          src={driver.profileImage}
+                          src={driver?.profileImage}
                           alt="Profile"
                           fill
                           className="object-cover"

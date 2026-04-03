@@ -48,7 +48,7 @@ export function AssignmentTab({
   });
 
   const driverJobs = (driverJobsData?.bookings || []).filter(
-    (job) => job.status !== BookingStatus.COMPLETED,
+    (job) => job?.status !== BookingStatus.COMPLETED,
   );
 
   const getStatusColor = (status: BookingStatus) => {

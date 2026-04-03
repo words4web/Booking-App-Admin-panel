@@ -101,7 +101,7 @@ export function BookingCalendar() {
 
   const companyId =
     user?.role === UserRoles.COMPANY_ADMIN
-      ? (user.companyId ?? undefined)
+      ? (user?.companyId ?? undefined)
       : undefined;
 
   const { data: bookings = [], isLoading } = useCalendarBookingsQuery(
@@ -113,8 +113,8 @@ export function BookingCalendar() {
   // Group bookings by date string "YYYY-MM-DD"
   const byDate = useMemo(() => {
     const map: Record<string, CalendarBooking[]> = {};
-    bookings.forEach((b) => {
-      const key = dayjs(b.scheduledDateTime).format("YYYY-MM-DD");
+    bookings?.forEach((b) => {
+      const key = dayjs(b?.scheduledDateTime).format("YYYY-MM-DD");
       if (!map[key]) map[key] = [];
       map[key].push(b);
     });
@@ -182,7 +182,7 @@ export function BookingCalendar() {
 
         {/* Weekday headers */}
         <div className="grid grid-cols-7 border-b border-slate-100">
-          {WEEKDAYS.map((d) => (
+          {WEEKDAYS?.map((d) => (
             <div
               key={d}
               className="py-3 text-center text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -247,24 +247,24 @@ export function BookingCalendar() {
                   )}>
                   {isDrawer ? (
                     dayBookings
-                      .slice(0, 4)
-                      .map((b) => (
+                      ?.slice(0, 4)
+                      ?.map((b) => (
                         <span
-                          key={b._id}
+                          key={b?._id}
                           className={cn(
                             "h-1.5 w-1.5 rounded-full flex-shrink-0",
-                            STATUS_CONFIG[b.status]?.dot || "bg-slate-400",
+                            STATUS_CONFIG[b?.status]?.dot || "bg-slate-400",
                           )}
                         />
                       ))
                   ) : (
                     <>
-                      {dayBookings.slice(0, 3).map((b) => (
-                        <BookingPill key={b._id} booking={b} />
+                      {dayBookings?.slice(0, 3)?.map((b) => (
+                        <BookingPill key={b?._id} booking={b} />
                       ))}
-                      {dayBookings.length > 3 && (
+                      {dayBookings?.length > 3 && (
                         <span className="text-[10px] font-bold text-slate-400 pl-1">
-                          +{dayBookings.length - 3} more
+                          +{dayBookings?.length - 3} more
                         </span>
                       )}
                     </>
@@ -277,11 +277,11 @@ export function BookingCalendar() {
 
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-2 md:gap-6 px-4 md:px-8 py-3 md:py-4 border-t border-slate-100 bg-slate-50/50">
-          {Object.values(STATUS_CONFIG).map((cfg) => (
-            <div key={cfg.label} className="flex items-center gap-1.5">
-              <span className={cn("h-2.5 w-2.5 rounded-full", cfg.dot)} />
+          {Object.values(STATUS_CONFIG)?.map((cfg) => (
+            <div key={cfg?.label} className="flex items-center gap-1.5">
+              <span className={cn("h-2.5 w-2.5 rounded-full", cfg?.dot)} />
               <span className="text-xs font-medium text-slate-500">
-                {cfg.label}
+                {cfg?.label}
               </span>
             </div>
           ))}
@@ -336,7 +336,7 @@ export function BookingCalendar() {
 
         {/* Bookings list */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {selectedDateBookings.length === 0 ? (
+          {selectedDateBookings?.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-center">
               <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
                 <Clock className="h-5 w-5 text-slate-400" />
@@ -347,21 +347,21 @@ export function BookingCalendar() {
               </p>
             </div>
           ) : (
-            selectedDateBookings.map((b) => {
-              const cfg = STATUS_CONFIG[b.status] ?? {
+            selectedDateBookings?.map((b) => {
+              const cfg = STATUS_CONFIG[b?.status] ?? {
                 bg: "bg-slate-50",
                 text: "text-slate-600",
                 dot: "bg-slate-400",
-                label: b.status,
+                label: b?.status,
               };
               return (
                 <button
-                  key={b._id}
+                  key={b?._id}
                   onClick={() => router.push(ROUTES_PATH.BOOKINGS.EDIT(b?._id))}
                   className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 transition-all group bg-white">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
-                      {b.bookingId}
+                      {b?.bookingId}
                     </span>
                     <span
                       className={cn(
@@ -373,15 +373,15 @@ export function BookingCalendar() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 font-medium truncate">
-                    {b.clientName}
+                    {b?.clientName}
                   </p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <Clock className="h-3 w-3 text-slate-400" />
                     <span className="text-xs text-slate-400 font-medium">
-                      {dayjs(b.scheduledDateTime).format("HH:mm")}
+                      {dayjs(b?.scheduledDateTime).format("HH:mm")}
                     </span>
                     <span className="text-xs text-slate-300 font-medium ml-auto">
-                      {b.serviceType}
+                      {b?.serviceType}
                     </span>
                   </div>
                 </button>
