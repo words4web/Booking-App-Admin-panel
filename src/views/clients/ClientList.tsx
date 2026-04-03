@@ -241,46 +241,47 @@ export function ClientList() {
                         <td className="px-4 md:px-8 py-5 align-middle">
                           <div className="flex flex-col">
                             <span className="font-bold text-foreground whitespace-nowrap">
-                              {`${client?.contactInfo.firstName || ""} ${client?.contactInfo.lastName || ""}`.trim() ||
+                              {`${client?.contactInfo?.firstName || ""} ${client?.contactInfo?.lastName || ""}`.trim() ||
                                 "Valued Customer"}
                             </span>
                             <span className="text-[10px] text-muted-foreground lowercase whitespace-nowrap">
-                              {client?.contactInfo.email}
+                              {client?.contactInfo?.email}
                             </span>
                             <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                              {client?.contactInfo.phone}
+                              {client?.contactInfo?.phone}
                             </span>
                           </div>
                         </td>
                         <td className="px-4 md:px-8 py-5 align-middle">
                           <div className="flex flex-col">
                             <span className="font-medium text-foreground whitespace-nowrap">
-                              {client?.legalDetails.legalName}
+                              {client?.legalDetails?.legalName}
                             </span>
                             <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                              Reg: {client?.legalDetails.registrationNumber}
+                              Reg: {client?.legalDetails?.registrationNumber}
                             </span>
-                            {client?.legalDetails.vatRegistered && (
+                            {client?.legalDetails?.vatRegistered && (
                               <span className="text-[9px] text-primary font-bold uppercase tracking-wider whitespace-nowrap">
-                                VAT: {client?.legalDetails.vatNumber}
+                                VAT: {client?.legalDetails?.vatNumber}
                               </span>
                             )}
                           </div>
                         </td>
                         <td className="px-4 md:px-8 py-5 align-middle hidden lg:table-cell">
                           <div className="flex flex-col text-xs text-muted-foreground max-w-[200px]">
-                            <span>{client?.address.addressLine1}</span>
+                            <span>{client?.address?.addressLine1}</span>
                             <span>
-                              {client?.address.city}, {client?.address.postcode}
+                              {client?.address?.city},{" "}
+                              {client?.address?.postcode}
                             </span>
-                            <span>{client?.address.country}</span>
+                            <span>{client?.address?.country}</span>
                           </div>
                         </td>
                         {isSuperAdmin && (
                           <td className="px-4 md:px-8 py-5 align-middle hidden md:table-cell">
                             <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700 whitespace-nowrap">
                               {typeof client?.companyId === "object"
-                                ? client?.companyId.name
+                                ? client?.companyId?.name
                                 : "Unknown"}
                             </span>
                           </td>
@@ -325,10 +326,10 @@ export function ClientList() {
               </div>
 
               {/* Pagination */}
-              {pagination && pagination.pages > 1 && (
+              {pagination && pagination?.pages > 1 && (
                 <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
                   <p className="text-xs text-muted-foreground font-medium">
-                    Page {pagination.page} of {pagination.pages}
+                    Page {pagination?.page} of {pagination?.pages}
                   </p>
                   <div className="flex gap-2">
                     <Button

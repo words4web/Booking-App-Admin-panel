@@ -89,7 +89,7 @@ export function Overview() {
   const quickActions = allQuickActions.filter(
     (action) =>
       !action.roles ||
-      (user?.role && action.roles.includes(user.role as UserRoles)),
+      (user?.role && action.roles.includes(user?.role as UserRoles)),
   );
 
   return (
@@ -115,14 +115,14 @@ export function Overview() {
         </div>
 
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-2">
-          {quickActions.map((action, idx) => {
+          {quickActions?.map((action, idx) => {
             const Icon = action.icon;
             // Use a slightly lighter version of the provided color for the icon background if it's primary
             const iconBg =
               action.color === "bg-primary" ? "bg-primary" : action.color;
 
             return (
-              <Link key={idx} href={action.href} className="group">
+              <Link key={idx} href={action?.href} className="group">
                 <Card className="relative overflow-hidden h-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-700 hover:shadow-[0_20px_50px_rgba(60,10,80,0.1)] hover:-translate-y-3 bg-white/80 backdrop-blur-xl group-hover:ring-2 group-hover:ring-primary/20">
                   {/* Glassmorphism gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />

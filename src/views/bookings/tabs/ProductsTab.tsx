@@ -77,10 +77,10 @@ export function ProductsTab({
                   <CommandGroup>
                     {products?.map((p) => (
                       <CommandItem
-                        key={p._id}
-                        value={p.name}
+                        key={p?._id}
+                        value={p?.name}
                         onSelect={() => {
-                          addProduct(p._id);
+                          addProduct(p?._id);
                           setOpen(false);
                         }}
                         // disabled={
@@ -98,10 +98,10 @@ export function ProductsTab({
                         )}>
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-900">
-                            {p.name}
+                            {p?.name}
                           </span>
                           <span className="text-[10px] text-slate-500">
-                            Base Price: £{p.basePrice}
+                            Base Price: £{p?.basePrice}
                           </span>
                         </div>
                         <Check
@@ -255,17 +255,17 @@ export function ProductsTab({
                   </p>
                 </div>
               </div>
-              {product.extraCharges && product.extraCharges.length > 0 && (
+              {product?.extraCharges && product?.extraCharges?.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <Package className="h-3 w-3" /> Additional Charges
                   </p>
                   <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-100 flex flex-wrap gap-2">
-                    {product.extraCharges.map((charge, cIdx) => (
+                    {product?.extraCharges?.map((charge, cIdx) => (
                       <span
                         key={cIdx}
                         className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-700 shadow-sm">
-                        {charge.label}: £{charge.amount}
+                        {charge?.label}: £{charge?.amount}
                       </span>
                     ))}
                   </div>
@@ -274,7 +274,7 @@ export function ProductsTab({
             </div>
           </div>
         ))}
-        {formik.values.products.length === 0 && (
+        {formik.values.products?.length === 0 && (
           <div
             className={cn(
               "flex flex-col items-center justify-center p-20 rounded-3xl border-2 border-dashed bg-slate-50/30",

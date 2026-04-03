@@ -71,7 +71,8 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
+        const fcmToken = typeof window !== "undefined" ? localStorage.getItem("fcmToken") : null;
+        const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, { fcmToken });
         const { accessToken } = response.data.data;
 
         localStorage.setItem("accessToken", accessToken);
@@ -84,6 +85,7 @@ api.interceptors.response.use(
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("user");
+          localStorage.removeItem("fcmToken");
           window.location.href = ROUTES_PATH.AUTH.LOGIN;
         }
         return Promise.reject(refreshError);

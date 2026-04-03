@@ -374,10 +374,10 @@ export function CompanyList() {
               )}
 
               {/* Pagination */}
-              {pagination && pagination.pages > 1 && (
+              {pagination && pagination?.pages > 1 && (
                 <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
                   <p className="text-xs text-muted-foreground font-medium">
-                    Page {pagination.page} of {pagination.pages}
+                    Page {pagination?.page} of {pagination?.pages}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -392,7 +392,7 @@ export function CompanyList() {
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((p) => p + 1)}
-                      disabled={page >= pagination.pages}
+                      disabled={page >= pagination?.pages}
                       className="rounded-lg h-8 text-xs font-bold">
                       Next
                     </Button>

@@ -108,7 +108,7 @@ export function DriverList() {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {!drivers || drivers.length === 0 ? (
+                {!drivers || drivers?.length === 0 ? (
                   <tr>
                     <td
                       colSpan={5}
@@ -117,34 +117,42 @@ export function DriverList() {
                     </td>
                   </tr>
                 ) : (
-                  drivers.map((driver) => (
+                  drivers?.map((driver) => (
                     <tr
-                      key={driver._id}
-                      onClick={() => router.push(ROUTES_PATH.DRIVERS.VIEW(driver._id))}
+                      key={driver?._id}
+                      onClick={() =>
+                        router.push(ROUTES_PATH.DRIVERS.VIEW(driver?._id))
+                      }
                       className="border-b transition-colors hover:bg-muted/50 cursor-pointer">
                       <td className="p-2 md:p-4 align-middle font-bold text-foreground whitespace-nowrap">
-                        {driver.fullName}
+                        {driver?.fullName}
                       </td>
                       <td className="p-2 md:p-4 align-middle hidden md:table-cell whitespace-nowrap">
-                        {driver.email}
+                        {driver?.email}
                       </td>
                       <td className="p-2 md:p-4 align-middle whitespace-nowrap">
-                        {driver.mobileNumber}
+                        {driver?.mobileNumber}
                       </td>
                       <td className="p-2 md:p-4 align-middle text-center">
-                        {driver.isDocumentsVerified ? (
+                        {driver?.isDocumentsVerified ? (
                           <div className="flex justify-center items-center text-emerald-600">
                             <CheckCircle className="h-4 w-4 mr-1" />
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Verified</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider">
+                              Verified
+                            </span>
                           </div>
                         ) : (
                           <div className="flex justify-center items-center text-amber-600">
                             <AlertCircle className="h-4 w-4 mr-1" />
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Pending</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider">
+                              Pending
+                            </span>
                           </div>
                         )}
                       </td>
-                      <td className="p-2 md:p-4 align-middle text-right border-l border-border/10" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="p-2 md:p-4 align-middle text-right border-l border-border/10"
+                        onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -160,14 +168,15 @@ export function DriverList() {
                             <DropdownMenuItem
                               className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
                               asChild>
-                              <Link href={ROUTES_PATH.DRIVERS.VIEW(driver._id)}>
+                              <Link
+                                href={ROUTES_PATH.DRIVERS.VIEW(driver?._id)}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                                 View Details
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-colors focus:bg-destructive/5 text-destructive"
-                              onClick={() => setDeleteDriverId(driver._id)}>
+                              onClick={() => setDeleteDriverId(driver?._id)}>
                               <Trash2 className="h-4 w-4" />
                               Delete Driver
                             </DropdownMenuItem>
@@ -182,10 +191,10 @@ export function DriverList() {
           </div>
 
           {/* Pagination */}
-          {pagination && pagination.pages > 1 && (
+          {pagination && pagination?.pages > 1 && (
             <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
               <p className="text-xs text-muted-foreground font-medium">
-                Page {pagination.page} of {pagination.pages}
+                Page {pagination?.page} of {pagination?.pages}
               </p>
               <div className="flex gap-2">
                 <Button
@@ -200,7 +209,7 @@ export function DriverList() {
                   variant="outline"
                   size="sm"
                   onClick={() => setPage((p) => p + 1)}
-                  disabled={page >= pagination.pages}
+                  disabled={page >= pagination?.pages}
                   className="rounded-lg h-8 text-xs font-bold">
                   Next
                 </Button>

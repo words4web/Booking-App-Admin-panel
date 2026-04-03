@@ -80,31 +80,31 @@ export function ClientForm({
     initialValues: {
       companyId:
         (typeof initialData?.companyId === "string"
-          ? initialData.companyId
+          ? initialData?.companyId
           : initialData?.companyId?._id) || "",
       contactInfo: {
-        firstName: initialData?.contactInfo.firstName || "",
-        lastName: initialData?.contactInfo.lastName || "",
-        email: initialData?.contactInfo.email || "",
-        phone: initialData?.contactInfo.phone || "",
+        firstName: initialData?.contactInfo?.firstName || "",
+        lastName: initialData?.contactInfo?.lastName || "",
+        email: initialData?.contactInfo?.email || "",
+        phone: initialData?.contactInfo?.phone || "",
       },
       legalDetails: {
-        legalName: initialData?.legalDetails.legalName || "",
-        registrationNumber: initialData?.legalDetails.registrationNumber || "",
-        vatNumber: initialData?.legalDetails.vatNumber || "",
-        vatRegistered: initialData?.legalDetails.vatRegistered ?? false,
+        legalName: initialData?.legalDetails?.legalName || "",
+        registrationNumber: initialData?.legalDetails?.registrationNumber || "",
+        vatNumber: initialData?.legalDetails?.vatNumber || "",
+        vatRegistered: initialData?.legalDetails?.vatRegistered ?? false,
         purchaseOrderNumber:
-          initialData?.legalDetails.purchaseOrderNumber || "",
+          initialData?.legalDetails?.purchaseOrderNumber || "",
         // nationalInsuranceNumber:
         //   initialData?.legalDetails.nationalInsuranceNumber || "",
       },
       address: {
-        addressLine1: initialData?.address.addressLine1 || "",
-        addressLine2: initialData?.address.addressLine2 || "",
-        city: initialData?.address.city || "",
-        county: initialData?.address.county || "",
-        postcode: initialData?.address.postcode || "",
-        country: initialData?.address.country || "United Kingdom",
+        addressLine1: initialData?.address?.addressLine1 || "",
+        addressLine2: initialData?.address?.addressLine2 || "",
+        city: initialData?.address?.city || "",
+        county: initialData?.address?.county || "",
+        postcode: initialData?.address?.postcode || "",
+        country: initialData?.address?.country || "United Kingdom",
       },
       vatExempt: initialData?.vatExempt ?? true,
     },
@@ -186,7 +186,7 @@ export function ClientForm({
           <Tabs value={activeTab} className="w-full">
             <div className="px-4 sm:px-8 pt-6 sm:pt-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
               <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl w-full flex min-w-min">
-                {ClientTabsData.map((data) => (
+                {ClientTabsData?.map((data) => (
                   <TabsTrigger
                     key={data?.id}
                     value={data?.id}
