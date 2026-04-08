@@ -87,8 +87,8 @@ export function Header({
             <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl border border-border/50 flex items-center justify-center hover:bg-primary/5 hover:border-primary/20 transition-all group-hover:scale-105">
               <Bell className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground group-hover:text-primary transition-colors" />
               {unreadCount !== undefined && unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground ring-2 md:ring-4 ring-background">
-                  {unreadCount > 9 ? "9+" : unreadCount}
+                <span className="absolute -top-1 -right-1 flex min-w-[16px] h-4 md:min-w-[20px] md:h-5 items-center justify-center rounded-full bg-primary px-1 text-[8px] md:text-[10px] font-black text-primary-foreground ring-2 md:ring-4 ring-background">
+                  {unreadCount}
                 </span>
               )}
             </div>
