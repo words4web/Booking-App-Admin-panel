@@ -70,18 +70,46 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
+      // TODO: Remove debug logs before deploying with full token durations
+      console.log(
+        "[Auth] 401 on:",
+        requestUrl,
+        "| isAuthEndpoint:",
+        isAuthEndpoint,
+      );
+      console.log("[Auth] Refreshing token...");
+
       try {
-        const fcmToken = typeof window !== "undefined" ? localStorage.getItem("fcmToken") : null;
-        const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, { fcmToken });
+        const fcmToken =
+          typeof window !== "undefined"
+            ? localStorage.getItem("fcmToken")
+            : null;
+        const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {
+          fcmToken,
+        });
         const { accessToken } = response.data.data;
 
         localStorage.setItem("accessToken", accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
         processQueue(null, accessToken);
+
+        // Reset before retrying so any 401 on the retry can trigger a fresh refresh
+        isRefreshing = false;
+
+        console.log("[Auth] Refresh OK, retrying original request");
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: any) {
         processQueue(refreshError, null);
+
+        // Reset before side-effects so no stale lock is left if redirect is slow
+        isRefreshing = false;
+
+        console.error(
+          "[Auth] Refresh failed, logging out",
+          (refreshError as any)?.response?.status,
+        );
+
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("user");
@@ -89,8 +117,6 @@ api.interceptors.response.use(
           window.location.href = ROUTES_PATH.AUTH.LOGIN;
         }
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     }
 
