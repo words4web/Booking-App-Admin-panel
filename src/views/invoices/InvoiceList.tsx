@@ -110,16 +110,26 @@ export function InvoiceList() {
       {/* Page Header */}
       <div className="flex flex-col gap-6 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
-              Invoice <span className="text-primary">Management</span>
-            </h1>
-            <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
-              {pagination
-                ? `${pagination.total} invoice${pagination.total !== 1 ? "s" : ""} total`
-                : "Manage your invoices"}
-            </p>
+        <div className="flex flex-col items-start justify-between gap-4">
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
+                Invoice <span className="text-primary">Management</span>
+              </h1>
+              <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
+                {pagination
+                  ? `${pagination?.total} invoice${pagination?.total !== 1 ? "s" : ""} total`
+                  : "Manage your invoices"}
+              </p>
+            </div>
+            <Button
+              asChild
+              className="w-[120px] sm:w-[180px] px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
+              <Link href={ROUTES_PATH.INVOICES.NEW}>
+                <Plus className="h-5 w-5" />
+                Create Invoice
+              </Link>
+            </Button>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center flex-1 sm:justify-end">
             <div className="relative w-full sm:max-w-xs group">
@@ -144,7 +154,7 @@ export function InvoiceList() {
             </div>
 
             {isSuperAdmin && (
-              <div className="w-full sm:w-[180px]">
+              <div className="w-full">
                 <Select
                   value={selectedCompanyId}
                   onValueChange={(val) => {
@@ -160,22 +170,14 @@ export function InvoiceList() {
                   <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
                     <SelectItem value="all">All Companies</SelectItem>
                     {companies?.map((company) => (
-                      <SelectItem key={company._id} value={company._id}>
-                        {company.name}
+                      <SelectItem key={company?._id} value={company?._id}>
+                        {company?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            <Button
-              asChild
-              className="w-full sm:w-auto px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
-              <Link href={ROUTES_PATH.INVOICES.NEW}>
-                <Plus className="h-5 w-5" />
-                Create Invoice
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
@@ -208,30 +210,30 @@ export function InvoiceList() {
                 <table className="w-full text-sm font-medium">
                   <thead>
                     <tr className="bg-muted/10 border-b border-border/50">
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70">
                         Invoice #
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70">
                         Client
                       </th>
                       {isSuperAdmin && (
-                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
+                        <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70 ">
                           Company
                         </th>
                       )}
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden sm:table-cell">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70 ">
                         Date
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70 ">
                         Due Date
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70">
                         Status
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70">
                         Amount
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 pl-4 text-left font-bold text-xs whitespace-nowrap uppercase tracking-widest text-muted-foreground/70">
                         Actions
                       </th>
                     </tr>
@@ -245,28 +247,28 @@ export function InvoiceList() {
                           onClick={() =>
                             router.push(ROUTES_PATH.INVOICES.EDIT(inv?._id))
                           }>
-                          <td className="px-4 md:px-8 py-5 align-middle">
+                          <td className="pl-2 py-5 align-middle">
                             <span className="font-bold text-foreground whitespace-nowrap">
                               {inv?.invoiceNumber}
                             </span>
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground whitespace-nowrap">
+                          <td className="pl-2 py-5 align-middle text-muted-foreground whitespace-nowrap">
                             {getClientName(inv?.clientId)}
                           </td>
                           {isSuperAdmin && (
-                            <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden lg:table-cell whitespace-nowrap">
+                            <td className="pl-2 py-5 align-middle text-muted-foreground whitespace-nowrap">
                               {typeof inv?.companyId === "object"
                                 ? (inv?.companyId as { name: string })?.name
                                 : "—"}
                             </td>
                           )}
-                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden sm:table-cell whitespace-nowrap">
+                          <td className="pl-2 py-5 align-middle text-muted-foreground whitespace-nowrap">
                             {formatDate(inv?.invoiceDate)}
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden md:table-cell whitespace-nowrap">
+                          <td className="pl-2 py-5 align-middle text-muted-foreground whitespace-nowrap">
                             {inv?.dueDate ? formatDate(inv?.dueDate) : "—"}
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle">
+                          <td className="pl-2 py-5 align-middle">
                             <span
                               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black whitespace-nowrap tracking-wider border ${
                                 inv?.isPaid
@@ -286,10 +288,10 @@ export function InvoiceList() {
                               )}
                             </span>
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-right font-bold text-foreground whitespace-nowrap">
+                          <td className="pl-2 py-5 text-left font-bold text-foreground whitespace-nowrap">
                             £{Number(inv?.totalAmount || 0)?.toFixed(2)}
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-right border-l border-border/10!">
+                          <td className="pl-2 py-5 text-left border-l border-border/10!">
                             <DropdownMenu>
                               <DropdownMenuTrigger
                                 asChild
