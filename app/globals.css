@@ -79,8 +79,8 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
@@ -88,13 +88,16 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.7);
+    background: hsl(var(--primary) / 0.4);
     border-radius: 10px;
+    border: 2px solid transparent; /* padding around thumb */
+    background-clip: padding-box;
     transition: background 0.3s ease;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary) / 0.6);
+    background-clip: padding-box;
   }
 }
 

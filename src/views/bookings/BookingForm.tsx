@@ -20,7 +20,7 @@ import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQu
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Car, MapPin, Package } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -43,6 +43,11 @@ import {
   Save,
   Send,
   AlertTriangle,
+  MessageCircle,
+  Calendar,
+  Car,
+  MapPin,
+  Package,
 } from "lucide-react";
 
 const tabClassName =
@@ -317,14 +322,28 @@ export function BookingForm({
               : "Enter new booking details"}
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.back()}
-          className="rounded-xl h-11 px-6 font-bold border-slate-200 hover:bg-slate-50 transition-all gap-2 w-full sm:w-auto">
-          <ArrowLeft className="h-4 w-4" />
-          Back to List
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          {initialData?.chatToken && (
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => router.push(`/booking-chat/${initialData.chatToken}`)}
+              className="rounded-xl h-11 px-6 font-bold bg-primary hover:opacity-90 text-white transition-all gap-2 flex-1 sm:flex-none">
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Open Chat</span>
+              <span className="sm:hidden">Chat</span>
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="rounded-xl h-11 px-6 font-bold border-slate-200 hover:bg-slate-50 transition-all gap-2 flex-1 sm:flex-none">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back to List</span>
+            <span className="sm:hidden">Back</span>
+          </Button>
+        </div>
       </div>
 
       <Tabs
