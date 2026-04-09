@@ -48,9 +48,9 @@ import { InvoiceService } from "@/src/services/invoiceManager/invoice.service";
 const STATUS_LABELS: Record<BookingStatus, string> = {
   [BookingStatus.SCHEDULED]: "Scheduled",
   [BookingStatus.ACCEPTED]: "Accepted",
-  [BookingStatus.JOB_STARTED]: "Job Started",
-  [BookingStatus.JOB_SUBMITTED]: "Job Submitted",
-  [BookingStatus.JOB_REJECTED]: "Job Rejected",
+  [BookingStatus.JOB_STARTED]: "Started",
+  [BookingStatus.JOB_SUBMITTED]: "Submitted",
+  [BookingStatus.JOB_REJECTED]: "Rejected",
   [BookingStatus.COMPLETED]: "Completed",
 };
 
@@ -85,7 +85,7 @@ function formatDateTime(dt: string) {
 }
 
 const tableHeaderCss =
-  "h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70";
+  "h-14 pl-2 text-left font-bold text-xs uppercase tracking-widest";
 
 export function BookingList() {
   const [deleteDialog, setDeleteDialog] = useState<{
@@ -152,7 +152,7 @@ export function BookingList() {
   return (
     <div className="space-y-8 pb-12">
       {/* Page Header */}
-      <div className="flex flex-col gap-6 relative">
+      <div className="flex flex-col gap-6 relative px-6">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
         <div className="flex flex-col items-start justify-between gap-4">
           <div className="flex items-center justify-between w-full">
@@ -193,7 +193,7 @@ export function BookingList() {
             </div>
 
             {isSuperAdmin && (
-              <div className="w-full lg:w-40">
+              <div className="w-full">
                 <Select
                   value={selectedCompanyId}
                   onValueChange={(val) => {
@@ -218,7 +218,7 @@ export function BookingList() {
               </div>
             )}
 
-            <div className="w-full lg:w-40">
+            <div className="w-full">
               <Select
                 value={selectedStatus}
                 onValueChange={(val) => {
@@ -276,22 +276,15 @@ export function BookingList() {
                 <table className="w-full text-sm font-medium">
                   <thead>
                     <tr className="bg-muted/10 border-b border-border/50">
-                      <th className={tableHeaderCss}>Booking ID</th>
+                      <th className={tableHeaderCss}>ID</th>
                       <th className={tableHeaderCss}>Client</th>
                       {isSuperAdmin && (
-                        <th
-                          className={`${tableHeaderCss} hidden lg:table-cell`}>
-                          Company
-                        </th>
+                        <th className={tableHeaderCss}>Company</th>
                       )}
                       <th className={tableHeaderCss}>Scheduled</th>
                       <th className={tableHeaderCss}>Status</th>
-                      <th className={`${tableHeaderCss} hidden md:table-cell`}>
-                        Driver
-                      </th>
-                      <th className={`${tableHeaderCss} text-right`}>
-                        Actions
-                      </th>
+                      <th className={tableHeaderCss}>Driver</th>
+                      <th className={tableHeaderCss}>Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/30">
@@ -306,35 +299,35 @@ export function BookingList() {
                             )
                           }
                           className="transition-all hover:bg-slate-50 cursor-pointer">
-                          <td className="px-4 md:px-8 py-5 align-middle">
+                          <td className="px-2 py-5 align-middle">
                             <span className="font-bold text-foreground whitespace-nowrap">
                               {booking?.bookingId}
                             </span>
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground">
+                          <td className="px-2 py-5 align-middle text-muted-foreground">
                             {getClientName(booking?.clientId)}
                           </td>
                           {isSuperAdmin && (
-                            <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden lg:table-cell">
+                            <td className="px-2 py-5 align-middle text-muted-foreground">
                               {typeof booking?.companyId === "object"
                                 ? (booking?.companyId as { name: string })?.name
                                 : "—"}
                             </td>
                           )}
-                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground whitespace-nowrap">
+                          <td className="px-2 py-5 align-middle text-muted-foreground">
                             {formatDateTime(booking?.scheduledDateTime)}
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle">
+                          <td className="px-2 py-5 align-middle">
                             <Badge
                               variant="outline"
-                              className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border whitespace-nowrap"}`}>
+                              className={`text-xs font-bold rounded-full px-3 ${STATUS_CLASSES[status] ?? "bg-muted text-muted-foreground border-border"}`}>
                               {STATUS_LABELS[status] ?? status}
                             </Badge>
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-muted-foreground hidden md:table-cell">
+                          <td className="px-2 py-5 align-middle text-muted-foreground">
                             {getDriverName(booking?.assignedDriverId)}
                           </td>
-                          <td className="px-4 md:px-8 py-5 align-middle text-right">
+                          <td className="px-2 py-5 align-middle">
                             <div onClick={(e) => e.stopPropagation()}>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
