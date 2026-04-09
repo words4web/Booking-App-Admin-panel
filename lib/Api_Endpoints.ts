@@ -94,6 +94,14 @@ const API_ENDPOINTS = {
     GET_BY_SLUG: (slug: string) => `/cms/${slug}`,
     UPSERT: "/cms",
   },
+  CHAT: {
+    GET_ROOM: (token: string) => `/chat/room/${token}`,
+    GET_MESSAGES: (token: string, after?: string) => 
+      `/chat/messages/${token}${after ? `?after=${after}` : ''}`,
+    SEND_PUBLIC: (token: string) => `/chat/messages/${token}`,
+    SEND_ADMIN: (token: string) => `/admin/chat/messages/${token}`,
+    CLOSE: (token: string) => `/admin/chat/room/${token}/close`,
+  },
 };
 
 export default API_ENDPOINTS;

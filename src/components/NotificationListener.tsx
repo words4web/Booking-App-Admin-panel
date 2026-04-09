@@ -63,6 +63,11 @@ export default function NotificationListener() {
         if (type && invoiceEvents.includes(type)) {
           queryClient.invalidateQueries({ queryKey: ["invoices"] });
         }
+
+        // Chat related events
+        if (type === "chat_message") {
+          queryClient.invalidateQueries({ queryKey: ["chat"] });
+        }
       });
     };
 

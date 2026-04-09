@@ -84,6 +84,7 @@ export interface Booking {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  chatToken?: string;
 }
 
 export interface BookingFormData {
