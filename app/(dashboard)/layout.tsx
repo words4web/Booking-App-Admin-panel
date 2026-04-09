@@ -18,6 +18,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isForbidden, setIsForbidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isBookingListPage = pathname === ROUTES_PATH.BOOKINGS.BASE;
 
   useEffect(() => {
     if (!isUserLoading && !token) {
@@ -66,7 +67,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* 4. Scrollable Content Area */}
         <main className="flex-1 overflow-y-auto scroll-smooth bg-slate-50/20 shadow-inner custom-scrollbar">
-          <div className="p-2 md:p-6 lg:p-8 max-w-[1600px] mx-auto min-h-full">
+          <div
+            className={`max-w-[1600px] mx-auto min-h-full ${isBookingListPage ? "px-2 py-6" : "p-2 md:p-6 lg:p-8"}`}>
             {isForbidden ? <Forbidden /> : children}
           </div>
         </main>
