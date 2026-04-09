@@ -41,7 +41,7 @@ export function ProductsTab({
 
   return (
     <div className="mt-0 space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4">
         <div className="flex-1">
           <h3 className="text-lg font-bold text-slate-900">
             Job Items & Pricing

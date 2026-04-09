@@ -109,8 +109,8 @@ export function ClientList() {
 
   return (
     <div className="space-y-8 pb-12">
-      <div className="flex flex-col gap-6 relative">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col items-start justify-start gap-4">
+        <div className="flex items-center justify-between w-full">
           <div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
               Client <span className="text-primary">Profiles</span>
@@ -119,66 +119,65 @@ export function ClientList() {
               Manage your corporate and individual clients
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 sm:justify-end">
-            <div className="flex flex-1 gap-2 sm:max-w-md w-full">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name, email or phone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-12 pl-10 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-                />
-              </div>
-              <div className="relative leading-none group">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-12 w-12 rounded-xl bg-white border-border shadow-sm hover:bg-slate-50 transition-all text-muted-foreground hover:text-primary">
-                  <Info className="h-5 w-5" />
-                </Button>
-                <div className="absolute right-0 top-full mt-3 w-64 p-4 bg-white border border-border shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-2xl z-[100] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-                  <p className="text-xs font-semibold text-slate-800 leading-relaxed">
-                    Search using client{" "}
-                    <span className="text-primary">Name</span>,{" "}
-                    <span className="text-primary">Email Address</span>, or{" "}
-                    <span className="text-primary">Phone Number</span>.
-                  </p>
-                  <div className="absolute -top-1.5 right-5 w-3 h-3 bg-white border-t border-l border-border rotate-45" />
-                </div>
+          <Button
+            asChild
+            className="w-[120px] sm:w-[180px] px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
+            <Link href={ROUTES_PATH.CLIENTS.NEW}>
+              <Plus className="h-5 w-5" />
+              Add Client
+            </Link>
+          </Button>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 sm:justify-end">
+          <div className="flex flex-1 gap-2 sm:max-w-md w-full">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, email or phone..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="h-12 pl-10 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm w-[280px]"
+              />
+            </div>
+            <div className="relative leading-none group">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 rounded-xl bg-white border-border shadow-sm hover:bg-slate-50 transition-all text-muted-foreground hover:text-primary">
+                <Info className="h-5 w-5" />
+              </Button>
+              <div className="absolute right-0 top-full mt-3 w-64 p-4 bg-white border border-border shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-2xl z-[100] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                <p className="text-xs font-semibold text-slate-800 leading-relaxed">
+                  Search using client <span className="text-primary">Name</span>
+                  , <span className="text-primary">Email Address</span>, or{" "}
+                  <span className="text-primary">Phone Number</span>.
+                </p>
+                <div className="absolute -top-1.5 right-5 w-3 h-3 bg-white border-t border-l border-border rotate-45" />
               </div>
             </div>
-            {isSuperAdmin && (
-              <div className="w-full sm:w-[200px]">
-                <Select
-                  value={selectedCompanyId}
-                  onValueChange={setSelectedCompanyId}>
-                  <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                    <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-primary" />
-                      <SelectValue placeholder="Filter" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
-                    <SelectItem value="all">All Companies</SelectItem>
-                    {companies?.map((company) => (
-                      <SelectItem key={company._id} value={company._id}>
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-            <Button
-              asChild
-              className="w-full sm:w-auto px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
-              <Link href={ROUTES_PATH.CLIENTS.NEW}>
-                <Plus className="h-5 w-5" />
-                Add Client
-              </Link>
-            </Button>
           </div>
+          {isSuperAdmin && (
+            <div className="w-full sm:w-[200px]">
+              <Select
+                value={selectedCompanyId}
+                onValueChange={setSelectedCompanyId}>
+                <SelectTrigger className="h-12 rounded-xl bg-white border-border/80 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-primary" />
+                    <SelectValue placeholder="Filter" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
+                  <SelectItem value="all">All Companies</SelectItem>
+                  {companies?.map((company) => (
+                    <SelectItem key={company?._id} value={company?._id}>
+                      {company?.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -214,14 +213,14 @@ export function ClientList() {
                       <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Contact Person
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
                         Legal Entity
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
                         Address
                       </th>
                       {isSuperAdmin && (
-                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                           Company
                         </th>
                       )}
@@ -278,7 +277,7 @@ export function ClientList() {
                           </div>
                         </td>
                         {isSuperAdmin && (
-                          <td className="px-4 md:px-8 py-5 align-middle hidden md:table-cell">
+                          <td className="px-4 md:px-8 py-5 align-middle">
                             <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700 whitespace-nowrap">
                               {typeof client?.companyId === "object"
                                 ? client?.companyId?.name

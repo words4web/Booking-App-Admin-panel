@@ -106,14 +106,24 @@ export function ProductList() {
     <div className="space-y-8 pb-12">
       <div className="flex flex-col gap-6 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
-              Product <span className="text-primary">Catalog</span>
-            </h1>
-            <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
-              Manage concrete products and standardized rates
-            </p>
+        <div className="flex flex-col items-start justify-between gap-4">
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
+                Product <span className="text-primary">Catalog</span>
+              </h1>
+              <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
+                Manage products
+              </p>
+            </div>
+            <Button
+              asChild
+              className="w-[120px] sm:w-[180px] px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
+              <Link href={ROUTES_PATH.PRODUCTS.NEW}>
+                <Plus className="h-5 w-5" />
+                Add Product
+              </Link>
+            </Button>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 sm:justify-end">
             <div className="flex flex-1 gap-2 sm:max-w-md w-full">
@@ -156,22 +166,14 @@ export function ProductList() {
                   <SelectContent className="bg-white border-border shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl z-[100]">
                     <SelectItem value="all">All Companies</SelectItem>
                     {companies?.map((company) => (
-                      <SelectItem key={company._id} value={company._id}>
-                        {company.name}
+                      <SelectItem key={company?._id} value={company?._id}>
+                        {company?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            <Button
-              asChild
-              className="w-full sm:w-auto px-6 h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
-              <Link href={ROUTES_PATH.PRODUCTS.NEW}>
-                <Plus className="h-5 w-5" />
-                Add Product
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
@@ -188,7 +190,7 @@ export function ProductList() {
               <CommonLoader fullScreen={false} message="Updating Results..." />
             </div>
           )}
-          {!products || products.length === 0 ? (
+          {!products || products?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                 <Package className="h-10 w-10 text-slate-300" />
@@ -211,14 +213,11 @@ export function ProductList() {
                       <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Product Name
                       </th>
-                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden md:table-cell">
-                        Description
-                      </th>
-                      <th className="h-14 px-4 md:px-8 text-right align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
+                      <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                         Base Price
                       </th>
                       {isSuperAdmin && (
-                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70 hidden lg:table-cell">
+                        <th className="h-14 px-4 md:px-8 text-left align-middle font-bold text-xs uppercase tracking-widest text-muted-foreground/70">
                           Company
                         </th>
                       )}
@@ -228,33 +227,28 @@ export function ProductList() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/30">
-                    {products.map((product: Product) => (
+                    {products?.map((product: Product) => (
                       <tr
-                        key={product._id}
+                        key={product?._id}
                         onClick={() =>
-                          router.push(ROUTES_PATH.PRODUCTS.EDIT(product._id))
+                          router.push(ROUTES_PATH.PRODUCTS.EDIT(product?._id))
                         }
                         className="transition-all hover:bg-slate-50 cursor-pointer group">
                         <td className="px-4 md:px-8 py-6 align-middle">
                           <span className="font-bold text-foreground block whitespace-nowrap">
-                            {product.name}
+                            {product?.name}
                           </span>
                         </td>
-                        <td className="px-4 md:px-8 py-6 align-middle hidden md:table-cell">
-                          <span className="text-xs text-muted-foreground line-clamp-1 max-w-[300px]">
-                            {product.description}
-                          </span>
-                        </td>
-                        <td className="px-4 md:px-8 py-6 align-middle text-right whitespace-nowrap">
+                        <td className="px-4 md:px-8 py-6 whitespace-nowrap">
                           <span className="font-bold text-primary">
-                            £{product.basePrice.toFixed(2)}
+                            £{product?.basePrice.toFixed(2)}
                           </span>
                         </td>
                         {isSuperAdmin && (
-                          <td className="px-4 md:px-8 py-6 align-middle hidden lg:table-cell">
+                          <td className="px-4 md:px-8 py-6 align-middle">
                             <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 border border-slate-200 uppercase tracking-tighter whitespace-nowrap">
-                              {typeof product.companyId === "object"
-                                ? product.companyId.name
+                              {typeof product?.companyId === "object"
+                                ? product?.companyId.name
                                 : "N/A"}
                             </span>
                           </td>

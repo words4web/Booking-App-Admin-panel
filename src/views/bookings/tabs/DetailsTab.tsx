@@ -263,7 +263,7 @@ export function DetailsTab({
           </div>
         </div>
 
-        <div className="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="col-span-1 grid grid-cols-1 gap-2">
           <div className="space-y-2">
             <Label className="text-sm font-bold text-slate-700">
               Scheduled Time
