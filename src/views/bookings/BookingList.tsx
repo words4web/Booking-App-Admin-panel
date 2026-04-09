@@ -154,14 +154,24 @@ export function BookingList() {
       {/* Page Header */}
       <div className="flex flex-col gap-6 relative">
         {/* <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full" /> */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
-              Booking <span className="text-primary">Management</span>
-            </h1>
-            <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest leading-none">
-              Manage transport bookings
-            </p>
+        <div className="flex flex-col items-start justify-between gap-4">
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-foreground">
+                Booking <span className="text-primary">Management</span>
+              </h1>
+              <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest leading-none">
+                Manage transport bookings
+              </p>
+            </div>
+            <Button
+              asChild
+              className="w-[120px] sm:w-[180px] px-5 h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
+              <Link href={ROUTES_PATH.BOOKINGS.NEW}>
+                <Plus className="h-5 w-5" />
+                Add Booking
+              </Link>
+            </Button>
           </div>
           <div className="flex flex-col lg:flex-row gap-3 lg:items-center flex-1 lg:justify-end">
             <div className="relative w-full lg:max-w-xs group">
@@ -231,15 +241,6 @@ export function BookingList() {
                 </SelectContent>
               </Select>
             </div>
-
-            <Button
-              asChild
-              className="w-full sm:w-auto px-5 h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
-              <Link href={ROUTES_PATH.BOOKINGS.NEW}>
-                <Plus className="h-5 w-5" />
-                Add Booking
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
