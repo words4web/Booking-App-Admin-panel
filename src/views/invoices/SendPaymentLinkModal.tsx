@@ -70,7 +70,9 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
   const isFormValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return (
-      email.trim() && emailRegex.test(email.trim()) && paymentUrl.trim().length > 0
+      email.trim() &&
+      emailRegex.test(email.trim()) &&
+      paymentUrl.trim().length > 0
     );
   };
 
@@ -83,7 +85,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
             Send Payment Link
           </DialogTitle>
           <p className="text-slate-500 text-sm font-normal mt-1">
-            Request payment for Invoice #{invoiceNumber} via email.
+            Request payment for Invoice #{invoiceNumber} via email and SMS.
           </p>
         </DialogHeader>
 
@@ -115,7 +117,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
               className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Client Phone Number (SMS)
             </Label>
-            <div className="relative group opacity-60">
+            <div className="relative group">
               <Input
                 id="phone"
                 type="tel"
@@ -128,7 +130,6 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
                 <Phone className="h-4 w-4" />
               </div>
             </div>
-            <p className="text-[10px] text-slate-400 italic">SMS functionality is coming soon.</p>
           </div>
 
           <div className="space-y-2">
