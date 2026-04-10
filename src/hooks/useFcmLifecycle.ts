@@ -110,9 +110,7 @@ export const useFcmLifecycle = (user: any) => {
           });
           permissionStatus.addEventListener("change", handlePermissionChange);
         }
-      } catch (err) {
-        console.warn("[FCM] Permissions API listener setup failed:", err);
-      }
+      } catch (err) {}
     };
 
     setupPermissionListener();

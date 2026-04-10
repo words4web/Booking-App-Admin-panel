@@ -70,15 +70,6 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      // TODO: Remove debug logs before deploying with full token durations
-      console.log(
-        "[Auth] 401 on:",
-        requestUrl,
-        "| isAuthEndpoint:",
-        isAuthEndpoint,
-      );
-      console.log("[Auth] Refreshing token...");
-
       try {
         const fcmToken =
           typeof window !== "undefined"
@@ -97,18 +88,12 @@ api.interceptors.response.use(
         // Reset before retrying so any 401 on the retry can trigger a fresh refresh
         isRefreshing = false;
 
-        console.log("[Auth] Refresh OK, retrying original request");
         return api(originalRequest);
       } catch (refreshError: any) {
         processQueue(refreshError, null);
 
         // Reset before side-effects so no stale lock is left if redirect is slow
         isRefreshing = false;
-
-        console.error(
-          "[Auth] Refresh failed, logging out",
-          (refreshError as any)?.response?.status,
-        );
 
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");

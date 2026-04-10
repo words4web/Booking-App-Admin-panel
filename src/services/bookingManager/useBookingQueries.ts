@@ -65,13 +65,15 @@ export const useUpdateBookingMutation = (id: string) => {
 export const useDeleteBookingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    // NOTE: Despite the name, this mutation calls the DELETE endpoint which now
+    // performs a soft-cancel (sets status to CANCELLED) instead of deleting the record.
     mutationFn: (id: string) => BookingService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      toast.success("Booking deleted successfully");
+      toast.success("Booking cancelled successfully");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to delete booking");
+      toast.error(error.response?.data?.message || "Failed to cancel booking");
     },
   });
 };

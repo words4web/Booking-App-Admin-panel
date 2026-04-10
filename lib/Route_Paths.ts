@@ -11,7 +11,6 @@ const ROUTES_PATH = {
   },
   DRIVERS: {
     BASE: "/drivers",
-    NEW: "/drivers/new",
     EDIT: (driverId: string) => `/drivers/${driverId}/edit`,
     VIEW: (driverId: string) => `/drivers/${driverId}`,
   },
