@@ -5,6 +5,7 @@ export enum BookingStatus {
   JOB_SUBMITTED = "Job Submitted",
   JOB_REJECTED = "Job Rejected",
   COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
 }
 
 export enum ServiceType {

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   Plus,
   Pencil,
-  Trash2,
   Filter,
   Package,
   MoreVertical,
@@ -30,24 +29,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { Product } from "@/src/types/product.types";
-import {
-  useAllProductsQuery,
-  useDeleteProductMutation,
-} from "@/src/services/productManager/useProductQueries";
+import { useAllProductsQuery } from "@/src/services/productManager/useProductQueries";
 import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function ProductList() {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
+  // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  // const [selectedProduct, setSelectedProduct] = useState<{
+  //   id: string;
+  //   name: string;
+  // } | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,26 +76,26 @@ export function ProductList() {
   const { data: companiesData } = useAllCompaniesQuery(1, 100);
   const companies = companiesData?.companies || [];
 
-  const deleteMutation = useDeleteProductMutation();
+  // const deleteMutation = useDeleteProductMutation();
 
-  const handleDeleteClick = (product: Product) => {
-    setSelectedProduct({
-      id: product._id,
-      name: product.name,
-    });
-    setDeleteDialogOpen(true);
-  };
+  // const handleDeleteClick = (product: Product) => {
+  //   setSelectedProduct({
+  //     id: product._id,
+  //     name: product.name,
+  //   });
+  //   setDeleteDialogOpen(true);
+  // };
 
-  const confirmDelete = () => {
-    if (selectedProduct) {
-      deleteMutation.mutate(selectedProduct.id, {
-        onSuccess: () => {
-          setDeleteDialogOpen(false);
-          setSelectedProduct(null);
-        },
-      });
-    }
-  };
+  // const confirmDelete = () => {
+  //   if (selectedProduct) {
+  //     deleteMutation.mutate(selectedProduct.id, {
+  //       onSuccess: () => {
+  //         setDeleteDialogOpen(false);
+  //         setSelectedProduct(null);
+  //       },
+  //     });
+  //   }
+  // };
 
   return (
     <div className="space-y-8 pb-12">
@@ -279,12 +274,12 @@ export function ProductList() {
                                 </Link>
                               </DropdownMenuItem>
 
-                              <DropdownMenuItem
+                              {/* <DropdownMenuItem
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
                                 onClick={() => handleDeleteClick(product)}>
                                 <Trash2 className="h-4 w-4" />
                                 Delete Product
-                              </DropdownMenuItem>
+                              </DropdownMenuItem> */}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </td>
@@ -325,7 +320,7 @@ export function ProductList() {
         </CardContent>
       </Card>
 
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         title="Delete Product"
@@ -336,7 +331,7 @@ export function ProductList() {
         variant="destructive"
         icon={Trash2}
         isLoading={deleteMutation.isPending}
-      />
+      /> */}
     </div>
   );
 }

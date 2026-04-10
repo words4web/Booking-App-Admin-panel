@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   Plus,
   Pencil,
-  Trash2,
   Building2,
   Mail,
   Landmark,
@@ -17,12 +16,8 @@ import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
-import {
-  useAllCompaniesQuery,
-  useDeleteCompanyMutation,
-} from "@/src/services/companyManager/useCompanyQueries";
+import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
@@ -34,11 +29,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function CompanyList() {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
+  // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  // const [selectedCompany, setSelectedCompany] = useState<{
+  //   id: string;
+  //   name: string;
+  // } | null>(null);
 
   const [page, setPage] = useState(1);
   const { user } = useAuth();
@@ -48,7 +43,7 @@ export function CompanyList() {
   );
   const companies = companiesData?.companies || [];
   const pagination = companiesData?.pagination;
-  const deleteMutation = useDeleteCompanyMutation();
+  // const deleteMutation = useDeleteCompanyMutation();
   const router = useRouter();
 
   const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
@@ -58,21 +53,21 @@ export function CompanyList() {
     ? companies
     : companies?.filter((c) => c._id === user?.companyId);
 
-  const handleDeleteClick = (company: { id: string; name: string }) => {
-    setSelectedCompany(company);
-    setDeleteDialogOpen(true);
-  };
+  // const handleDeleteClick = (company: { id: string; name: string }) => {
+  //   setSelectedCompany(company);
+  //   setDeleteDialogOpen(true);
+  // };
 
-  const confirmDelete = () => {
-    if (selectedCompany) {
-      deleteMutation.mutate(selectedCompany.id, {
-        onSuccess: () => {
-          setDeleteDialogOpen(false);
-          setSelectedCompany(null);
-        },
-      });
-    }
-  };
+  // const confirmDelete = () => {
+  //   if (selectedCompany) {
+  //     deleteMutation.mutate(selectedCompany.id, {
+  //       onSuccess: () => {
+  //         setDeleteDialogOpen(false);
+  //         setSelectedCompany(null);
+  //       },
+  //     });
+  //   }
+  // };
 
   if (isLoading) {
     return <CommonLoader />;
@@ -221,7 +216,7 @@ export function CompanyList() {
                                     </Link>
                                   </DropdownMenuItem>
 
-                                  <DropdownMenuItem
+                                  {/* <DropdownMenuItem
                                     className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
                                     onClick={() =>
                                       handleDeleteClick({
@@ -231,7 +226,7 @@ export function CompanyList() {
                                     }>
                                     <Trash2 className="h-4 w-4" />
                                     Delete Company
-                                  </DropdownMenuItem>
+                                  </DropdownMenuItem> */}
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </td>
@@ -404,7 +399,7 @@ export function CompanyList() {
         </CardContent>
       </Card>
 
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         title="Delete Company Profile"
@@ -415,7 +410,7 @@ export function CompanyList() {
         variant="destructive"
         icon={Trash2}
         isLoading={deleteMutation.isPending}
-      />
+      /> */}
     </div>
   );
 }

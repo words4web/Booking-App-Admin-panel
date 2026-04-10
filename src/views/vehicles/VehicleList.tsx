@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2, Plus, Truck, MoreVertical } from "lucide-react";
+import { Pencil, Plus, Truck, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,12 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
-import {
-  useVehiclesQuery,
-  useDeleteVehicleMutation,
-} from "@/src/services/vehicleManager/useVehicleQueries";
+import { useVehiclesQuery } from "@/src/services/vehicleManager/useVehicleQueries";
 import ROUTES_PATH from "@/lib/Route_Paths";
-import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
@@ -30,11 +26,11 @@ export function VehicleList() {
   } = useVehiclesQuery(page, PAGINATION_LIMIT);
   const vehicles = vehiclesData?.vehicles || [];
   const pagination = vehiclesData?.pagination;
-  const deleteMutation = useDeleteVehicleMutation();
-  const [vehicleToDelete, setVehicleToDelete] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
+  // const deleteMutation = useDeleteVehicleMutation();
+  // const [vehicleToDelete, setVehicleToDelete] = useState<{
+  //   id: string;
+  //   name: string;
+  // } | null>(null);
   const router = useRouter();
 
   if (isLoading) {
@@ -158,7 +154,7 @@ export function VehicleList() {
                               </Link>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                               className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
                               onClick={() =>
                                 setVehicleToDelete({
@@ -168,7 +164,7 @@ export function VehicleList() {
                               }>
                               <Trash2 className="h-4 w-4" />
                               Delete Vehicle
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
@@ -208,7 +204,7 @@ export function VehicleList() {
         </CardContent>
       </Card>
 
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={!!vehicleToDelete}
         onOpenChange={(open) => !open && setVehicleToDelete(null)}
         title="Delete Vehicle"
@@ -221,7 +217,7 @@ export function VehicleList() {
           }
         }}
         isLoading={deleteMutation.isPending}
-      />
+      /> */}
     </div>
   );
 }

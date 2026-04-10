@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  Filter,
-  MoreVertical,
-  Search,
-  Info,
-} from "lucide-react";
+import { Plus, Pencil, Filter, MoreVertical, Search, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ROUTES_PATH from "@/lib/Route_Paths";
@@ -29,24 +21,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ConfirmModal } from "@/src/components/common/ConfirmModal";
 import { CommonLoader } from "@/src/components/common/CommonLoader";
-import {
-  useAllClientsQuery,
-  useDeleteClientMutation,
-} from "@/src/services/clientManager/useClientQueries";
+import { useAllClientsQuery } from "@/src/services/clientManager/useClientQueries";
 import { useAllCompaniesQuery } from "@/src/services/companyManager/useCompanyQueries";
 import { useAuth } from "@/src/services/authManager";
 import { UserRoles } from "@/src/enums/roles.enum";
-import { Client } from "@/src/types/client.types";
 import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 
 export function ClientList() {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
+  // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  // const [selectedClient, setSelectedClient] = useState<{
+  //   id: string;
+  //   name: string;
+  // } | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,29 +70,29 @@ export function ClientList() {
   const { data: companiesData2 } = useAllCompaniesQuery(1, 100);
   const companies = companiesData2?.companies || [];
 
-  const deleteMutation = useDeleteClientMutation();
+  // const deleteMutation = useDeleteClientMutation();
 
-  const handleDeleteClick = (client: Client) => {
-    setSelectedClient({
-      id: client._id,
-      name:
-        `${client.contactInfo.firstName || ""} ${client.contactInfo.lastName || ""}`.trim() ||
-        client.legalDetails.legalName ||
-        "Valued Customer",
-    });
-    setDeleteDialogOpen(true);
-  };
+  // const handleDeleteClick = (client: Client) => {
+  //   setSelectedClient({
+  //     id: client._id,
+  //     name:
+  //       `${client.contactInfo.firstName || ""} ${client.contactInfo.lastName || ""}`.trim() ||
+  //       client.legalDetails.legalName ||
+  //       "Valued Customer",
+  //   });
+  //   setDeleteDialogOpen(true);
+  // };
 
-  const confirmDelete = () => {
-    if (selectedClient) {
-      deleteMutation.mutate(selectedClient.id, {
-        onSuccess: () => {
-          setDeleteDialogOpen(false);
-          setSelectedClient(null);
-        },
-      });
-    }
-  };
+  // const confirmDelete = () => {
+  //   if (selectedClient) {
+  //     deleteMutation.mutate(selectedClient.id, {
+  //       onSuccess: () => {
+  //         setDeleteDialogOpen(false);
+  //         setSelectedClient(null);
+  //       },
+  //     });
+  //   }
+  // };
 
   return (
     <div className="space-y-8 pb-12">
@@ -309,12 +296,12 @@ export function ClientList() {
                                 </Link>
                               </DropdownMenuItem>
 
-                              <DropdownMenuItem
+                              {/* <DropdownMenuItem
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
                                 onClick={() => handleDeleteClick(client)}>
                                 <Trash2 className="h-4 w-4" />
                                 Delete Client
-                              </DropdownMenuItem>
+                              </DropdownMenuItem> */}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </td>
@@ -355,7 +342,7 @@ export function ClientList() {
         </CardContent>
       </Card>
 
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         title="Delete Client"
@@ -366,7 +353,7 @@ export function ClientList() {
         variant="destructive"
         icon={Trash2}
         isLoading={deleteMutation.isPending}
-      />
+      /> */}
     </div>
   );
 }
