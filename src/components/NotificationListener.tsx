@@ -24,7 +24,6 @@ export default function NotificationListener() {
 
         const data = payload.data || payload.additionalData || {};
         const type = data.type;
-        console.log("NotificationListener Type => ", data.type);
         // List of booking related events
         const bookingEvents = [
           "booking_assigned",
@@ -37,7 +36,6 @@ export default function NotificationListener() {
         ];
 
         if (type && bookingEvents.includes(type)) {
-          console.log("invalidateQueries bookings => ", type);
           queryClient.invalidateQueries({ queryKey: ["bookings"] });
           queryClient.invalidateQueries({ queryKey: ["booking"] });
         }

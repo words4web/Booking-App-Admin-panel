@@ -241,14 +241,14 @@ export function ProductList() {
                         </td>
                         <td className="px-4 md:px-8 py-6 whitespace-nowrap">
                           <span className="font-bold text-primary">
-                            £{product?.basePrice.toFixed(2)}
+                            £{product?.basePrice?.toFixed(2)}
                           </span>
                         </td>
                         {isSuperAdmin && (
                           <td className="px-4 md:px-8 py-6 align-middle">
                             <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 border border-slate-200 uppercase tracking-tighter whitespace-nowrap">
                               {typeof product?.companyId === "object"
-                                ? product?.companyId.name
+                                ? product?.companyId?.name
                                 : "N/A"}
                             </span>
                           </td>
@@ -271,7 +271,9 @@ export function ProductList() {
                                 className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-50 focus:text-primary"
                                 asChild>
                                 <Link
-                                  href={ROUTES_PATH.PRODUCTS.EDIT(product._id)}>
+                                  href={ROUTES_PATH.PRODUCTS.EDIT(
+                                    product?._id,
+                                  )}>
                                   <Pencil className="h-4 w-4 text-slate-500" />
                                   Edit Product
                                 </Link>

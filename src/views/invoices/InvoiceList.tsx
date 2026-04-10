@@ -394,10 +394,10 @@ export function InvoiceList() {
               </div>
 
               {/* Pagination */}
-              {pagination && pagination.pages > 1 && (
+              {pagination && pagination?.pages > 1 && (
                 <div className="flex items-center justify-between px-8 py-4 border-t border-border/50">
                   <p className="text-xs text-muted-foreground font-medium">
-                    Page {pagination.page} of {pagination.pages}
+                    Page {pagination?.page} of {pagination?.pages}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -412,7 +412,7 @@ export function InvoiceList() {
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((p) => p + 1)}
-                      disabled={page >= pagination.pages}
+                      disabled={page >= pagination?.pages}
                       className="rounded-lg h-8 text-xs font-bold">
                       Next
                     </Button>
@@ -439,11 +439,11 @@ export function InvoiceList() {
         <EmailInvoiceModal
           isOpen={!!emailModal}
           onClose={() => setEmailModal(null)}
-          invoiceId={emailModal._id}
-          invoiceNumber={emailModal.invoiceNumber}
+          invoiceId={emailModal?._id}
+          invoiceNumber={emailModal?.invoiceNumber}
           defaultEmail={
-            typeof emailModal.clientId === "object"
-              ? (emailModal.clientId.contactInfo?.email ?? "")
+            typeof emailModal?.clientId === "object"
+              ? (emailModal?.clientId?.contactInfo?.email ?? "")
               : ""
           }
         />
@@ -454,16 +454,16 @@ export function InvoiceList() {
         <SendPaymentLinkModal
           isOpen={!!sendPaymentLinkModal}
           onClose={() => setSendPaymentLinkModal(null)}
-          invoiceId={sendPaymentLinkModal._id}
-          invoiceNumber={sendPaymentLinkModal.invoiceNumber}
+          invoiceId={sendPaymentLinkModal?._id}
+          invoiceNumber={sendPaymentLinkModal?.invoiceNumber}
           defaultEmail={
-            typeof sendPaymentLinkModal.clientId === "object"
-              ? (sendPaymentLinkModal.clientId.contactInfo?.email ?? "")
+            typeof sendPaymentLinkModal?.clientId === "object"
+              ? (sendPaymentLinkModal?.clientId?.contactInfo?.email ?? "")
               : ""
           }
           defaultPhone={
-            typeof sendPaymentLinkModal.clientId === "object"
-              ? (sendPaymentLinkModal.clientId.contactInfo?.phone ?? "")
+            typeof sendPaymentLinkModal?.clientId === "object"
+              ? (sendPaymentLinkModal?.clientId?.contactInfo?.phone ?? "")
               : ""
           }
         />
@@ -499,7 +499,7 @@ export function InvoiceList() {
         cancelText="Cancel"
         onConfirm={() => {
           if (toggleStatusDialog) {
-            toggleStatusMutation.mutate(toggleStatusDialog._id, {
+            toggleStatusMutation.mutate(toggleStatusDialog?._id, {
               onSuccess: () => setToggleStatusDialog(null),
             });
           }
