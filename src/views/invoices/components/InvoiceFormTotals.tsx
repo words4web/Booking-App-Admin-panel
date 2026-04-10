@@ -28,7 +28,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Product Total</span>
           <span className="font-semibold text-gray-900">
-            £{Number(totals.productTotal || 0).toFixed(2)}
+            £{Number(totals?.productTotal || 0)?.toFixed(2)}
           </span>
         </div>
 
@@ -140,8 +140,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                   ...current,
                   { label: "New Charge", amount: 0 },
                 ]);
-              }}
-            >
+              }}>
               <Plus className="w-3 h-3 mr-1" /> Add
             </Button>
           </div>
@@ -167,7 +166,8 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                   value={charge.amount || ""}
                   onChange={(e) => {
                     const newVal = [...(formik.values.extraCharges || [])];
-                    newVal[idx].amount = e.target.value === "" ? 0 : Number(e.target.value);
+                    newVal[idx].amount =
+                      e.target.value === "" ? 0 : Number(e.target.value);
                     formik.setFieldValue("extraCharges", newVal);
                   }}
                   className="h-8 text-xs bg-white text-right font-bold"
@@ -183,8 +183,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                   const newVal = [...(formik.values.extraCharges || [])];
                   newVal.splice(idx, 1);
                   formik.setFieldValue("extraCharges", newVal);
-                }}
-              >
+                }}>
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>
@@ -196,7 +195,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
             Subtotal
           </span>
           <span className="font-bold text-slate-900">
-            £{Number(totals.subtotal || 0).toFixed(2)}
+            £{Number(totals?.subtotal || 0)?.toFixed(2)}
           </span>
         </div>
 
@@ -205,7 +204,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
             VAT (20%)
           </span>
           <span className="font-semibold text-slate-900">
-            £{Number(totals.totalVat || 0).toFixed(2)}
+            £{Number(totals?.totalVat || 0)?.toFixed(2)}
           </span>
         </div>
         <div className="border-t-2 border-slate-900 pt-3 flex justify-between items-center">
@@ -213,7 +212,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
             Total Payable
           </span>
           <span className="text-xl sm:text-2xl font-black text-primary">
-            £{Number(totals.totalAmount || 0).toFixed(2)}
+            £{Number(totals?.totalAmount || 0)?.toFixed(2)}
           </span>
         </div>
       </div>

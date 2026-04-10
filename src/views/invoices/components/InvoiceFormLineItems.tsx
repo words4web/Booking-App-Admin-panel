@@ -29,7 +29,7 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      {formik.values.lineItems.map((line, idx) => (
+      {formik.values.lineItems?.map((line, idx) => (
         <div
           key={idx}
           className="bg-gray-50 rounded-lg border border-gray-200 p-5">

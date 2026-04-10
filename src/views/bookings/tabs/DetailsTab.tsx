@@ -143,7 +143,7 @@ export function DetailsTab({
 
         <div className="space-y-2">
           <Label className="text-sm font-bold text-slate-700">Client</Label>
-          <div className="w-full">
+          <div className="w-full overflow-x-scroll">
             <Popover open={openClient} onOpenChange={setOpenClient}>
               <PopoverTrigger asChild>
                 <Button

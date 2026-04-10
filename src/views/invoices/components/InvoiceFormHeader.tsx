@@ -32,11 +32,11 @@ export const InvoiceFormHeader: React.FC<InvoiceFormHeaderProps> = ({
             <SelectValue placeholder="Select logo" />
           </SelectTrigger>
           <SelectContent className="w-[--radix-select-trigger-width] bg-white border border-gray-200">
-            {availableLogos.map((logo) => (
+            {availableLogos?.map((logo) => (
               <SelectItem key={logo} value={logo}>
                 {logo
-                  .replace(/\.(png|jpg|jpeg|svg|webp)$/i, "")
-                  .replace(/-/g, " ")}
+                  ?.replace(/\.(png|jpg|jpeg|svg|webp)$/i, "")
+                  ?.replace(/-/g, " ")}
               </SelectItem>
             ))}
           </SelectContent>

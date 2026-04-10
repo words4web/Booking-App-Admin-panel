@@ -290,63 +290,65 @@ export function InvoiceForm({
 
   const handleBookingSelect = useCallback(
     (bId: string) => {
-      const b = availableBookings.find((x) => x._id === bId);
+      const b = availableBookings?.find((x) => x?._id === bId);
       if (!b) return;
 
       setFieldValue("bookingId", bId);
       setFieldValue(
         "clientId",
-        typeof b.clientId === "string" ? b.clientId : b.clientId?._id || "",
+        typeof b?.clientId === "string" ? b?.clientId : b?.clientId?._id || "",
       );
       setFieldValue(
         "companyId",
-        typeof b.companyId === "string" ? b.companyId : b.companyId?._id || "",
+        typeof b?.companyId === "string"
+          ? b?.companyId
+          : b?.companyId?._id || "",
       );
 
       const isClientVatExempt =
-        typeof b.clientId !== "string" && (b.clientId as any)?.vatExempt;
+        typeof b?.clientId !== "string" && (b?.clientId as any)?.vatExempt;
 
       const lines: InvoiceLineFormData[] = [];
-      (b.products || []).forEach((p) => {
+      (b?.products || [])?.forEach((p: any) => {
         const vatPct = isClientVatExempt ? 0 : 20;
         // Main product line
         lines.push({
           productId:
-            typeof p.productId === "string" ? p.productId : p.productId?._id,
-          description: p.name,
-          quantity: p.quantity,
-          unitPrice: p.rate,
+            typeof p?.productId === "string" ? p?.productId : p?.productId?._id,
+          description: p?.name,
+          quantity: p?.quantity,
+          unitPrice: p?.rate,
           vatPercent: vatPct,
         });
       });
 
       const extraChargesArr: { label: string; amount: number }[] = [];
-      (b.products || []).forEach((p: any) => {
+      (b?.products || [])?.forEach((p: any) => {
         // Also check if extraCharges exist under productId (if populated)
-        const pExtraCharges = p.extraCharges || p.productId?.extraCharges;
+        const pExtraCharges = p?.extraCharges || p?.productId?.extraCharges;
         if (Array.isArray(pExtraCharges)) {
-          pExtraCharges.forEach((ec: any) => {
-            if (ec.label && ec.amount) {
-              extraChargesArr.push({ label: ec.label, amount: ec.amount });
+          pExtraCharges?.forEach((ec: any) => {
+            if (ec?.label && ec?.amount) {
+              extraChargesArr.push({ label: ec?.label, amount: ec?.amount });
             }
           });
         }
       });
 
-      setFieldValue("lineItems", lines.length > 0 ? lines : [EMPTY_LINE]);
+      setFieldValue("lineItems", lines?.length > 0 ? lines : [EMPTY_LINE]);
       setFieldValue("extraCharges", extraChargesArr);
 
       // Auto-set waiting time as dedicated fields
       if (
-        b.waitingTime &&
-        typeof b.waitingTime.durationMinutes === "number" &&
-        b.waitingTime.durationMinutes > 0
+        b?.waitingTime &&
+        typeof b?.waitingTime?.durationMinutes === "number" &&
+        b?.waitingTime?.durationMinutes > 0
       ) {
-        const hourlyRate = (b.products?.[0] as any)?.hourlyRate || 0;
-        const durationHours = b.waitingTime.durationMinutes / 60;
+        const hourlyRate = (b?.products?.[0] as any)?.hourlyRate || 0;
+        const durationHours = b?.waitingTime?.durationMinutes / 60;
         const waitCost = Number((durationHours * hourlyRate).toFixed(2));
 
-        setFieldValue("waitingMinutes", b.waitingTime.durationMinutes);
+        setFieldValue("waitingMinutes", b?.waitingTime?.durationMinutes);
         setFieldValue("waitingTotal", waitCost);
       } else {
         setFieldValue("waitingMinutes", 0);
@@ -354,38 +356,38 @@ export function InvoiceForm({
       }
 
       // Auto-populate address overrides
-      const client = b.clientId as any;
-      const company = b.companyId as any;
+      const client = b?.clientId as any;
+      const company = b?.companyId as any;
 
       if (client?.legalDetails?.legalName) {
-        setFieldValue("billingName", client.legalDetails.legalName);
+        setFieldValue("billingName", client?.legalDetails?.legalName);
       }
 
       const clientAddrString = client?.address
         ? [
-            client.address.addressLine1,
-            client.address.addressLine2,
-            client.address.city,
-            client.address.county,
-            client.address.postcode,
-            client.address.country,
+            client?.address?.addressLine1,
+            client?.address?.addressLine2,
+            client?.address?.city,
+            client?.address?.county,
+            client?.address?.postcode,
+            client?.address?.country,
           ]
-            .filter(Boolean)
-            .join("\n")
+            ?.filter(Boolean)
+            ?.join("\n")
         : "";
       setFieldValue("billingAddress", clientAddrString);
 
       const companyAddrString = company?.address
         ? [
-            company.address.addressLine1,
-            company.address.addressLine2,
-            company.address.city,
-            company.address.county,
-            company.address.postcode,
-            company.address.country,
+            company?.address?.addressLine1,
+            company?.address?.addressLine2,
+            company?.address?.city,
+            company?.address?.county,
+            company?.address?.postcode,
+            company?.address?.country,
           ]
-            .filter(Boolean)
-            .join("\n")
+            ?.filter(Boolean)
+            ?.join("\n")
         : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
       setFieldValue("companyAddress", companyAddrString);
     },
@@ -405,10 +407,10 @@ export function InvoiceForm({
 
   const removeLine = (index: number) => {
     const newLines = [...formik.values.lineItems];
-    newLines.splice(index, 1);
+    newLines?.splice(index, 1);
     formik.setFieldValue(
       "lineItems",
-      newLines.length > 0 ? newLines : [EMPTY_LINE],
+      newLines?.length > 0 ? newLines : [EMPTY_LINE],
     );
   };
 
@@ -417,8 +419,8 @@ export function InvoiceForm({
   };
 
   const previewInvoiceData = useMemo(() => {
-    const selectedBooking = availableBookings.find(
-      (b) => b._id === formik.values.bookingId,
+    const selectedBooking = availableBookings?.find(
+      (b) => b?._id === formik.values.bookingId,
     );
     const client = selectedBooking?.clientId as any;
     const company = selectedBooking?.companyId as any;
@@ -426,7 +428,7 @@ export function InvoiceForm({
     // Custom Invoice ID Logic matching Backend
     let customInvoiceId = "DRAFT";
     if (selectedBooking?.bookingId) {
-      const numericPart = selectedBooking.bookingId.replace(/^\D+/g, "");
+      const numericPart = selectedBooking?.bookingId?.replace(/^\D+/g, "");
       const prefix = company?.invoicePrefix || "RKB";
       customInvoiceId = prefix + (numericPart || "0001");
     }

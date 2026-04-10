@@ -7,7 +7,7 @@ import ROUTES_PATH from "@/lib/Route_Paths";
 import {
   Plus,
   Pencil,
-  Trash2,
+  Ban,
   FileText,
   Loader2,
   MoreVertical,
@@ -52,6 +52,7 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   [BookingStatus.JOB_SUBMITTED]: "Submitted",
   [BookingStatus.JOB_REJECTED]: "Rejected",
   [BookingStatus.COMPLETED]: "Completed",
+  [BookingStatus.CANCELLED]: "Cancelled",
 };
 
 const STATUS_CLASSES: Record<BookingStatus, string> = {
@@ -60,8 +61,8 @@ const STATUS_CLASSES: Record<BookingStatus, string> = {
   [BookingStatus.JOB_STARTED]: "bg-primary/10 text-primary border-primary/20",
   [BookingStatus.JOB_SUBMITTED]: "bg-primary/10 text-primary border-primary/20",
   [BookingStatus.JOB_REJECTED]: "bg-red-50 text-red-700 border-red-200",
-  [BookingStatus.COMPLETED]:
-    "bg-emerald-50 text-emerald-700 border-emerald-200",
+  [BookingStatus.COMPLETED]: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  [BookingStatus.CANCELLED]: "bg-slate-100 text-slate-500 border-slate-200",
 };
 
 function getClientName(clientId: Booking["clientId"]): string {
@@ -371,15 +372,15 @@ export function BookingList() {
                                   </DropdownMenuItem>
 
                                   <DropdownMenuItem
-                                    className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-red-50 text-red-600 focus:text-red-700"
+                                    className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-colors focus:bg-slate-100 text-slate-600 focus:text-slate-700"
                                     onClick={() =>
                                       setDeleteDialog({
                                         id: booking?._id,
                                         bookingId: booking?.bookingId,
                                       })
                                     }>
-                                    <Trash2 className="h-4 w-4" />
-                                    Delete Booking
+                                    <Ban className="h-4 w-4" />
+                                    Cancel Booking
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -426,10 +427,10 @@ export function BookingList() {
       <ConfirmModal
         isOpen={!!deleteDialog}
         onOpenChange={(open) => !open && setDeleteDialog(null)}
-        title="Delete Booking"
-        description={`Are you sure you want to delete booking ${deleteDialog?.bookingId ?? ""}? This action cannot be undone.`}
-        confirmText="Delete Booking"
-        cancelText="Cancel"
+        title="Cancel Booking"
+        description={`Are you sure you want to cancel booking ${deleteDialog?.bookingId ?? ""}? The booking will be marked as Cancelled and removed from the driver's job list. You can still create an invoice for cancellation fees if needed.`}
+        confirmText="Yes, Cancel Booking"
+        cancelText="Go Back"
         onConfirm={() => {
           if (deleteDialog) {
             deleteMutation.mutate(deleteDialog?.id, {
@@ -437,8 +438,8 @@ export function BookingList() {
             });
           }
         }}
-        variant="destructive"
-        icon={Trash2}
+        variant="warning"
+        icon={Ban}
         isLoading={deleteMutation.isPending}
       />
     </div>

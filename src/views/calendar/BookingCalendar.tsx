@@ -60,6 +60,12 @@ const STATUS_CONFIG: Record<
     dot: "bg-emerald-500",
     label: "Completed",
   },
+  [BookingStatus.CANCELLED]: {
+    bg: "bg-slate-100",
+    text: "text-slate-500",
+    dot: "bg-slate-400",
+    label: "Cancelled",
+  },
 };
 
 function BookingPill({ booking }: { booking: CalendarBooking }) {

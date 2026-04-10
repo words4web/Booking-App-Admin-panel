@@ -5,7 +5,6 @@ import {
   AlertCircle,
   MoreVertical,
   Trash2,
-  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -68,16 +67,6 @@ export function DriverList() {
           <p className="text-muted-foreground font-medium text-[10px] sm:text-sm mt-1 uppercase tracking-widest">
             Manage your network of professional drivers
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            asChild
-            className="w-full sm:w-auto px-6 h-12 sm:h-auto rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center gap-2">
-            <Link href={ROUTES_PATH.DRIVERS.NEW}>
-              <Plus className="h-5 w-5" />
-              Add Driver
-            </Link>
-          </Button>
         </div>
       </div>
 
