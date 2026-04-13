@@ -5,10 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormikProps } from "formik";
-import {
-  InvoiceFormData,
-  InvoiceLineFormData,
-} from "@/src/types/invoice.types";
+import { InvoiceFormData } from "@/src/types/invoice.types";
 
 interface InvoiceFormLineItemsProps {
   formik: FormikProps<InvoiceFormData>;
@@ -16,7 +13,6 @@ interface InvoiceFormLineItemsProps {
   getFieldError: (name: string) => string | null;
   removeLine: (index: number) => void;
   setLineField: (index: number, field: string, value: any) => void;
-  getVatAmt: (l: InvoiceLineFormData) => number;
 }
 
 export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
@@ -25,7 +21,6 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
   getFieldError,
   removeLine,
   setLineField,
-  getVatAmt,
 }) => {
   return (
     <div className="space-y-4">
@@ -97,40 +92,45 @@ export const InvoiceFormLineItems: React.FC<InvoiceFormLineItemsProps> = ({
               />
             </div>
 
-            {/* VAT Rate */}
+            {/* VAT Rate - only editable on line 1, synced to all */}
             <div className="col-span-1 order-3 lg:order-2">
               <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
                 VAT (%)
+                {idx > 0 && (
+                  <span className="ml-1 text-[9px] text-amber-500 normal-case font-semibold">
+                    (global)
+                  </span>
+                )}
               </Label>
               <Input
                 type="number"
                 step="1"
                 min="0"
                 max="100"
-                value={line.vatPercent || ""}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setLineField(
-                    idx,
-                    "vatPercent",
-                    e.target.value === "" ? 0 : Number(e.target.value),
-                  )
-                }
+                value={formik.values?.lineItems?.[0]?.vatPercent ?? 20}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const val =
+                    e.target.value === "" ? 0 : Number(e.target.value);
+                  // Sync vatPercent across ALL lines (Option B: single global rate)
+                  formik.values?.lineItems?.forEach((_, i) => {
+                    setLineField(i, "vatPercent", val);
+                  });
+                }}
+                disabled={idx > 0}
                 placeholder="20"
-                className={cn(
-                  "h-10 sm:h-11 rounded-lg border-gray-300 text-sm bg-white font-medium",
-                  getFieldError(`lineItems.${idx}.vatPercent`) &&
-                    "border-destructive",
-                )}
+                className="h-10 sm:h-11 rounded-lg border-gray-300 text-sm bg-white font-medium disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
 
-            {/* VAT Amount */}
+            {/* Net (£) — qty × unitPrice, VAT excluded */}
             <div className="col-span-1 order-5 lg:order-3">
               <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
-                VAT (£)
+                Net (£)
               </Label>
               <div className="h-10 sm:h-11 flex items-center px-3 text-sm text-slate-500 bg-slate-50/50 rounded-lg border border-slate-200 font-bold">
-                {Number(getVatAmt(line) || 0).toFixed(2)}
+                {Number((line?.quantity || 0) * (line?.unitPrice || 0)).toFixed(
+                  2,
+                )}
               </div>
             </div>
 

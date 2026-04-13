@@ -201,7 +201,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
 
         <div className="flex justify-between items-center text-[13px] sm:text-sm">
           <span className="text-slate-400 font-bold uppercase tracking-wider">
-            VAT (20%)
+            VAT ({Number(formik.values.lineItems?.[0]?.vatPercent ?? 20)}%)
           </span>
           <span className="font-semibold text-slate-900">
             £{Number(totals?.totalVat || 0)?.toFixed(2)}
