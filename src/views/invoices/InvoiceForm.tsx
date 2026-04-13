@@ -82,14 +82,10 @@ function computeTotals(
   extraCharges: { label: string; amount: number }[] = [],
 ): LineComputedTotals {
   let productTotal = 0;
-  let totalVat = 0;
   lines.forEach((l) => {
     const qty = Number(l.quantity) || 0;
     const price = Number(l.unitPrice) || 0;
-    const vat = Number(l.vatPercent) || 0;
-    const exVat = qty * price;
-    productTotal += exVat;
-    totalVat += exVat * (vat / 100);
+    productTotal += qty * price;
   });
 
   const extraChargesSum = extraCharges.reduce(
@@ -99,6 +95,10 @@ function computeTotals(
 
   const subtotal =
     productTotal + waitingTotal + nightShiftAmount + extraChargesSum;
+
+  // VAT is applied on the full subtotal using the first line's vatPercent
+  const globalVatPercent = Number(lines[0]?.vatPercent) || 20;
+  const totalVat = subtotal * (globalVatPercent / 100);
   const totalAmount = subtotal + totalVat;
 
   return { productTotal, subtotal, totalVat, totalAmount };
@@ -541,7 +541,6 @@ export function InvoiceForm({
             getFieldError={getFieldError}
             removeLine={removeLine}
             setLineField={setLineField}
-            getVatAmt={getVatAmt}
           />
           {/* Divider */}
           <div className="border-t border-gray-200 mt-6 mb-6" />
