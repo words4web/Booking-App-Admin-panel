@@ -5,6 +5,23 @@ export interface DocumentType {
   reason?: string | null;
 }
 
+export interface LicenseBundle {
+  frontImage: DocumentType;
+  backImage: DocumentType;
+}
+
+export interface ExtraDocs {
+  tachographCard?: LicenseBundle;
+  cpcCard?: LicenseBundle;
+  mpqcSafety?: {
+    cardFront: DocumentType;
+    cardBack: DocumentType;
+    certificate: DocumentType;
+  };
+  cscsCard?: LicenseBundle;
+  companyId?: LicenseBundle;
+}
+
 export interface Driver {
   _id: string;
   fullName: string;
@@ -14,13 +31,11 @@ export interface Driver {
   isDocumentsVerified: boolean;
   isOtpVerified: boolean;
   nationalInsuranceNumber: string;
-  license: {
-    frontImage: DocumentType;
-    backImage: DocumentType;
-  };
+  license: LicenseBundle;
   passport: {
     passportImage: DocumentType;
   };
+  extraDocs?: ExtraDocs;
   isDeleted?: boolean;
   isDeletedByUser?: boolean;
   deletedAt?: string | null;
