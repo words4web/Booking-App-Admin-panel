@@ -94,7 +94,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                     !formik.values.nightShiftAmount ||
                     Number(formik.values.nightShiftAmount) === 0
                   ) {
-                    formik.setFieldValue("nightShiftAmount", 2);
+                    formik.setFieldValue("nightShiftAmount", 0);
                   }
                 }}
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
@@ -201,7 +201,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
 
         <div className="flex justify-between items-center text-[13px] sm:text-sm">
           <span className="text-slate-400 font-bold uppercase tracking-wider">
-            VAT ({Number(formik.values.lineItems?.[0]?.vatPercent ?? 20)}%)
+            VAT ({Number(formik.values.lineItems?.[0]?.vatPercent ?? 0)}%)
           </span>
           <span className="font-semibold text-slate-900">
             £{Number(totals?.totalVat || 0)?.toFixed(2)}

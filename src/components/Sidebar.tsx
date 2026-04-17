@@ -86,7 +86,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }: SidebarProps) {
       label: "Driver",
       icon: <UserCheck className="h-5 w-5" />,
       href: ROUTES_PATH.DRIVERS.BASE,
-      roles: [UserRoles.SUPER_ADMIN],
+      roles: [UserRoles.SUPER_ADMIN, UserRoles.COMPANY_ADMIN],
     },
     {
       label: "Vehicle",
