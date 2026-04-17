@@ -25,11 +25,15 @@ import { PAGINATION_LIMIT } from "@/src/constants/pagination";
 import { useState } from "react";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/src/services/authManager";
+import { UserRoles } from "@/src/enums/roles.enum";
 
 export function DriverList() {
   const [page, setPage] = useState(1);
   const [deleteDriverId, setDeleteDriverId] = useState<string | null>(null);
   const router = useRouter();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === UserRoles.SUPER_ADMIN;
 
   const { data, isLoading, error } = useAllDriversQuery(page, PAGINATION_LIMIT);
   const { mutateAsync: deleteDriver, isPending: isDeleting } =
@@ -163,12 +167,14 @@ export function DriverList() {
                                 View Details
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-colors focus:bg-destructive/5 text-destructive"
-                              onClick={() => setDeleteDriverId(driver?._id)}>
-                              <Trash2 className="h-4 w-4" />
-                              Delete Driver
-                            </DropdownMenuItem>
+                            {isSuperAdmin && (
+                              <DropdownMenuItem
+                                className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-colors focus:bg-destructive/5 text-destructive"
+                                onClick={() => setDeleteDriverId(driver?._id)}>
+                                <Trash2 className="h-4 w-4" />
+                                Delete Driver
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>

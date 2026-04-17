@@ -65,7 +65,7 @@ const EMPTY_LINE: InvoiceLineFormData = {
 
   quantity: 1,
   unitPrice: 0,
-  vatPercent: 20,
+  vatPercent: 0,
 };
 
 interface LineComputedTotals {
@@ -97,7 +97,7 @@ function computeTotals(
     productTotal + waitingTotal + nightShiftAmount + extraChargesSum;
 
   // VAT is applied on the full subtotal using the first line's vatPercent
-  const globalVatPercent = Number(lines[0]?.vatPercent) || 20;
+  const globalVatPercent = lines[0]?.vatPercent ?? 0;
   const totalVat = subtotal * (globalVatPercent / 100);
   const totalAmount = subtotal + totalVat;
 
