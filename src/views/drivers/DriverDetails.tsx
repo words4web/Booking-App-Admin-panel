@@ -200,6 +200,161 @@ export function DriverDetails({ driverId }: DriverDetailsProps) {
                 />
               </div>
             </TabsContent>
+
+            <TabsContent
+              value="extra"
+              className="mt-0 focus-visible:outline-none">
+              <div className="space-y-10">
+                {/* Tachograph Card */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <div className="h-6 w-1.5 bg-primary rounded-full"></div>
+                    Tachograph Card
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DocumentViewer
+                      title="Front Side"
+                      imageUrl={driver?.extraDocs?.tachographCard?.frontImage?.url || null}
+                      isVerified={driver?.extraDocs?.tachographCard?.frontImage?.isVerified || false}
+                      reason={driver?.extraDocs?.tachographCard?.frontImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.tachographCard.frontImage", verified, reason)
+                      }
+                    />
+                    <DocumentViewer
+                      title="Back Side"
+                      imageUrl={driver?.extraDocs?.tachographCard?.backImage?.url || null}
+                      isVerified={driver?.extraDocs?.tachographCard?.backImage?.isVerified || false}
+                      reason={driver?.extraDocs?.tachographCard?.backImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.tachographCard.backImage", verified, reason)
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* CPC Card */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <div className="h-6 w-1.5 bg-primary rounded-full"></div>
+                    CPC / Driver Qualification Card (DQC)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DocumentViewer
+                      title="Front Side"
+                      imageUrl={driver?.extraDocs?.cpcCard?.frontImage?.url || null}
+                      isVerified={driver?.extraDocs?.cpcCard?.frontImage?.isVerified || false}
+                      reason={driver?.extraDocs?.cpcCard?.frontImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.cpcCard.frontImage", verified, reason)
+                      }
+                    />
+                    <DocumentViewer
+                      title="Back Side"
+                      imageUrl={driver?.extraDocs?.cpcCard?.backImage?.url || null}
+                      isVerified={driver?.extraDocs?.cpcCard?.backImage?.isVerified || false}
+                      reason={driver?.extraDocs?.cpcCard?.backImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.cpcCard.backImage", verified, reason)
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* MPQC Safety */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <div className="h-6 w-1.5 bg-primary rounded-full"></div>
+                    MPQC (Quarry / Site Safety)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DocumentViewer
+                      title="Card Front"
+                      imageUrl={driver?.extraDocs?.mpqcSafety?.cardFront?.url || null}
+                      isVerified={driver?.extraDocs?.mpqcSafety?.cardFront?.isVerified || false}
+                      reason={driver?.extraDocs?.mpqcSafety?.cardFront?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.mpqcSafety.cardFront", verified, reason)
+                      }
+                    />
+                    <DocumentViewer
+                      title="Card Back"
+                      imageUrl={driver?.extraDocs?.mpqcSafety?.cardBack?.url || null}
+                      isVerified={driver?.extraDocs?.mpqcSafety?.cardBack?.isVerified || false}
+                      reason={driver?.extraDocs?.mpqcSafety?.cardBack?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.mpqcSafety.cardBack", verified, reason)
+                      }
+                    />
+                    <DocumentViewer
+                      title="Certificate Image"
+                      imageUrl={driver?.extraDocs?.mpqcSafety?.certificate?.url || null}
+                      isVerified={driver?.extraDocs?.mpqcSafety?.certificate?.isVerified || false}
+                      reason={driver?.extraDocs?.mpqcSafety?.certificate?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.mpqcSafety.certificate", verified, reason)
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* CSCS Card */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <div className="h-6 w-1.5 bg-primary rounded-full"></div>
+                    CSCS Card (Construction)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DocumentViewer
+                      title="Front Side"
+                      imageUrl={driver?.extraDocs?.cscsCard?.frontImage?.url || null}
+                      isVerified={driver?.extraDocs?.cscsCard?.frontImage?.isVerified || false}
+                      reason={driver?.extraDocs?.cscsCard?.frontImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.cscsCard.frontImage", verified, reason)
+                      }
+                    />
+                    <DocumentViewer
+                      title="Back Side"
+                      imageUrl={driver?.extraDocs?.cscsCard?.backImage?.url || null}
+                      isVerified={driver?.extraDocs?.cscsCard?.backImage?.isVerified || false}
+                      reason={driver?.extraDocs?.cscsCard?.backImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.cscsCard.backImage", verified, reason)
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Company ID */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <div className="h-6 w-1.5 bg-primary rounded-full"></div>
+                    Company ID
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DocumentViewer
+                      title="Front Side"
+                      imageUrl={driver?.extraDocs?.companyId?.frontImage?.url || null}
+                      isVerified={driver?.extraDocs?.companyId?.frontImage?.isVerified || false}
+                      reason={driver?.extraDocs?.companyId?.frontImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.companyId.frontImage", verified, reason)
+                      }
+                    />
+                    <DocumentViewer
+                      title="Back Side"
+                      imageUrl={driver?.extraDocs?.companyId?.backImage?.url || null}
+                      isVerified={driver?.extraDocs?.companyId?.backImage?.isVerified || false}
+                      reason={driver?.extraDocs?.companyId?.backImage?.reason || null}
+                      onVerify={(verified, reason) =>
+                        handleVerifyDocument("extraDocs.companyId.backImage", verified, reason)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
           </CardContent>
         </Tabs>
       </Card>
