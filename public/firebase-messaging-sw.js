@@ -14,12 +14,12 @@ self.addEventListener("activate", (event) => {
 });
 
 firebase.initializeApp({
-  apiKey: "AIzaSyAAgFET5dX4_Mq_ZKkDhrsL_PwayZ3IdSA",
-  authDomain: "rkb-divine-app.firebaseapp.com",
-  projectId: "rkb-divine-app",
-  storageBucket: "rkb-divine-app.firebasestorage.app",
-  messagingSenderId: "20802354440",
-  appId: "1:20802354440:web:3128e9c9edb5ec6f1580bd",
+  apiKey: "AIzaSyDk2_-DtwNn8vc2FSytJupT8LxFbvLJnw8",
+  authDomain: "rkb-divine-app-145f5.firebaseapp.com",
+  projectId: "rkb-divine-app-145f5",
+  storageBucket: "rkb-divine-app-145f5.firebasestorage.app",
+  messagingSenderId: "792293448126",
+  appId: "1:792293448126:web:ee5c452dd64a3b7d3081ef",
 });
 
 const messaging = firebase.messaging();
