@@ -125,7 +125,7 @@ export function InvoiceForm({
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [availableLogos] = useState<string[]>([
-    "RKB-CCONCRETE-LTD-LOGO.png",
+    "RKB-CONCRETE-LTD-LOGO.png",
     "RKB-HAULAGE-LTD-LOGO.png",
   ]);
   const hasAutoselected = useRef(false);
@@ -187,7 +187,7 @@ export function InvoiceForm({
       terms:
         initialData?.terms ||
         "Late payment will be subject to a compensation payment, plus interest charged at 8% above the Bank Of England base rate.\nPayment should be made by bank transfer to the following account:\nAccount Name : RKB KENT Concrete Ltd\nSort Code: 60-06-33\nAccount No: 34965254\nName of Bank: Natwest",
-      logoFile: initialData?.logoFile || "RKB-CCONCRETE-LTD-LOGO.png",
+      logoFile: initialData?.logoFile || "RKB-CONCRETE-LTD-LOGO.png",
     }),
     [initialData, bookingIdFromUrl, defaultDate],
   );

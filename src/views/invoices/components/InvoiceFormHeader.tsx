@@ -26,7 +26,7 @@ export const InvoiceFormHeader: React.FC<InvoiceFormHeaderProps> = ({
           Invoice Logo
         </Label>
         <Select
-          value={formik.values.logoFile || "RKB-CCONCRETE-LTD-LOGO.png"}
+          value={formik.values.logoFile || "RKB-CONCRETE-LTD-LOGO.png"}
           onValueChange={(v) => formik.setFieldValue("logoFile", v)}>
           <SelectTrigger className="w-full h-11 sm:h-10 rounded-lg border-gray-300 bg-white text-sm">
             <SelectValue placeholder="Select logo" />
