@@ -26,9 +26,14 @@ import {
   useCreateInvoiceMutation,
   useUpdateInvoiceMutation,
 } from "@/src/services/invoiceManager/useInvoiceQueries";
+import {
+  useAllClientsQuery,
+  useClientDetailsQuery,
+} from "@/src/services/clientManager/useClientQueries";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { Booking } from "@/src/types/booking.types";
 import { useDebounce } from "@/src/hooks/useDebounce";
+import { useAllProductsQuery } from "@/src/services/productManager/useProductQueries";
 import { InvoiceFormHeader } from "./components/InvoiceFormHeader";
 import { InvoiceFormBookingSection } from "./components/InvoiceFormBookingSection";
 import { InvoiceFormLineItems } from "./components/InvoiceFormLineItems";
@@ -65,7 +70,7 @@ const EMPTY_LINE: InvoiceLineFormData = {
 
   quantity: 1,
   unitPrice: 0,
-  vatPercent: 0,
+  vatPercent: 20,
 };
 
 interface LineComputedTotals {
@@ -120,9 +125,12 @@ export function InvoiceForm({
   const bookingIdFromUrl = searchParams.get("bookingId");
 
   const [open, setOpen] = useState(false);
+  const [clientOpen, setClientOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [clientSearchTerm, setClientSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const debouncedClientSearch = useDebounce(clientSearchTerm, 300);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [availableLogos] = useState<string[]>([
     "RKB-CONCRETE-LTD-LOGO.png",
@@ -148,11 +156,18 @@ export function InvoiceForm({
   const availableBookings = useMemo(() => {
     let list = [...(bookingsData?.bookings ?? [])];
     const specific = specificBookingData;
-    if (specific && !list.find((b) => b._id === specific._id)) {
+    if (specific && !list.find((b) => b?._id === specific?._id)) {
       list.unshift(specific);
     }
     return list;
   }, [bookingsData, specificBookingData]);
+
+  const { data: clientsData, isLoading: isLoadingClients } = useAllClientsQuery(
+    { search: debouncedClientSearch, limit: 50 },
+  );
+
+  const { data: productsData } = useAllProductsQuery({ getAll: true });
+  const products = productsData?.products || [];
 
   const createMutation = useCreateInvoiceMutation();
   const updateMutation = useUpdateInvoiceMutation(invoiceId || "");
@@ -161,9 +176,18 @@ export function InvoiceForm({
 
   const memoizedInitialValues = useMemo<InvoiceFormData>(
     () => ({
-      bookingId: initialData?.bookingId || bookingIdFromUrl || "",
-      clientId: initialData?.clientId || "",
-      companyId: initialData?.companyId || "",
+      bookingId:
+        typeof initialData?.bookingId === "string"
+          ? initialData?.bookingId
+          : (initialData?.bookingId as any)?._id || bookingIdFromUrl || "",
+      clientId:
+        typeof initialData?.clientId === "string"
+          ? initialData?.clientId
+          : (initialData?.clientId as any)?._id || "",
+      companyId:
+        typeof initialData?.companyId === "string"
+          ? initialData?.companyId
+          : (initialData?.companyId as any)?._id || "",
       invoiceDate: initialData?.invoiceDate
         ? new Date(initialData.invoiceDate).toISOString()
         : defaultDate,
@@ -173,7 +197,14 @@ export function InvoiceForm({
       transactionType: initialData?.transactionType || TransactionType.SALES,
       status: initialData?.status || InvoiceStatus.DRAFT,
       paymentStatus: initialData?.paymentStatus || PaymentStatus.PENDING,
-      lineItems: initialData?.lineItems || [EMPTY_LINE],
+      lineItems:
+        initialData?.lineItems?.map((l) => ({
+          ...l,
+          productId:
+            typeof l?.productId === "string"
+              ? l?.productId
+              : (l?.productId as any)?._id || "",
+        })) || [],
       billingName: initialData?.billingName || "",
       billingAddress: initialData?.billingAddress || "",
       companyAddress: initialData?.companyAddress || "",
@@ -188,6 +219,7 @@ export function InvoiceForm({
         initialData?.terms ||
         "Late payment will be subject to a compensation payment, plus interest charged at 8% above the Bank Of England base rate.\nPayment should be made by bank transfer to the following account:\nAccount Name : RKB KENT Concrete Ltd\nSort Code: 60-06-33\nAccount No: 34965254\nName of Bank: Natwest",
       logoFile: initialData?.logoFile || "RKB-CONCRETE-LTD-LOGO.png",
+      invoiceNumber: (initialData as any)?.invoiceNumber || "",
     }),
     [initialData, bookingIdFromUrl, defaultDate],
   );
@@ -212,6 +244,19 @@ export function InvoiceForm({
       }
     },
   });
+
+  const { data: specificClientData } = useClientDetailsQuery(
+    formik.values?.clientId || "",
+  );
+
+  const availableClients = useMemo(() => {
+    let list = [...(clientsData?.clients ?? [])];
+    const specific = specificClientData;
+    if (specific && !list?.find((c: any) => c?._id === specific?._id)) {
+      list.unshift(specific);
+    }
+    return list;
+  }, [clientsData, specificClientData]);
 
   const getFieldError = (name: string): string | null => {
     const error = formik.errors as any;
@@ -305,26 +350,20 @@ export function InvoiceForm({
           : b?.companyId?._id || "",
       );
 
-      const isClientVatExempt =
-        typeof b?.clientId !== "string" && (b?.clientId as any)?.vatExempt;
-
       const lines: InvoiceLineFormData[] = [];
       (b?.products || [])?.forEach((p: any) => {
-        const vatPct = isClientVatExempt ? 0 : 20;
-        // Main product line
         lines.push({
           productId:
             typeof p?.productId === "string" ? p?.productId : p?.productId?._id,
           description: p?.name,
           quantity: p?.quantity,
           unitPrice: p?.rate,
-          vatPercent: vatPct,
+          vatPercent: 20,
         });
       });
 
       const extraChargesArr: { label: string; amount: number }[] = [];
       (b?.products || [])?.forEach((p: any) => {
-        // Also check if extraCharges exist under productId (if populated)
         const pExtraCharges = p?.extraCharges || p?.productId?.extraCharges;
         if (Array.isArray(pExtraCharges)) {
           pExtraCharges?.forEach((ec: any) => {
@@ -338,7 +377,6 @@ export function InvoiceForm({
       setFieldValue("lineItems", lines?.length > 0 ? lines : [EMPTY_LINE]);
       setFieldValue("extraCharges", extraChargesArr);
 
-      // Auto-set waiting time as dedicated fields
       if (
         b?.waitingTime &&
         typeof b?.waitingTime?.durationMinutes === "number" &&
@@ -347,7 +385,6 @@ export function InvoiceForm({
         const hourlyRate = (b?.products?.[0] as any)?.hourlyRate || 0;
         const durationHours = b?.waitingTime?.durationMinutes / 60;
         const waitCost = Number((durationHours * hourlyRate).toFixed(2));
-
         setFieldValue("waitingMinutes", b?.waitingTime?.durationMinutes);
         setFieldValue("waitingTotal", waitCost);
       } else {
@@ -355,14 +392,11 @@ export function InvoiceForm({
         setFieldValue("waitingTotal", 0);
       }
 
-      // Auto-populate address overrides
       const client = b?.clientId as any;
       const company = b?.companyId as any;
-
       if (client?.legalDetails?.legalName) {
         setFieldValue("billingName", client?.legalDetails?.legalName);
       }
-
       const clientAddrString = client?.address
         ? [
             client?.address?.addressLine1,
@@ -376,7 +410,6 @@ export function InvoiceForm({
             ?.join("\n")
         : "";
       setFieldValue("billingAddress", clientAddrString);
-
       const companyAddrString = company?.address
         ? [
             company?.address?.addressLine1,
@@ -394,6 +427,74 @@ export function InvoiceForm({
     [availableBookings, setFieldValue],
   );
 
+  // Standalone client select (no booking)
+  const handleClientSelect = useCallback(
+    (cId: string) => {
+      const c = availableClients?.find((x: any) => x?._id === cId);
+      if (!c) return;
+      setFieldValue("clientId", cId);
+      const compId = c?.companyId;
+      setFieldValue(
+        "companyId",
+        typeof compId === "string" ? compId : compId?._id || "",
+      );
+      setFieldValue("bookingId", ""); // clear booking when picking client directly
+
+      // Reset financial fields to defaults for standalone mode
+      setFieldValue("lineItems", []);
+      setFieldValue("extraCharges", []);
+      setFieldValue("waitingMinutes", 0);
+      setFieldValue("waitingTotal", 0);
+
+      if (c?.legalDetails?.legalName) {
+        setFieldValue("billingName", c?.legalDetails?.legalName);
+      }
+
+      // Set Billing Address
+      const addrString = c?.address
+        ? [
+            c?.address?.addressLine1,
+            c?.address?.addressLine2,
+            c?.address?.city,
+            c?.address?.county,
+            c?.address?.postcode,
+            c?.address?.country,
+          ]
+            ?.filter(Boolean)
+            ?.join("\n")
+        : "";
+      setFieldValue("billingAddress", addrString);
+
+      // Set Company Address (Fallback to standard if company details aren't fully populated in client list)
+
+      const companyAddrString = c?.address
+        ? c?.address?.country
+        : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
+      setFieldValue("companyAddress", companyAddrString);
+    },
+    [availableClients, setFieldValue],
+  );
+
+  const handleClearBooking = useCallback(() => {
+    setFieldValue("bookingId", "");
+    setFieldValue("clientId", "");
+    setFieldValue("companyId", "");
+    setFieldValue("billingName", "");
+    setFieldValue("billingAddress", "");
+    setFieldValue("lineItems", []);
+    setFieldValue("extraCharges", []);
+    setFieldValue("waitingMinutes", 0);
+    setFieldValue("waitingTotal", 0);
+  }, [setFieldValue]);
+
+  const handleClearClient = useCallback(() => {
+    setFieldValue("clientId", "");
+    setFieldValue("billingName", "");
+    setFieldValue("billingAddress", "");
+    setFieldValue("lineItems", []);
+    setFieldValue("companyId", "");
+  }, [setFieldValue]);
+
   useEffect(() => {
     if (
       bookingIdFromUrl &&
@@ -408,10 +509,7 @@ export function InvoiceForm({
   const removeLine = (index: number) => {
     const newLines = [...formik.values.lineItems];
     newLines?.splice(index, 1);
-    formik.setFieldValue(
-      "lineItems",
-      newLines?.length > 0 ? newLines : [EMPTY_LINE],
-    );
+    formik.setFieldValue("lineItems", newLines);
   };
 
   const setLineField = (index: number, field: string, value: any) => {
@@ -422,15 +520,25 @@ export function InvoiceForm({
     const selectedBooking = availableBookings?.find(
       (b) => b?._id === formik.values.bookingId,
     );
-    const client = selectedBooking?.clientId as any;
-    const company = selectedBooking?.companyId as any;
+    const bookingClient = selectedBooking?.clientId as any;
+    const bookingCompany = selectedBooking?.companyId as any;
+    // Fallback to standalone client if no booking is selected
+    const standaloneClient = availableClients?.find(
+      (c: any) => c?._id === formik.values.clientId,
+    ) as any;
+    const client = bookingClient || standaloneClient;
+    const company = bookingCompany || (standaloneClient?.companyId as any);
 
-    // Custom Invoice ID Logic matching Backend
-    let customInvoiceId = "DRAFT";
-    if (selectedBooking?.bookingId) {
-      const numericPart = selectedBooking?.bookingId?.replace(/^\D+/g, "");
+    let customInvoiceId = formik.values.invoiceNumber || "DRAFT";
+
+    if (!formik.values.invoiceNumber) {
       const prefix = company?.invoicePrefix || "RKB";
-      customInvoiceId = prefix + (numericPart || "0001");
+      if (selectedBooking?.bookingId) {
+        const numericPart = selectedBooking?.bookingId?.replace(/^\D+/g, "");
+        customInvoiceId = prefix + (numericPart || "0001");
+      } else if (client) {
+        customInvoiceId = `${prefix}-DRAFT`;
+      }
     }
 
     return {
@@ -438,14 +546,13 @@ export function InvoiceForm({
       invoiceNumber: customInvoiceId,
       clientId: client || formik.values.clientId,
       companyId: company || formik.values.companyId,
-      // Pass overrides to preview
       billingName: formik.values.billingName,
       billingAddress: formik.values.billingAddress,
       companyAddress: formik.values.companyAddress,
       subtotal: totals.subtotal,
       totalVat: totals.totalVat,
       totalAmount: totals.totalAmount || 0,
-      lineItems: formik.values.lineItems.map((l) => ({
+      lineItems: formik.values.lineItems?.map((l) => ({
         ...l,
         exVat: getExVat(l),
         vatAmt: getVatAmt(l),
@@ -453,7 +560,14 @@ export function InvoiceForm({
       })),
       taxBreakdown: [],
     } as unknown as Invoice;
-  }, [formik.values, totals, availableBookings, getExVat, getVatAmt]);
+  }, [
+    formik.values,
+    totals,
+    availableBookings,
+    availableClients,
+    getExVat,
+    getVatAmt,
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50/50 py-6 px-0 md:px-8">
@@ -478,7 +592,7 @@ export function InvoiceForm({
                 </h1>
                 <p className="text-muted-foreground font-medium text-[10px] sm:text-sm uppercase tracking-widest leading-none">
                   {isEdit
-                    ? `Serial: ${previewInvoiceData.invoiceNumber}`
+                    ? `Serial: ${previewInvoiceData?.invoiceNumber}`
                     : "Generate professional tax invoice"}
                 </p>
               </div>
@@ -530,7 +644,17 @@ export function InvoiceForm({
             availableBookings={availableBookings}
             handleBookingSelect={handleBookingSelect}
             getBookingLabel={getBookingLabel}
-            previewInvoiceData={previewInvoiceData}
+            initialBooking={initialData?.bookingId as any}
+            clientOpen={clientOpen}
+            setClientOpen={setClientOpen}
+            clientSearchTerm={clientSearchTerm}
+            setClientSearchTerm={setClientSearchTerm}
+            isLoadingClients={isLoadingClients}
+            availableClients={availableClients}
+            initialClient={initialData?.clientId}
+            handleClientSelect={handleClientSelect}
+            handleClearBooking={handleClearBooking}
+            handleClearClient={handleClearClient}
           />
           {/* Divider */}
           <div className="border-t border-gray-200 mb-6" />
@@ -538,6 +662,7 @@ export function InvoiceForm({
           <InvoiceFormLineItems
             formik={formik}
             isEdit={!!isEdit}
+            products={products}
             getFieldError={getFieldError}
             removeLine={removeLine}
             setLineField={setLineField}

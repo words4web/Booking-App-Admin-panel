@@ -1,6 +1,5 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,7 +11,7 @@ import { DateTimePicker } from "@/src/components/DateTimePicker";
 import { cn } from "@/lib/utils";
 import { TransactionType } from "@/src/enums/invoice.enum";
 import { FormikProps } from "formik";
-import { InvoiceFormData, Invoice } from "@/src/types/invoice.types";
+import { InvoiceFormData } from "@/src/types/invoice.types";
 import { Booking } from "@/src/types/booking.types";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,7 +40,18 @@ interface InvoiceFormBookingSectionProps {
   availableBookings: Booking[];
   handleBookingSelect: (bId: string) => void;
   getBookingLabel: (b: Booking) => string;
-  previewInvoiceData: Invoice;
+  initialBooking?: Booking;
+  // Client selector (standalone mode)
+  clientOpen: boolean;
+  setClientOpen: (open: boolean) => void;
+  clientSearchTerm: string;
+  setClientSearchTerm: (term: string) => void;
+  isLoadingClients: boolean;
+  availableClients: any[];
+  initialClient?: any;
+  handleClientSelect: (cId: string) => void;
+  handleClearBooking: () => void;
+  handleClearClient: () => void;
 }
 
 export const InvoiceFormBookingSection: React.FC<
@@ -57,8 +67,34 @@ export const InvoiceFormBookingSection: React.FC<
   availableBookings,
   handleBookingSelect,
   getBookingLabel,
-  previewInvoiceData,
+  initialBooking,
+  clientOpen,
+  setClientOpen,
+  clientSearchTerm,
+  setClientSearchTerm,
+  isLoadingClients,
+  availableClients,
+  initialClient,
+  handleClientSelect,
+  handleClearBooking,
+  handleClearClient,
 }) => {
+  const isBookingMode = !!formik.values.bookingId;
+  const isStandaloneMode = !!formik.values.clientId && !isBookingMode;
+
+  const selectedClient =
+    availableClients?.find((c: any) => c?._id === formik.values.clientId) ||
+    (typeof initialClient === "object" &&
+    initialClient?._id === formik.values.clientId
+      ? initialClient
+      : null);
+
+  const clientLabel = selectedClient
+    ? selectedClient?.legalDetails?.legalName ||
+      `${selectedClient?.contactInfo?.firstName || ""} ${selectedClient?.contactInfo?.lastName || ""}`.trim() ||
+      "Client"
+    : "Select Client";
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
@@ -80,9 +116,14 @@ export const InvoiceFormBookingSection: React.FC<
             </p>
           )}
         </div>
+
+        {/* Booking Selector (Optional) */}
         <div>
           <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
-            Select Booking
+            Select Booking{" "}
+            <span className="normal-case font-normal text-gray-400">
+              (optional)
+            </span>
           </Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -90,20 +131,38 @@ export const InvoiceFormBookingSection: React.FC<
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
+                disabled={isStandaloneMode}
                 className={cn(
                   "h-11 sm:h-10 w-full justify-between rounded-lg border-gray-300 bg-white text-sm font-normal overflow-hidden",
                   getFieldError("bookingId") && "border-destructive",
+                  isStandaloneMode && "opacity-60 cursor-not-allowed",
                 )}>
                 <span className="truncate">
                   {formik.values.bookingId
                     ? getBookingLabel(
-                        availableBookings.find(
-                          (b) => b._id === formik.values.bookingId,
-                        ) as Booking,
+                        (availableBookings?.find(
+                          (b) => b?._id === formik.values?.bookingId,
+                        ) ||
+                          (initialBooking?._id === formik.values.bookingId
+                            ? initialBooking
+                            : null)) as Booking,
                       )
                     : "Select Booking"}
                 </span>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <div className="flex items-center gap-1 ml-2">
+                  {formik.values?.bookingId && (
+                    <div
+                      role="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClearBooking();
+                      }}
+                      className="p-1 hover:bg-slate-100 rounded-full transition-colors">
+                      <span className="text-lg leading-none">×</span>
+                    </div>
+                  )}
+                  <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                </div>
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -125,8 +184,8 @@ export const InvoiceFormBookingSection: React.FC<
                   <CommandGroup>
                     {availableBookings?.map((b) => (
                       <CommandItem
-                        key={b._id}
-                        value={b._id}
+                        key={b?._id}
+                        value={b?._id}
                         onSelect={(currentValue) => {
                           handleBookingSelect(currentValue);
                           setOpen(false);
@@ -134,7 +193,7 @@ export const InvoiceFormBookingSection: React.FC<
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            formik.values.bookingId === b._id
+                            formik.values.bookingId === b?._id
                               ? "opacity-100"
                               : "opacity-0",
                           )}
@@ -153,6 +212,96 @@ export const InvoiceFormBookingSection: React.FC<
             </p>
           )}
         </div>
+
+        {/* Client Selector (standalone mode — required when no booking) */}
+        <div>
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
+            Client{" "}
+            <span className="normal-case font-normal text-gray-400">
+              {formik.values.bookingId
+                ? "(auto-set from booking)"
+                : "(required)"}
+            </span>
+          </Label>
+          <Popover open={clientOpen} onOpenChange={setClientOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={clientOpen}
+                disabled={isBookingMode}
+                className={cn(
+                  "h-11 sm:h-10 w-full justify-between rounded-lg border-gray-300 bg-white text-sm font-normal overflow-hidden",
+                  getFieldError("clientId") && "border-destructive",
+                  isBookingMode && "opacity-60 cursor-not-allowed",
+                )}>
+                <span className="truncate">{clientLabel}</span>
+                <div className="flex items-center gap-1 ml-2">
+                  {formik.values.clientId && !isBookingMode && (
+                    <div
+                      role="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClearClient();
+                      }}
+                      className="p-1 hover:bg-slate-100 rounded-full transition-colors">
+                      <span className="text-lg leading-none">×</span>
+                    </div>
+                  )}
+                  <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                </div>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-[--radix-popover-trigger-width] p-0"
+              align="start">
+              <Command shouldFilter={false}>
+                <CommandInput
+                  placeholder="Search client..."
+                  value={clientSearchTerm}
+                  onValueChange={setClientSearchTerm}
+                />
+                <CommandList>
+                  {isLoadingClients && (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      Searching...
+                    </div>
+                  )}
+                  <CommandEmpty>No clients found.</CommandEmpty>
+                  <CommandGroup>
+                    {availableClients?.map((c: any) => (
+                      <CommandItem
+                        key={c?._id}
+                        value={c?._id}
+                        onSelect={(val) => {
+                          handleClientSelect(val);
+                          setClientOpen(false);
+                        }}>
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            formik.values.clientId === c?._id
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                        {c?.legalDetails?.legalName ||
+                          `${c?.contactInfo?.firstName || ""} ${c?.contactInfo?.lastName || ""}`?.trim() ||
+                          "Unnamed Client"}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          {getFieldError("clientId") && (
+            <p className="text-[11px] text-destructive font-medium mt-1">
+              {getFieldError("clientId")}
+            </p>
+          )}
+        </div>
+
         <div>
           <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
             Type
@@ -170,20 +319,6 @@ export const InvoiceFormBookingSection: React.FC<
               </SelectItem>
             </SelectContent>
           </Select>
-        </div>
-        <div>
-          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
-            Invoice #
-          </Label>
-          <Input
-            value={
-              formik.values.bookingId
-                ? `#${previewInvoiceData.invoiceNumber}`
-                : "PENDING"
-            }
-            disabled
-            className="h-11 sm:h-10 rounded-lg border-gray-200 bg-gray-50 text-gray-700 font-bold text-sm"
-          />
         </div>
       </div>
 
