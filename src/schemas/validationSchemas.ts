@@ -156,7 +156,7 @@ export const InvoiceSchema = z
   .object({
     companyId: z.string().optional(),
     clientId: z.string().min(1, "Client is required"),
-    bookingId: z.string().min(1, "Booking reference is required"),
+    bookingId: z.string().optional(),
     invoiceDate: z.string().optional(),
     dueDate: z.string().optional(),
     transactionType: z

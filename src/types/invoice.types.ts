@@ -126,6 +126,7 @@ export interface InvoiceFormData {
   notes?: string;
   terms?: string;
   paymentLink?: string;
+  invoiceNumber?: string;
 }
 
 export interface InvoiceFilters {

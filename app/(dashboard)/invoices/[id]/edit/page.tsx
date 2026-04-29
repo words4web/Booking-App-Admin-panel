@@ -35,7 +35,7 @@ export default function EditInvoicePage() {
       ? new Date(invoice?.dueDate)?.toISOString()
       : undefined,
     lineItems: invoice?.lineItems?.map((l) => ({
-      productId: typeof l?.productId === "string" ? l?.productId : undefined,
+      productId: l?.productId,
       description: l?.description,
       quantity: l?.quantity,
       unitPrice: l?.unitPrice,
@@ -54,6 +54,7 @@ export default function EditInvoicePage() {
     paymentLink: invoice?.paymentLink,
     extraCharges: invoice?.extraCharges,
     transactionType: invoice?.transactionType,
+    invoiceNumber: invoice?.invoiceNumber,
   };
 
   return <InvoiceForm initialData={initialData} isEdit={true} invoiceId={id} />;

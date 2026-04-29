@@ -48,7 +48,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   formik.setFieldValue(
                     "waitingMinutes",
-                    e.target.value === "" ? 0 : Number(e.target.value),
+                    e.target?.value === "" ? 0 : Number(e.target?.value),
                   )
                 }
                 placeholder="0"
@@ -64,7 +64,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   formik.setFieldValue(
                     "waitingTotal",
-                    e.target.value === "" ? 0 : Number(e.target.value),
+                    e.target?.value === "" ? 0 : Number(e.target?.value),
                   )
                 }
                 placeholder="0.00"
@@ -86,7 +86,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                 type="checkbox"
                 checked={formik.values.isNightShift || false}
                 onChange={(e) => {
-                  const checked = e.target.checked;
+                  const checked = e.target?.checked;
                   formik.setFieldValue("isNightShift", checked);
                   if (!checked) {
                     formik.setFieldValue("nightShiftAmount", 0);
@@ -112,7 +112,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     formik.setFieldValue(
                       "nightShiftAmount",
-                      e.target.value === "" ? 0 : Number(e.target.value),
+                      e.target?.value === "" ? 0 : Number(e.target?.value),
                     )
                   }
                   placeholder="0.00"
@@ -152,7 +152,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                   value={charge.label}
                   onChange={(e) => {
                     const newVal = [...(formik.values.extraCharges || [])];
-                    newVal[idx].label = e.target.value;
+                    newVal[idx].label = e.target?.value;
                     formik.setFieldValue("extraCharges", newVal);
                   }}
                   className="h-8 text-xs bg-white"
@@ -167,7 +167,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
                   onChange={(e) => {
                     const newVal = [...(formik.values.extraCharges || [])];
                     newVal[idx].amount =
-                      e.target.value === "" ? 0 : Number(e.target.value);
+                      e.target?.value === "" ? 0 : Number(e.target?.value);
                     formik.setFieldValue("extraCharges", newVal);
                   }}
                   className="h-8 text-xs bg-white text-right font-bold"
@@ -201,7 +201,7 @@ export const InvoiceFormTotals: React.FC<InvoiceFormTotalsProps> = ({
 
         <div className="flex justify-between items-center text-[13px] sm:text-sm">
           <span className="text-slate-400 font-bold uppercase tracking-wider">
-            VAT ({Number(formik.values.lineItems?.[0]?.vatPercent ?? 0)}%)
+            VAT ({Number(formik.values?.lineItems?.[0]?.vatPercent ?? 20)}%)
           </span>
           <span className="font-semibold text-slate-900">
             £{Number(totals?.totalVat || 0)?.toFixed(2)}
