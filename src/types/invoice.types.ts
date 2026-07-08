@@ -73,6 +73,10 @@ export interface Invoice {
   billingName?: string;
   billingAddress?: string;
   companyAddress?: string;
+  companyName?: string;
+  companyTelephone?: string;
+  companyEmail?: string;
+  companyVatNumber?: string;
   waitingMinutes?: number;
   waitingTotal?: number;
   isNightShift?: boolean;
@@ -115,6 +119,10 @@ export interface InvoiceFormData {
   billingName?: string;
   billingAddress?: string;
   companyAddress?: string;
+  companyName?: string;
+  companyTelephone?: string;
+  companyEmail?: string;
+  companyVatNumber?: string;
   waitingMinutes?: number;
   waitingTotal?: number;
   isNightShift?: boolean;

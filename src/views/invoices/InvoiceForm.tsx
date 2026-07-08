@@ -30,6 +30,7 @@ import {
   useAllClientsQuery,
   useClientDetailsQuery,
 } from "@/src/services/clientManager/useClientQueries";
+import { useCompanyDetailsQuery } from "@/src/services/companyManager/useCompanyQueries";
 import ROUTES_PATH from "@/lib/Route_Paths";
 import { Booking } from "@/src/types/booking.types";
 import { useDebounce } from "@/src/hooks/useDebounce";
@@ -135,8 +136,10 @@ export function InvoiceForm({
   const [availableLogos] = useState<string[]>([
     "RKB-CONCRETE-LTD-LOGO.png",
     "RKB-HAULAGE-LTD-LOGO.png",
+    "RKB-UNIQUE-HAULAGE-LTD-LOGO.png",
   ]);
   const hasAutoselected = useRef(false);
+  const shouldAutofillCompany = useRef(!initialData?.companyName);
 
   const bookingFilters = useMemo(
     () => ({
@@ -207,7 +210,25 @@ export function InvoiceForm({
         })) || [],
       billingName: initialData?.billingName || "",
       billingAddress: initialData?.billingAddress || "",
-      companyAddress: initialData?.companyAddress || "",
+      companyAddress:
+        initialData?.companyAddress ||
+        "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU",
+      companyName:
+        initialData?.companyName ||
+        (initialData?.companyId as any)?.name ||
+        "RKB KENT CONCRETE LTD",
+      companyTelephone:
+        initialData?.companyTelephone ||
+        (initialData?.companyId as any)?.telephone ||
+        "+44-7956409828",
+      companyEmail:
+        initialData?.companyEmail ||
+        (initialData?.companyId as any)?.adminEmail ||
+        "rkbkentconcrete@gmail.com",
+      companyVatNumber:
+        initialData?.companyVatNumber ||
+        (initialData?.companyId as any)?.vatNumber ||
+        "499 4540 35",
       waitingMinutes: initialData?.waitingMinutes || 0,
       waitingTotal: initialData?.waitingTotal || 0,
       isNightShift: initialData?.isNightShift || false,
@@ -248,6 +269,46 @@ export function InvoiceForm({
   const { data: specificClientData } = useClientDetailsQuery(
     formik.values?.clientId || "",
   );
+
+  const { data: companyDetails } = useCompanyDetailsQuery(
+    formik.values?.companyId || "",
+  );
+
+  useEffect(() => {
+    if (shouldAutofillCompany.current && companyDetails) {
+      formik.setFieldValue(
+        "companyName",
+        companyDetails?.name || "RKB KENT CONCRETE LTD",
+      );
+      formik.setFieldValue(
+        "companyTelephone",
+        companyDetails?.telephone || "+44-7956409828",
+      );
+      formik.setFieldValue(
+        "companyEmail",
+        companyDetails?.adminEmail || "rkbkentconcrete@gmail.com",
+      );
+      formik.setFieldValue(
+        "companyVatNumber",
+        companyDetails?.vatNumber || "499 4540 35",
+      );
+
+      const companyAddrString = companyDetails?.address
+        ? [
+            companyDetails?.address.addressLine1,
+            companyDetails?.address.addressLine2,
+            companyDetails?.address.city,
+            companyDetails?.address.postcode,
+            companyDetails?.address.country,
+          ]
+            ?.filter(Boolean)
+            ?.join("\n")
+        : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
+      formik.setFieldValue("companyAddress", companyAddrString);
+
+      shouldAutofillCompany.current = false;
+    }
+  }, [companyDetails, formik.setFieldValue]);
 
   const availableClients = useMemo(() => {
     let list = [...(clientsData?.clients ?? [])];
@@ -423,6 +484,10 @@ export function InvoiceForm({
             ?.join("\n")
         : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
       setFieldValue("companyAddress", companyAddrString);
+      setFieldValue("companyName", company?.name || "");
+      setFieldValue("companyTelephone", company?.telephone || "");
+      setFieldValue("companyEmail", company?.adminEmail || "");
+      setFieldValue("companyVatNumber", company?.vatNumber || "");
     },
     [availableBookings, setFieldValue],
   );
@@ -466,11 +531,24 @@ export function InvoiceForm({
       setFieldValue("billingAddress", addrString);
 
       // Set Company Address (Fallback to standard if company details aren't fully populated in client list)
+      const company = typeof compId === "object" ? (compId as any) : null;
+      if (company) {
+        setFieldValue("companyName", company?.name || "");
+        setFieldValue("companyTelephone", company?.telephone || "");
+        setFieldValue("companyEmail", company?.adminEmail || "");
+        setFieldValue("companyVatNumber", company?.vatNumber || "");
+      } else {
+        setFieldValue("companyName", "");
+        setFieldValue("companyTelephone", "");
+        setFieldValue("companyEmail", "");
+        setFieldValue("companyVatNumber", "");
+      }
 
       const companyAddrString = c?.address
         ? c?.address?.country
         : "RKB House\nWharf Road\nGravesend, Kent\nDA12 2RU";
       setFieldValue("companyAddress", companyAddrString);
+      shouldAutofillCompany.current = true;
     },
     [availableClients, setFieldValue],
   );
@@ -481,6 +559,11 @@ export function InvoiceForm({
     setFieldValue("companyId", "");
     setFieldValue("billingName", "");
     setFieldValue("billingAddress", "");
+    setFieldValue("companyAddress", "");
+    setFieldValue("companyName", "");
+    setFieldValue("companyTelephone", "");
+    setFieldValue("companyEmail", "");
+    setFieldValue("companyVatNumber", "");
     setFieldValue("lineItems", []);
     setFieldValue("extraCharges", []);
     setFieldValue("waitingMinutes", 0);
@@ -491,6 +574,11 @@ export function InvoiceForm({
     setFieldValue("clientId", "");
     setFieldValue("billingName", "");
     setFieldValue("billingAddress", "");
+    setFieldValue("companyAddress", "");
+    setFieldValue("companyName", "");
+    setFieldValue("companyTelephone", "");
+    setFieldValue("companyEmail", "");
+    setFieldValue("companyVatNumber", "");
     setFieldValue("lineItems", []);
     setFieldValue("companyId", "");
   }, [setFieldValue]);
