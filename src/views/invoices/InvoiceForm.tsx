@@ -137,6 +137,7 @@ export function InvoiceForm({
     "RKB-CONCRETE-LTD-LOGO.png",
     "RKB-HAULAGE-LTD-LOGO.png",
     "RKB-UNIQUE-HAULAGE-LTD-LOGO.png",
+    "QUBE-HAULAGE-LTD-LOGO.png",
   ]);
   const hasAutoselected = useRef(false);
   const shouldAutofillCompany = useRef(!initialData?.companyName);
